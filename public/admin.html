@@ -536,7 +536,7 @@ a, button, [role="button"] {
     <label class="lbl">Password</label>
     <input type="password" id="loginPw" class="inp" placeholder="Admin password" autocomplete="off" />
     <div class="login-err" id="loginErr">Wrong password. Try again.</div>
-    <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    <button class="btn-primary" id="loginBtn">Sign In</button>
   </div>
 </div>
 
@@ -545,7 +545,7 @@ a, button, [role="button"] {
     <div class="topbar-brand">StartupSync <span class="topbar-badge">Admin</span></div>
     <div class="topbar-right">
       <span class="clock" id="clock"></span>
-      <button class="btn-logout" onclick="doLogout()">Logout</button>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
     </div>
   </div>
   <div class="main">
@@ -560,16 +560,16 @@ a, button, [role="button"] {
     </div>
     <div class="card">
       <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('founders',this)">Founders <span class="cnt" id="fcnt">0</span></button>
-        <button class="tab-btn" onclick="switchTab('investors',this)">Investors <span class="cnt" id="icnt">0</span></button>
-        <button class="tab-btn" onclick="switchTab('help',this)">Help Requests <span class="cnt" id="hcnt">0</span></button>
-        <button class="tab-btn" onclick="switchTab('feedback',this)">Feedback <span class="cnt" id="fbcnt">0</span></button>
+        <button class="tab-btn active" id="tab-btn-founders">Founders <span class="cnt" id="fcnt">0</span></button>
+        <button class="tab-btn" id="tab-btn-investors">Investors <span class="cnt" id="icnt">0</span></button>
+        <button class="tab-btn" id="tab-btn-help">Help Requests <span class="cnt" id="hcnt">0</span></button>
+        <button class="tab-btn" id="tab-btn-feedback">Feedback <span class="cnt" id="fbcnt">0</span></button>
       </div>
       <div class="tab-panel active" id="tab-founders">
         <div class="controls">
           <div class="search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" class="search" id="fSearch" placeholder="Name, email, startup…" oninput="filterF()"/>
+            <input type="text" class="search" id="fSearch" placeholder="Name, email, startup…" id="fSearchInp"/>
           </div>
           <select class="sel" id="fSort" onchange="filterF()">
             <option value="newest">Newest first</option>
@@ -594,7 +594,7 @@ a, button, [role="button"] {
         <div class="controls">
           <div class="search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" class="search" id="iSearch" placeholder="Name, email, focus…" oninput="filterI()"/>
+            <input type="text" class="search" id="iSearch" placeholder="Name, email, focus…" id="iSearchInp"/>
           </div>
           <select class="sel" id="iSort" onchange="filterI()">
             <option value="newest">Newest first</option>
@@ -619,7 +619,7 @@ a, button, [role="button"] {
         <div class="controls">
           <div class="search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" class="search" id="hSearch" placeholder="Search user, email, problem…" oninput="filterH()"/>
+            <input type="text" class="search" id="hSearch" placeholder="Search user, email, problem…" id="hSearchInp"/>
           </div>
           <select class="sel" id="hFilter" onchange="filterH()">
             <option value="all">All Requests</option>
@@ -644,7 +644,7 @@ a, button, [role="button"] {
         <div class="controls">
           <div class="search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" class="search" id="fbSearch" placeholder="Search user, email, feedback…" oninput="filterFb()"/>
+            <input type="text" class="search" id="fbSearch" placeholder="Search user, email, feedback…" id="fbSearchInp"/>
           </div>
           <select class="sel" id="fbFilter" onchange="filterFb()">
             <option value="all">All Feedback</option>
@@ -672,7 +672,7 @@ a, button, [role="button"] {
 </div>
 
 <!-- Screenshot Lightbox -->
-<div class="screenshot-modal" id="screenshotModal" onclick="closeScreenshot()">
+<div class="screenshot-modal" id="screenshotModal" id="screenshotCloseBtn">
   <button class="screenshot-close" onclick="closeScreenshot()">✕</button>
   <img id="screenshotModalImg" src="" alt="Screenshot"/>
 </div>
@@ -681,7 +681,7 @@ a, button, [role="button"] {
   <div class="drawer">
     <div class="drawer-head">
       <div class="drawer-title" id="drawerTitle">Profile</div>
-      <button class="btn-close" onclick="closeDrawerDirect()">✕</button>
+      <button class="btn-close" id="drawerCloseBtn">✕</button>
     </div>
     <div class="drawer-body" id="drawerBody"></div>
     <div class="drawer-foot">
@@ -1116,5 +1116,60 @@ async function deleteFeedback(id){
 
   function _ssAlert(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111118;color:#fff;padding:10px 20px;border-radius:10px;font-family:Sora,sans-serif;font-size:.8rem;font-weight:600;z-index:2147483647;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center;';document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},3000);}
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Login
+  var loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) loginBtn.addEventListener('click', doLogin);
+
+  // Logout
+  var logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+
+  // Tab buttons
+  var tabBtns = {
+    'tab-btn-founders':  function(el){ switchTab('founders', el); },
+    'tab-btn-investors': function(el){ switchTab('investors', el); },
+    'tab-btn-help':      function(el){ switchTab('help', el); },
+    'tab-btn-feedback':  function(el){ switchTab('feedback', el); },
+  };
+  Object.keys(tabBtns).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(){ tabBtns[id](this); });
+  });
+
+  // Search/filter inputs
+  var fSearch = document.getElementById('fSearchInp') || document.getElementById('fSearch');
+  if (fSearch) fSearch.addEventListener('input', filterF);
+  var iSearch = document.getElementById('iSearchInp') || document.getElementById('iSearch');
+  if (iSearch) iSearch.addEventListener('input', filterI);
+  var hSearch = document.getElementById('hSearchInp') || document.getElementById('hSearch');
+  if (hSearch) hSearch.addEventListener('input', filterH);
+  var fbSearch = document.getElementById('fbSearchInp') || document.getElementById('fbSearch');
+  if (fbSearch) fbSearch.addEventListener('input', filterFb);
+
+  // Sort selects
+  var fSort = document.getElementById('fSortSel') || document.getElementById('fSort');
+  if (fSort) fSort.addEventListener('change', filterF);
+  var iSort = document.getElementById('iSortSel') || document.getElementById('iSort');
+  if (iSort) iSort.addEventListener('change', filterI);
+  var hFilter = document.getElementById('hFilterSel') || document.getElementById('hFilter');
+  if (hFilter) hFilter.addEventListener('change', filterH);
+  var fbFilter = document.getElementById('fbFilterSel') || document.getElementById('fbFilter');
+  if (fbFilter) fbFilter.addEventListener('change', filterFb);
+
+  // Screenshot close
+  var ssClose = document.getElementById('screenshotCloseBtn');
+  if (ssClose) ssClose.addEventListener('click', closeScreenshot);
+  var ssModal = document.getElementById('screenshotModal');
+  if (ssModal) ssModal.addEventListener('click', closeScreenshot);
+
+  // Drawer close
+  var drawerClose = document.getElementById('drawerCloseBtn');
+  if (drawerClose) drawerClose.addEventListener('click', closeDrawerDirect);
+});
+</script>
+
 </body>
 </html>
