@@ -156,7 +156,7 @@ mongoose.connect(process.env.MONGO_URI, {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
-  bufferCommands: false,
+  bufferCommands: false,createTransport
 })
   .then(async () => { console.log("✅ MongoDB Connected"); await ensureIndexes(); })
   .catch((err) => {
@@ -595,12 +595,11 @@ app.post("/auth/send-otp", otpLimiter, async (req, res) => {
       { upsert: true, new: true }
     );
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "StartupSync — Verify Your Email",
-      html: getOtpEmailHtml(otp, "signup"),
-    });
+    await sendEmail(
+      email,
+      "StartupSync — Verify Your Email",
+      getOtpEmailHtml(otp, "signup")
+    );
 
     res.json({ success: true });
   } catch (e) {
@@ -647,13 +646,11 @@ app.post("/reset-password/send-otp", otpLimiter, async (req, res) => {
       { upsert: true, new: true }
     );
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "StartupSync — Password Reset OTP",
-      html: getOtpEmailHtml(otp, "reset"),
-    });
-
+    await sendEmail(
+      email,
+      "StartupSync — Password Reset OTP",
+      getOtpEmailHtml(otp, "reset")
+    );
     return res.json({ success: true });
   } catch (e) {
     console.error("reset-password/send-otp error:", e);
