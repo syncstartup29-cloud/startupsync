@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Startup Sync - Founder Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"/></noscript>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { background:#F7F7F8; min-height:100%; font-family:'Inter', sans-serif; }
+    :root {
+      --bg:#F7F7F8; --card-bg:#FFFFFF; --input-bg:#F4F4F5; --input-border:#E4E4E7;
+      --text-primary:#111118; --text-secondary:#6B7280; --text-muted:#9CA3AF;
+      --accent:#111118; --accent-hover:#2d2d35; --border:#E4E4E7;
+      --success:#16A34A; --error:#DC2626; --radius:12px;
+      --font-h:'Sora', sans-serif; --font-b:'Inter', sans-serif;
+      --ease:cubic-bezier(0.4,0,0.2,1);
+      --shadow-card:0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08);
+    }
+    body { min-height:100vh; font-family:var(--font-b); color:var(--text-primary); background:var(--bg); overflow-x:hidden; overflow-y:auto; padding:2rem 1.25rem; -webkit-font-smoothing:antialiased; }
+    button, input, textarea, select { font-family:inherit; font-size:16px; }
+    .container { position:relative; z-index:10; max-width:720px; margin:0 auto; padding:2rem 0; width:100%; }
+    .header { text-align:center; margin-bottom:1.8rem; display:flex; flex-direction:column; align-items:center; }
+    .logo-title { font-family:var(--font-h); font-size:1.3rem; font-weight:700; color:var(--text-primary); letter-spacing:0.04em; margin-bottom:0.5rem; }
+    .logo-title sup { font-size:0.45em; vertical-align:super; font-weight:600; color:var(--text-secondary); margin-left:1px; letter-spacing:0; }
+    .header h1 { font-family:var(--font-h); font-size:1.75rem; font-weight:700; color:var(--text-primary); letter-spacing:0.03em; margin-bottom:0.35rem; }
+    .header p { font-size:0.78rem; color:var(--text-secondary); font-weight:400; font-family:var(--font-b); }
+    .card { position:relative; background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); padding:2.5rem; box-shadow:var(--shadow-card); animation:cardIn 0.45s var(--ease) both; overflow:hidden; }
+    .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #111118 0%, #2d2d35 50%, #111118 100%); background-size:200% 100%; animation:accentSlide 4s ease-in-out infinite; border-radius:var(--radius) var(--radius) 0 0; }
+    @keyframes accentSlide { 0%{background-position:0% 0;} 50%{background-position:100% 0;} 100%{background-position:0% 0;} }
+    @keyframes cardIn { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+    .photo-upload-section { display:flex; flex-direction:column; align-items:center; margin-bottom:2rem; }
+    .photo-label { cursor:pointer; }
+    /* ✅ FIX: Smaller photo wrapper */
+    .photo-wrapper { position:relative; width:96px; height:96px; }
+    .photo-preview {
+      width:96px; height:96px;
+      border-radius:50%;
+      background:#f4f4f5;
+      border:3px solid #e0e0e0;
+      box-shadow:0 0 0 3px #fff, 0 0 0 5px #e0e0e0;
+      display:flex; align-items:center; justify-content:center;
+      transition:border-color 0.25s var(--ease), transform 0.18s var(--ease), box-shadow 0.25s var(--ease);
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .photo-preview img { width:100%; height:100%; object-fit:cover; object-position:center; border-radius:50%; display:block; }
+    .photo-label:hover .photo-preview { border-color:#aaa; box-shadow:0 0 0 3px #fff, 0 0 0 5px #aaa; transform:scale(1.04); }
+    .photo-icon { color:var(--text-muted); }
+    .upload-icon {
+      position:absolute; bottom:2px; right:2px;
+      background:var(--accent); border-radius:50%;
+      width:24px; height:24px;
+      box-shadow:0 2px 8px rgba(17,17,24,0.1), 0 0 0 2px #fff;
+      transition:transform 0.2s var(--ease), background 0.2s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .photo-label:hover .upload-icon { transform:scale(1.12); background:var(--accent-hover); }
+    .upload-icon svg { display:block; color:#FFFFFF; }
+    .photo-label-text { margin-top:0.6rem; font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-b); font-weight:500; }
+    .photo-size-text { font-size:0.65rem; color:var(--text-muted); margin-top:0.2rem; font-family:var(--font-b); }
+    .required { color:var(--error); }
+    .form-fields { display:flex; flex-direction:column; gap:1.25rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+    .form-group label { font-size:0.72rem; font-weight:600; color:var(--text-primary); font-family:var(--font-b); }
+    .form-group input, .form-group textarea { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; outline:none; -webkit-tap-highlight-color:transparent; }
+    .form-group input::placeholder, .form-group textarea::placeholder { color:var(--text-muted); }
+    .form-group input:focus, .form-group textarea:focus { background:#FFFFFF; border-color:var(--accent); box-shadow:0 0 0 3px rgba(17,17,24,0.1); color:var(--text-primary); }
+    .form-group select { width:100%; padding:0.75rem 2.6rem 0.75rem 1rem; background-color:var(--input-bg); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important; background-repeat:no-repeat !important; background-position:right 1rem center !important; background-size:12px 7px !important; border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease), box-shadow 0.2s var(--ease); -webkit--webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; -webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; -webkit--webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; -moz--webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important; outline:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .form-group select:focus { background-color:#FFFFFF; border-color:var(--accent); box-shadow:0 0 0 3px rgba(17,17,24,0.1); }
+    .form-group select option { background:#FFFFFF; color:var(--text-primary); }
+    .form-group textarea { resize:none; overflow:hidden; min-height:110px; line-height:1.6; white-space:pre-wrap; word-wrap:break-word; }
+    .char-counter { font-size:0.65rem; color:var(--text-muted); text-align:right; margin-top:4px; font-family:var(--font-b); transition:color 0.2s; }
+    .char-counter.ok { color:var(--success); }
+    .char-counter.warn { color:#B45309; }
+    .phone-row { display:grid; grid-template-columns:1fr 2fr; gap:0.75rem; }
+    .phone-validation { font-size:0.68rem; margin-top:4px; font-weight:600; display:flex; align-items:center; gap:4px; font-family:var(--font-b); }
+    .phone-validation.error { color:var(--error); }
+    .phone-validation.ok { color:var(--success); }
+    .warning-hint { color:#B45309; font-weight:500; background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:8px; padding:8px 12px; margin-top:8px; font-size:0.72rem; line-height:1.6; font-family:var(--font-b); }
+    .save-button { width:100%; margin-top:1.5rem; padding:0.85rem 1rem; border:none; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; background:var(--accent); color:#FFFFFF; box-shadow:0 2px 8px rgba(17,17,24,0.1); transition:transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.15s; position:relative; overflow:hidden; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-tap-highlight-color:transparent; }
+    .save-button::after { content:''; position:absolute; top:0; left:-110%; width:60%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition:left 0.45s var(--ease); transform:skewX(-15deg); }
+    .save-button:hover::after { left:150%; }
+    .save-button:hover { background:var(--accent-hover); transform:translateY(-1px); box-shadow:0 6px 20px rgba(17,17,24,0.1); }
+    .save-button:active { transform:translateY(0); box-shadow:0 2px 6px rgba(17,17,24,0.1); }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+    ::-webkit-scrollbar-thumb:hover { background:#D1D5DB; }
+    @media(max-width:600px){ body{padding:1.25rem 1rem;} .card{padding:1.75rem 1.35rem;} .phone-row{grid-template-columns:1fr;} }
+    @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
+    @media(min-width:768px){ body{padding:2.5rem 1.5rem;} .card{padding:3rem 2.75rem;} }
+
+    /* ✅ CROP MODAL — smaller, compact, both sliders */
+    .crop-modal { position:fixed; inset:0; background:rgba(17,17,24,0.72); display:none; align-items:center; justify-content:center; padding:1rem; z-index:9999; }
+    .crop-modal.show { display:flex; }
+    .crop-panel {
+      width:min(100%, 440px);
+      background:#FFFFFF; border-radius:14px; padding:0.85rem;
+      box-shadow:0 18px 60px rgba(0,0,0,0.24);
+    }
+    .crop-title { font-family:var(--font-h); font-size:0.88rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem; }
+    .crop-subtitle { font-size:0.68rem; color:var(--text-secondary); line-height:1.5; margin-bottom:0.7rem; }
+    /* ✅ Smaller square stage */
+    .crop-stage {
+      position:relative;
+      width:min(100%, 300px);
+      aspect-ratio:1 / 1;
+      margin:0 auto 0.75rem;
+      border-radius:12px;
+      overflow:hidden;
+      background:#111827;
+      touch-action:none;
+      user-select:none;
+    }
+    .crop-stage img { position:absolute; top:50%; left:50%; transform-origin:center center; max-width:none; max-height:none; will-change:transform; pointer-events:none; }
+    .crop-mask { position:absolute; inset:0; border-radius:12px; pointer-events:none; box-shadow:0 0 0 9999px rgba(17,17,24,0.42) inset; }
+    .crop-mask::after { content:''; position:absolute; inset:8%; border-radius:50%; box-shadow:0 0 0 9999px rgba(17,17,24,0.48); border:2px solid rgba(255,255,255,0.95); }
+    /* ✅ Two sliders side by side */
+    .crop-controls {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0.5rem 0.85rem;
+      margin-bottom:0.75rem;
+    }
+    .crop-slider-group { display:flex; flex-direction:column; gap:3px; }
+    .crop-slider-label {
+      font-size:0.65rem; font-weight:600; color:var(--text-primary);
+      display:flex; align-items:center; gap:4px;
+    }
+    .crop-slider-label svg { width:11px; height:11px; opacity:0.7; }
+    .crop-controls input[type="range"] { width:100%; accent-color:var(--accent); height:3px; cursor:pointer; }
+    .crop-actions { display:flex; gap:0.6rem; }
+    .crop-btn { flex:1; padding:0.75rem 1rem; border-radius:10px; border:1px solid var(--border); font-family:var(--font-h); font-size:0.78rem; font-weight:600; cursor:pointer; }
+    .crop-btn.secondary { background:#F4F4F5; color:var(--text-primary); }
+    .crop-btn.primary { background:var(--accent); border-color:var(--accent); color:#FFFFFF; box-shadow:0 2px 8px rgba(17,17,24,0.1); }
+    @media(max-width:480px){
+      .crop-panel { width:min(100%, 100%); padding:0.75rem; }
+      .crop-stage { width:min(100%, 260px); }
+      .crop-controls { grid-template-columns:1fr; }
+    }
+    @media(max-height:600px) and (orientation:landscape){
+      .crop-panel { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; width:min(100%, 600px); }
+      .crop-stage { width:min(100%, 200px); margin-bottom:0; }
+      .crop-title, .crop-subtitle { grid-column:1/-1; margin-bottom:0; }
+      .crop-controls { grid-column:2; grid-template-columns:1fr; align-content:start; }
+      .crop-actions { grid-column:2; }
+    }
+    /* ─── Mode tabs ─── */
+    .crop-mode-tabs { display:flex; gap:3px; background:#F4F4F5; border-radius:8px; padding:3px; margin-bottom:0.7rem; }
+    .crop-mode-tab { flex:1; padding:0.38rem 0.5rem; border:none; border-radius:6px; font-family:var(--font-h); font-size:0.68rem; font-weight:600; cursor:pointer; background:transparent; color:var(--text-secondary); transition:all 0.2s var(--ease); }
+    .crop-mode-tab.active { background:#FFFFFF; color:var(--accent); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+    /* Fullsize mask hides circle overlay */
+    .crop-mask.fullsize::after { display:none; }
+    .crop-mask.fullsize { box-shadow:none; }
+    /* ─── Adjustments row ─── */
+    .crop-adjustments { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.45rem 0.6rem; margin-bottom:0.5rem; }
+    .crop-adj-divider { border:none; border-top:1px solid var(--border); margin:0.5rem 0 0.6rem; }
+    .crop-reset-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; }
+    .crop-adj-heading { font-size:0.62rem; font-weight:600; color:var(--text-secondary); letter-spacing:0.05em; text-transform:uppercase; }
+    .crop-reset-link { font-size:0.65rem; color:var(--accent); cursor:pointer; font-family:var(--font-b); font-weight:500; background:none; border:none; padding:0; text-decoration:underline; }
+    .crop-reset-link:hover { color:var(--accent-hover); }
+    @media(max-width:480px){ .crop-adjustments { grid-template-columns:1fr 1fr; } }
+  
+    /* ==SS-BW-START== */
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html{-webkit-text-size-adjust:100%;}
+    body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
+    input,select,textarea{font-size:max(16px,1em)!important;}
+    body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
+
+    /* Page Loader - shows on initial load only */
+    #ss-loader{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .35s ease,visibility .35s ease;}
+    #ss-loader.ss-gone{opacity:0;visibility:hidden;pointer-events:none;}
+    #ss-loader .sll{width:52px;height:52px;border-radius:50%;background:#111118;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:ssLG 2s ease-in-out infinite;}
+    #ss-loader .sll span{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;color:#fff;letter-spacing:.04em;}
+    #ss-loader .sld{display:flex;gap:6px;}
+    #ss-loader .sld span{width:6px;height:6px;border-radius:50%;background:#111118;animation:ssLD 1.4s ease-in-out infinite;}
+    #ss-loader .sld span:nth-child(2){animation-delay:.2s;}
+    #ss-loader .sld span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssLG{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.1),0 2px 12px rgba(0,0,0,.2);}50%{box-shadow:0 0 0 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.32);}}
+    @keyframes ssLD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Nav - TM transparent, logo glow */
+    .top-nav{padding-top:env(safe-area-inset-top,0);}
+
+    /* Black glow on ALL primary buttons */
+    .btn-interested,.btn-accept,.btn-chat,.btn-go-connections,.btn-discover,.btn-unskip,
+    .btn-connect,.submit-btn,.btn-interested,.send-otp-btn,
+    button[type=submit]{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    @keyframes ssBtnG{0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.22);}50%{box-shadow:0 5px 24px rgba(0,0,0,.45),0 0 0 3px rgba(0,0,0,.07);}}
+
+    /* Index/login page - keep existing blue accent but add glow */
+    #submitBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    #confirmOtpBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+
+    /* B&W on index/reset - card top accent white */
+    .container::before,.card::before{background:linear-gradient(90deg,#555 0%,#111 50%,#555 100%)!important;background-size:200% 100%!important;}
+
+    /* Discover cards */
+    .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:3px 3px 0 #111118,0 4px 12px rgba(0,0,0,.07)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
+    .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:5px 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
+    @keyframes ssCardIn{from{opacity:0;transform:translateY(18px) rotate(-1deg) scale(.97);}to{opacity:1;transform:translateY(0) rotate(0) scale(1);}}
+    .profile-grid .profile-card{animation:ssCardIn .4s cubic-bezier(.34,1.3,.64,1) both;}
+
+    /* Connected cards */
+    .connection-card{border:1px solid #e0e0e0!important;box-shadow:0 2px 12px rgba(0,0,0,.06)!important;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s!important;}
+    .connection-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#111118;border-radius:12px 12px 0 0;}
+    .connection-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 22px rgba(0,0,0,.11)!important;}
+
+    /* Skipped cards */
+    .profiles-list .profile-card{border:1px solid #e4e4e7!important;box-shadow:0 1px 6px rgba(0,0,0,.05)!important;opacity:.8;position:relative;overflow:hidden;transition:opacity .2s,transform .2s!important;}
+    .profiles-list .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#d1d1d1;border-radius:12px 12px 0 0;}
+    .profiles-list .profile-card:hover{opacity:1;transform:translateY(-1px)!important;}
+
+    /* Inbox cards */
+    .inbox-card{border:1px solid #e8e8e8!important;box-shadow:0 2px 10px rgba(0,0,0,.06)!important;transition:transform .18s,box-shadow .18s!important;}
+    .inbox-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 18px rgba(0,0,0,.1)!important;}
+
+    /* Role badges */
+    .role-badge.founder,.role-founder{background:#111118!important;color:#fff!important;border:1px solid #111118!important;}
+    .role-badge.investor,.role-investor{background:#fff!important;color:#111118!important;border:1px solid #111118!important;}
+    .connected-tag{background:#f0f0f0!important;border:1px solid #ddd!important;color:#111118!important;}
+    .avatar{border:2px solid #111118!important;}
+    .avatar-wrap{border:2px solid #111118!important;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #111118!important;}
+
+    /* Hide LinkedIn on cards */
+    .linkedin-link{display:none!important;}
+
+    /* Admin B&W */
+    .admin-header{background:#111118!important;color:#fff!important;}
+    .admin-table th{background:#111118!important;color:#fff!important;}
+
+    /* Founder/Investor dashboard - B&W form cards */
+    .card{box-shadow:0 4px 24px rgba(0,0,0,.08)!important;border:1px solid #e4e4e7!important;}
+    .save-btn,.btn-save{animation:ssBtnG 2.8s ease-in-out infinite!important;background:#111118!important;color:#fff!important;}
+
+    /* connections empty state */
+    #emptyState{position:relative;overflow:hidden;}
+    #emptyState canvas#ssEC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+    #emptyState .empty-inner{position:relative;z-index:1;}
+    #emptyState.ss-go{opacity:0;transition:opacity .4s ease;pointer-events:none;}
+    #emptyState.ss-gi{opacity:1;transition:opacity .4s ease;}
+    .ss-pills{display:flex;flex-direction:column;gap:8px;width:100%;max-width:260px;margin:1.25rem auto 0;}
+    .ss-pill{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;border:1px solid #ebebeb;background:#fafafa;animation:ssPI 3s ease-in-out infinite;}
+    .ss-pill:nth-child(2){animation-delay:.55s;}.ss-pill:nth-child(3){animation-delay:1.1s;}
+    @keyframes ssPI{0%,100%{opacity:.45;}50%{opacity:1;}}
+    .ss-pdot{width:7px;height:7px;border-radius:50%;background:#111118;flex-shrink:0;}
+    .ss-pdot.g{background:#ccc;}
+    .ss-pt{font-size:.72rem;font-weight:600;color:#333;flex:1;text-align:left;}
+    .ss-ps{font-size:.6rem;font-weight:700;color:#bbb;}
+    .ss-ps.live{color:#111118;}
+    .ss-pr{display:flex;align-items:center;gap:14px;justify-content:center;margin:1rem 0;}
+    .ss-pl-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,#ccc,transparent);}
+    .ss-pd{display:flex;gap:5px;}
+    .ss-pd span{width:5px;height:5px;border-radius:50%;background:#111118;animation:ssPD 1.5s ease-in-out infinite;}
+    .ss-pd span:nth-child(2){animation-delay:.2s;}.ss-pd span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssPD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Welcome mobile */
+    @media(max-width:768px){canvas#welcomeCanvas{display:none!important;}}
+
+    /* Safari */
+    @supports(-webkit-touch-callout:none){
+      .top-nav{position:-webkit-sticky;position:sticky;}
+      .mob-left-rail,.page-content,.ch-body,.users-list{-webkit-overflow-scrolling:touch;}
+    }
+    /* ==SS-BW-END== */
+
+  
+    /* ── B&W + Responsive Patch ── */
+    :root {
+      --accent: #111118;
+      --accent-hover: #2d2d35;
+    }
+
+    /* Remove blue top bar */
+    .card::before, .container::before { display: none !important; }
+
+    /* Card — black border + lightning glow */
+    .card {
+      border: 1.5px solid #111118 !important;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+      overflow: visible !important;
+      animation: cardIn 0.45s cubic-bezier(0.4,0,0.2,1) both, borderLightning 3.5s ease-in-out infinite !important;
+    }
+
+    /* Lightning breathing glow */
+    @keyframes borderLightning {
+      0%   { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0); }
+      15%  { box-shadow: 0 0 8px 2px rgba(17,17,24,0.35), 0 0 20px rgba(17,17,24,0.12); }
+      25%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.08); }
+      40%  { box-shadow: 0 0 18px 4px rgba(17,17,24,0.55), 0 0 40px rgba(17,17,24,0.18); }
+      55%  { box-shadow: 0 0 4px 1px rgba(17,17,24,0.12); }
+      70%  { box-shadow: 0 0 12px 3px rgba(17,17,24,0.42), 0 0 28px rgba(17,17,24,0.14); }
+      85%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.06); }
+      100% { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0); }
+    }
+
+    /* Photo circle — B&W */
+    .photo-preview, .photo-circle {
+      background: #f4f4f5 !important;
+      border-color: #111118 !important;
+      box-shadow: 0 0 0 3px #fff, 0 0 0 5px #111118 !important;
+    }
+    .photo-label:hover .photo-preview,
+    .photo-circle:hover {
+      border-color: #333 !important;
+      box-shadow: 0 0 0 3px #fff, 0 0 0 5px #333 !important;
+    }
+
+    /* Upload icon — B&W */
+    .upload-icon, .upload-btn {
+      background: #111118 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35), 0 0 0 2px #fff !important;
+    }
+    .photo-label:hover .upload-icon,
+    .upload-btn:hover {
+      background: #2d2d35 !important;
+    }
+
+    /* Inputs focus — B&W */
+    .form-group input:focus, .form-group textarea:focus,
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: #111118 !important;
+      box-shadow: 0 0 0 3px rgba(17,17,24,0.1) !important;
+    }
+
+    /* Save button — B&W + glow */
+    .save-button, .save-btn {
+      background: #111118 !important;
+      color: #fff !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+      animation: ssBtnGlow 2.8s ease-in-out infinite !important;
+    }
+    .save-button:hover, .save-btn:hover {
+      background: #2d2d35 !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.38) !important;
+    }
+    @keyframes ssBtnGlow {
+      0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.22); }
+      50%      { box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 0 3px rgba(0,0,0,0.08); }
+    }
+
+    /* Crop modal — B&W */
+    .crop-mode-tab.active { color: #111118 !important; }
+    .crop-btn.primary { background: #111118 !important; border-color: #111118 !important; }
+    .crop-btn.primary:hover { background: #2d2d35 !important; }
+    .crop-reset-link { color: #111118 !important; }
+    .crop-controls input[type="range"] { accent-color: #111118 !important; }
+
+    /* Header — STARTUP SYNC big, title small */
+    .logo-title {
+      font-size: clamp(1.1rem, 4vw, 1.35rem) !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.1em !important;
+      color: #111118 !important;
+    }
+    .header h1 {
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.18em !important;
+      color: #111118 !important;
+    }
+    .header p {
+      color: #111118 !important;
+      font-size: 0.72rem !important;
+      font-weight: 500 !important;
+    }
+
+    /* TM transparent circle */
+    .c-with-tm {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Remove moz error */
+
+    /* ── Dimension fixes ── */
+    html { -webkit-text-size-adjust: 100%; }
+    body { overflow-x: hidden !important; padding-bottom: env(safe-area-inset-bottom,0); }
+    input, select, textarea { font-size: max(16px,1em) !important; }
+
+    @media(max-width:360px) {
+      body { padding: 0.75rem 0.6rem !important; }
+      .card { padding: 1.1rem 0.85rem !important; }
+      .header h1 { font-size: 0.82rem !important; }
+      .logo-title { font-size: 1rem !important; }
+      .phone-row { grid-template-columns: 1fr !important; }
+    }
+    @media(max-width:480px) {
+      .card { padding: 1.4rem 1.1rem !important; }
+      .phone-row { grid-template-columns: 1fr !important; }
+    }
+    @media(min-width:1024px) {
+      .container { max-width: 760px !important; }
+    }
+    @media(min-width:1200px) {
+      .container { max-width: 820px !important; }
+      .card { padding: 3.5rem 3.25rem !important; }
+    }
+
+    @supports(-webkit-touch-callout:none) {
+      body { -webkit-overflow-scrolling: touch; }
+      input, select, textarea { -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; }
+    }
+    /* ── End B&W Patch ── */
+
+    /* ── Mobile Container Polish ── */
+    @media (max-width: 600px) {
+      body { padding: 1.25rem 1.1rem !important; }
+      .container { padding: 1rem 0 !important; }
+      .card { padding: 1.75rem 1.5rem !important; border-radius: 14px !important; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 1rem 1rem !important; }
+      .card { padding: 1.5rem 1.25rem !important; border-radius: 12px !important; }
+    }
+    @media (max-width: 400px) {
+      body { padding: 0.875rem 0.875rem !important; }
+      .card { padding: 1.35rem 1.1rem !important; }
+    }
+    @media (max-width: 360px) {
+      body { padding: 0.75rem 0.75rem !important; }
+      .card { padding: 1.15rem 1rem !important; }
+    }
+    /* ── End Mobile Container Polish ── */
+
+  
+    /* ── appearance compatibility fix ── */
+    input, select, textarea, button {
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+    }
+    /* keep select arrow visible */
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 1rem center !important;
+      background-size: 12px 7px !important;
+    }
+
+  
+  
+    /* ══ Universal TM — plain superscript, visible ══ */
+    .tm-circle,
+    .tm-circle-brand,
+    .nav-tm-circle,
+    .nav-logo-circle,
+    .mob-tm-circle,
+    .brand-tm {
+      display: inline !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      font-family: 'Sora', 'Inter', sans-serif !important;
+      font-size: 0.5em !important;
+      font-weight: 700 !important;
+      color: #111118 !important;
+      vertical-align: baseline !important;
+      position: relative !important;
+      top: -0.55em !important;
+      margin-left: -1px !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+
+  
+    /* ══ MOBILE FIX: Lock header height — no collapse/shift ══ */
+    .top-nav {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
+      background: #fff !important;
+      border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important;
+      flex-shrink: 0 !important;
+    }
+    .top-nav-inner {
+      display: flex !important;
+      align-items: center !important;
+      height: 60px !important;
+      min-height: 60px !important;
+      max-height: 60px !important;
+      padding: 0 20px !important;
+      gap: 4px !important;
+      overflow: visible !important;
+      -webkit-overflow-scrolling: unset !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+    }
+    /* Mobile nav — keep 60px on all screen sizes */
+    @media (max-width: 768px) {
+      .top-nav-inner {
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+        padding: 0 14px !important;
+        gap: 2px !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner {
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+        padding: 0 10px !important;
+        gap: 1px !important;
+      }
+    }
+    /* Fast touch response */
+    .nav-btn, button, a {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    /* Smooth scrolling on all pages */
+    html { -webkit-text-size-adjust: 100%; }
+    body { -webkit-overflow-scrolling: touch; }
+
+  
+    /* ══ UNIVERSAL FLEXIBLE HEADER FIX ══ */
+    .top-nav {
+      position: sticky !important; top: 0 !important; z-index: 1000 !important;
+      background: #fff !important; border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important; flex-shrink: 0 !important;
+      padding-top: env(safe-area-inset-top, 0) !important;
+    }
+    .top-nav-inner {
+      display: flex !important; align-items: center !important;
+      min-height: 60px !important; max-height: none !important; height: auto !important;
+      padding: 0 clamp(10px, 3vw, 24px) !important;
+      gap: clamp(4px, 1.5vw, 12px) !important;
+      overflow: visible !important; box-sizing: border-box !important;
+      width: 100% !important; flex-wrap: nowrap !important;
+    }
+    @media (max-width: 768px) {
+      .top-nav-inner { min-height: 56px !important; padding: 0 clamp(8px, 2.5vw, 16px) !important; }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner { min-height: 52px !important; padding: 0 clamp(6px, 2vw, 12px) !important; }
+    }
+    @media (max-width: 360px) {
+      .top-nav-inner { min-height: 48px !important; padding: 0 8px !important; }
+    }
+    /* Nav avatar — flexible size, no glitch */
+    .nav-avatar {
+      opacity: 1 !important; flex-shrink: 0 !important;
+      overflow: hidden !important; cursor: pointer !important;
+    }
+    .nav-avatar img {
+      width: 100% !important; height: 100% !important;
+      border-radius: 50% !important; object-fit: cover !important;
+      object-position: center !important; display: block !important;
+    }
+    /* Touch performance */
+    button, a, .nav-btn, .sb-item, .mob-rail-btn {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    html { -webkit-text-size-adjust: 100% !important; }
+    body { -webkit-overflow-scrolling: touch; overflow-x: hidden !important; }
+
+    /* ═══ STARTUPSYNC™ HEADER — CANONICAL ═══ */
+    nav.top-nav .nav-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; letter-spacing:0.06em !important; white-space:nowrap !important; line-height:1.1 !important; }
+    nav.top-nav .nav-tagline { font-family:'Sora',sans-serif !important; font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; letter-spacing:0.01em !important; white-space:nowrap !important; }
+    @media(max-width:768px){ .mob-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; } .mob-brand-sub { font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; } }
+  
+    /* ═══ PERF: Mobile speed ═══ */
+    img { content-visibility:auto; }
+    .profile-card,.connection-card { contain:layout style; }
+  </style>
+
+<style id="ss-premium-toast-css">
+/* ── FIX 1: Premium B&W Toast ──────────────────────────── */
+#ss-premium-toast-container {
+  position: fixed; top: 72px; right: 16px; z-index: 2147483646;
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none; max-width: calc(100vw - 32px);
+}
+.ss-premium-toast {
+  background: #111118; color: #fff; border-radius: 14px;
+  padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+  min-width: 240px; max-width: 320px; pointer-events: all;
+  animation: ssPremIn 0.38s cubic-bezier(0.34,1.4,0.64,1) forwards;
+  border: 1.5px solid rgba(255,255,255,0.12); position: relative; overflow: hidden;
+}
+.ss-premium-toast::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  animation: ssSweep 1.8s ease-in-out infinite;
+}
+.ss-premium-toast.ss-pt-out { animation: ssPremOut 0.3s ease-in forwards; }
+@keyframes ssPremIn { from{opacity:0;transform:translateX(120px) scale(0.9);} to{opacity:1;transform:translateX(0) scale(1);} }
+@keyframes ssPremOut { from{opacity:1;transform:translateX(0) scale(1);} to{opacity:0;transform:translateX(120px) scale(0.9);} }
+@keyframes ssSweep { 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
+.ss-pt-icon { width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px; }
+.ss-pt-body { flex:1;min-width:0; }
+.ss-pt-title { font-family:'Sora',sans-serif;font-size:0.78rem;font-weight:700;color:#fff;margin-bottom:2px;letter-spacing:0.01em; }
+.ss-pt-msg { font-size:0.72rem;color:rgba(255,255,255,0.7);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.ss-pt-close { width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.6);font-size:11px;transition:background 0.15s; }
+.ss-pt-close:hover { background:rgba(255,255,255,0.2); }
+@media(max-width:480px) { #ss-premium-toast-container{top:64px;right:10px;left:10px;} .ss-premium-toast{max-width:100%;min-width:0;} }
+</style>
+
+
+<style id="ss-mobile-global-fix">
+/* ══ FIX 5: Global Mobile Responsiveness ══════════════════ */
+html { height: -webkit-fill-available; }
+body {
+  min-height: 100vh; min-height: -webkit-fill-available;
+  overflow-x: hidden !important; -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+html { -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+input, textarea, select, button { max-width: 100%; font-size: max(16px, 1em) !important; -webkit-appearance: none; appearance: none; box-sizing: border-box; }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 1rem center !important; background-size: 12px 7px !important; }
+.top-nav { position: sticky !important; top: 0 !important; z-index: 1000 !important; width: 100% !important; flex-shrink: 0 !important; padding-top: env(safe-area-inset-top, 0) !important; }
+.nav-avatar { opacity: 1 !important; flex-shrink: 0 !important; overflow: hidden !important; }
+.nav-avatar img { width: 100% !important; height: 100% !important; border-radius: 50% !important; object-fit: cover !important; display: block !important; }
+.ch-input { position: sticky !important; bottom: 0 !important; padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important; background: #fff !important; z-index: 10 !important; }
+.mob-left-rail { padding-bottom: env(safe-area-inset-bottom, 0) !important; }
+.profile-grid, .connection-grid, .profiles-list { max-width: 100% !important; overflow-x: hidden !important; }
+@media (max-width: 768px) {
+  .btn, .nav-btn, .mob-rail-btn, button { min-height: 44px; -webkit-tap-highlight-color: transparent !important; touch-action: manipulation !important; }
+  .page-header h2 { font-size: clamp(1.3rem, 5vw, 2rem) !important; }
+  .profile-name { font-size: clamp(0.82rem, 2.5vw, 0.9rem) !important; }
+  .modalBox, .crop-panel { width: min(92vw, 420px) !important; max-height: 90vh !important; overflow-y: auto !important; }
+}
+@media (max-width: 360px) { body { padding: 0.75rem 0.75rem !important; } .card { padding: 1.1rem 0.9rem !important; } .main-content { padding: 1rem 0.75rem !important; } }
+*, *::before, *::after { box-sizing: border-box !important; }
+img { max-width: 100%; height: auto; }
+a, button, [role="button"] { -webkit-tap-highlight-color: transparent !important; touch-action: manipulation !important; }
+/* ══ End FIX 5 ════════════════════════════════════════════ */
+</style>
+
+</head>
+<body>
+<script id="ss-show-toast-global">
+// Global _showToast — available immediately on page load
+// Handles both string and object opts (same as the private version below)
+window._showToast = function(opts) {
+  if (typeof opts === 'string') opts = { msg: opts, title: 'Notice', borderColor: '#111118' };
+  opts = opts || {};
+  // Wait for container to exist (it's injected later in the page)
+  function tryShow() {
+    var c = document.getElementById('_ssFlashContainer');
+    if (!c) { setTimeout(tryShow, 50); return; }
+    var el = document.createElement('div');
+    el.className = '_ss-toast';
+    el.style.borderLeft = '3px solid ' + (opts.borderColor || '#111118');
+    var av = opts.photo
+      ? '<img class="_ss-tavatar" src="' + opts.photo + '" alt="">'
+      : '<div class="_ss-tavatar">' + (opts.initials || '!') + '</div>';
+    el.innerHTML = av +
+      '<div class="_ss-tbody">' +
+        '<div class="_ss-ttitle">' + (opts.title || 'Notice') + '</div>' +
+        '<div class="_ss-tmsg">'  + (opts.msg   || '')        + '</div>' +
+      '</div>';
+    el.addEventListener('click', function() { window.location.href = opts.href || '#'; });
+    c.appendChild(el);
+    setTimeout(function() { el.classList.add('out'); }, opts.dur || 4000);
+    setTimeout(function() { if (el.parentNode) el.remove(); }, (opts.dur || 4000) + 350);
+  }
+  tryShow();
+};
+</script>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo-title">STARTUP SYN<span class="c-with-tm">C<span class="tm-circle">™</span></span></div>
+      <h1>FOUNDER PROFILE</h1>
+      <p>Complete your founder profile</p>
+    </div>
+    <div class="card">
+      <form id="profileForm">
+        <div class="photo-upload-section">
+          <label for="photo-upload" class="photo-label">
+            <div class="photo-wrapper">
+              <div id="photoPreview" class="photo-preview">
+                <svg class="photo-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="upload-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </div>
+            </div>
+          </label>
+          <input type="file" id="photo-upload" accept="image/*" style="display:none;">
+          <p class="photo-label-text">Profile Photo <span class="required">*</span></p>
+          <p class="photo-size-text">Max file size: 20 MB • iPhone photos supported</p>
+        </div>
+        <div class="form-fields">
+          <div class="form-group">
+            <label for="fullName">Full Name <span class="required">*</span></label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <input type="email" name="email" id="email" class="form-input" readonly style="cursor: not-allowed; background-color: #f3f4f6;">
+            <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Email address cannot be changed.</p>
+          </div>
+          <div class="form-group">
+            <label for="role">Role <span class="required">*</span></label>
+            <input type="text" id="role" value="Founder" readonly style="background:#F4F4F5;color:#6B7280;cursor:not-allowed;border-color:#E4E4E7;" tabindex="-1">
+          </div>
+          <div class="form-group">
+            <label>Phone Number <span class="required">*</span></label>
+            <div class="phone-row">
+              <select id="phoneCountry" onchange="onPhoneCountryChange()" disabled style="background:#F4F4F5 !important;cursor:not-allowed !important;"><option value="+91" selected>🇮🇳 +91 India</option></select>
+              <input type="tel" id="phone" placeholder="10-digit number" required oninput="validatePhone()" onchange="validatePhone()">
+            </div>
+            <div class="phone-validation" id="phoneValidation"></div>
+            <p class="warning-hint">⚠️ Enter your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
+          </div>
+          <div class="form-group">
+            <label for="linkedinUrl">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
+            <div id="linkedinUrlWrapper">
+              <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/yourname">
+              <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
+            </div>
+
+            <p class="warning-hint">⚠️ Paste your real LinkedIn profile link. It will be publicly clickable so others can verify you are a real person.</p>
+            <p style="font-size:0.68rem;color:#6B7280;margin-top:6px;font-family:'Inter',sans-serif;">💡 Please login to LinkedIn on web to explore other profiles and copy your profile link.</p>
+          </div>
+          <div class="form-group">
+            <label for="startupName">Startup Name <span class="required">*</span></label>
+            <input type="text" id="startupName" placeholder="Your startup name" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Short Description <span class="required">*</span></label>
+            <textarea id="description" rows="4" minlength="100" placeholder="Tell us about yourself and your startup — what problem you're solving, your stage, and what kind of investor you're looking for. (min 100 characters)" required></textarea>
+            <div class="char-counter" id="descCounter">0 / 100 min</div>
+          </div>
+        </div>
+        <button type="submit" class="save-button">Save Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="crop-modal" id="cropModal" aria-hidden="true">
+    <div class="crop-panel" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+      <div class="crop-title" id="cropTitle">Adjust Photo</div>
+      <div class="crop-subtitle">Drag to reposition • Zoom &amp; rotate to fit.</div>
+
+      <!-- Mode tabs -->
+      <div class="crop-mode-tabs">
+        <button type="button" class="crop-mode-tab active" id="modePfp">⊙ Profile Photo</button>
+        <button type="button" class="crop-mode-tab" id="modeFullsize">⬜ Full Size</button>
+      </div>
+
+      <div class="crop-stage" id="cropStage">
+        <img id="cropImage" alt="Crop preview">
+        <div class="crop-mask" id="cropMask"></div>
+      </div>
+
+      <!-- Position & rotation sliders -->
+      <div class="crop-controls">
+        <div class="crop-slider-group">
+          <span class="crop-slider-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            Zoom
+          </span>
+          <input type="range" id="cropZoom" min="1" max="3" step="0.01" value="1">
+        </div>
+        <div class="crop-slider-group">
+          <span class="crop-slider-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
+            Rotate
+          </span>
+          <input type="range" id="cropRotate" min="-180" max="180" step="1" value="0">
+        </div>
+      </div>
+
+      <!-- Image adjustments -->
+      <hr class="crop-adj-divider">
+      <div class="crop-reset-row">
+        <span class="crop-adj-heading">Adjustments</span>
+        <button type="button" class="crop-reset-link" id="cropResetAdj">Reset all</button>
+      </div>
+      <div class="crop-adjustments">
+        <div class="crop-slider-group">
+          <span class="crop-slider-label">☀ Brightness</span>
+          <input type="range" id="adjBrightness" min="50" max="150" step="1" value="100">
+        </div>
+        <div class="crop-slider-group">
+          <span class="crop-slider-label">◑ Contrast</span>
+          <input type="range" id="adjContrast" min="50" max="150" step="1" value="100">
+        </div>
+        <div class="crop-slider-group">
+          <span class="crop-slider-label">⬡ Saturation</span>
+          <input type="range" id="adjSaturation" min="0" max="200" step="1" value="100">
+        </div>
+      </div>
+
+      <div class="crop-actions">
+        <button type="button" class="crop-btn secondary" id="cropCancelBtn">Cancel</button>
+        <button type="button" class="crop-btn primary" id="cropApplyBtn">Use Photo</button>
+      </div>
+    </div>
+  </div>
+  
+<!-- one-tab enforcement handled by session-guard.js -->
+  <script>
+    const profileForm = document.getElementById("profileForm");
+    const photoUpload = document.getElementById("photo-upload");
+    const photoPreview = document.getElementById("photoPreview");
+
+    let currentUser = JSON.parse(localStorage.getItem("currentUser") || sessionStorage.getItem("currentUser") || 'null');
+    let profilePhotoUploaded = false;
+
+    function profilePhotoKey() { return "profilePhoto_founder_" + (currentUser?.email || "guest"); }
+
+    const cropModal = document.getElementById("cropModal");
+    const cropStage = document.getElementById("cropStage");
+    const cropImage = document.getElementById("cropImage");
+    const cropMask  = document.getElementById("cropMask");
+    const cropZoom = document.getElementById("cropZoom");
+    const cropRotate = document.getElementById("cropRotate");
+    const cropCancelBtn = document.getElementById("cropCancelBtn");
+    const cropApplyBtn = document.getElementById("cropApplyBtn");
+    const modePfp      = document.getElementById("modePfp");
+    const modeFullsize = document.getElementById("modeFullsize");
+    const adjBrightness  = document.getElementById("adjBrightness");
+    const adjContrast    = document.getElementById("adjContrast");
+    const adjSaturation  = document.getElementById("adjSaturation");
+    const cropResetAdj   = document.getElementById("cropResetAdj");
+
+    const cropState = {
+      src:"", scale:1, minScale:1, maxScale:3,
+      x:0, y:0, rotate:0,
+      baseWidth:0, baseHeight:0,
+      dragging:false, pointerId:null,
+      startX:0, startY:0, startOffsetX:0, startOffsetY:0,
+      mode:"pfp", // "pfp" | "fullsize"
+      brightness:100, contrast:100, saturation:100
+    };
+
+    function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
+    function getCropDiameter() { return cropStage.clientWidth * 0.76; }
+
+    function getFilterString() {
+      return `brightness(${cropState.brightness}%) contrast(${cropState.contrast}%) saturate(${cropState.saturation}%)`;
+    }
+
+    function renderCropImage() {
+      if (!cropState.baseWidth || !cropState.baseHeight) return;
+      cropImage.style.width = (cropState.baseWidth * cropState.scale) + "px";
+      cropImage.style.height = (cropState.baseHeight * cropState.scale) + "px";
+      cropImage.style.transform = `translate(calc(-50% + ${cropState.x}px), calc(-50% + ${cropState.y}px)) rotate(${cropState.rotate}deg)`;
+      cropImage.style.filter = getFilterString();
+    }
+
+    function clampCropPosition() {
+      const stageSize = cropStage.clientWidth || 260;
+      const rad = Math.abs(cropState.rotate * Math.PI / 180);
+      const rw = cropState.baseWidth * cropState.scale;
+      const rh = cropState.baseHeight * cropState.scale;
+      const rotW = Math.abs(rw * Math.cos(rad)) + Math.abs(rh * Math.sin(rad));
+      const rotH = Math.abs(rw * Math.sin(rad)) + Math.abs(rh * Math.cos(rad));
+      // Allow panning freely within the stage bounds
+      const limitX = Math.max(stageSize / 2, rotW / 2);
+      const limitY = Math.max(stageSize / 2, rotH / 2);
+      cropState.x = clamp(cropState.x, -limitX, limitX);
+      cropState.y = clamp(cropState.y, -limitY, limitY);
+    }
+
+    function setMode(mode) {
+      cropState.mode = mode;
+      if (mode === "pfp") {
+        modePfp.classList.add("active");
+        modeFullsize.classList.remove("active");
+        cropMask.classList.remove("fullsize");
+        document.getElementById("cropTitle").textContent = "Adjust Profile Photo";
+      } else {
+        modeFullsize.classList.add("active");
+        modePfp.classList.remove("active");
+        cropMask.classList.add("fullsize");
+        document.getElementById("cropTitle").textContent = "Adjust Full Size Photo";
+      }
+    }
+
+    function openCropModal(src) {
+      cropState.src = src;
+      cropState.scale = 1;
+      cropState.x = 0; cropState.y = 0; cropState.rotate = 0;
+      cropState.brightness = 100; cropState.contrast = 100; cropState.saturation = 100;
+      cropRotate.value = 0;
+      adjBrightness.value = 100; adjContrast.value = 100; adjSaturation.value = 100;
+      setMode("pfp");
+      cropImage.onload = function() {
+        const stageSize = cropStage.clientWidth || 260;
+        const diameter = stageSize * 0.76;
+        const iw = cropImage.naturalWidth || stageSize;
+        const ih = cropImage.naturalHeight || stageSize;
+        // fitScale = scale to fit whole photo inside the stage
+        const fitScale = Math.min(stageSize / iw, stageSize / ih, 1);
+        // fillScale = scale so photo fills the crop circle (needed for pfp)
+        const fillScale = Math.max(diameter / iw, diameter / ih);
+        // minScale allows zooming out to see full photo
+        cropState.minScale = fitScale;
+        cropState.maxScale = Math.max(fillScale * 3, fitScale * 4, 2);
+        // Start zoomed out so user sees full photo first
+        cropState.scale = fitScale;
+        cropZoom.min = cropState.minScale.toFixed(3);
+        cropZoom.max = cropState.maxScale.toFixed(3);
+        cropZoom.value = cropState.scale.toFixed(3);
+        cropState.baseWidth = iw;
+        cropState.baseHeight = ih;
+        clampCropPosition();
+        renderCropImage();
+      };
+      cropImage.src = src;
+      cropModal.classList.add("show");
+      cropModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeCropModal(resetInput) {
+      cropModal.classList.remove("show");
+      cropModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (resetInput) photoUpload.value = "";
+    }
+
+    function applyCroppedPhoto(onDone) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const filter = getFilterString();
+
+      if (cropState.mode === "pfp") {
+        canvas.width = 600; canvas.height = 600;
+        const diameter = getCropDiameter();
+        const sw = diameter / cropState.scale;
+        const sh = diameter / cropState.scale;
+        const sx = (cropState.baseWidth / 2) - ((diameter / 2) + cropState.x) / cropState.scale;
+        const sy = (cropState.baseHeight / 2) - ((diameter / 2) + cropState.y) / cropState.scale;
+        ctx.filter = filter;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(300, 300, 300, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        // Fill circle with white so JPEG export has no black corners
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, 600, 600);
+        ctx.translate(300, 300);
+        ctx.rotate(cropState.rotate * Math.PI / 180);
+        ctx.translate(-300, -300);
+        ctx.drawImage(cropImage, sx, sy, sw, sh, 0, 0, 600, 600);
+        ctx.restore();
+      } else {
+        // Full-size: export whole photo with adjustments at capped resolution
+        const maxOut = 1200;
+        const scaleOut = Math.min(1, maxOut / Math.max(cropState.baseWidth, cropState.baseHeight));
+        const cw = Math.round(cropState.baseWidth * scaleOut);
+        const ch = Math.round(cropState.baseHeight * scaleOut);
+        canvas.width = cw; canvas.height = ch;
+        ctx.filter = filter;
+        ctx.save();
+        if (cropState.rotate !== 0) {
+          ctx.translate(cw / 2, ch / 2);
+          ctx.rotate(cropState.rotate * Math.PI / 180);
+          ctx.translate(-cw / 2, -ch / 2);
+        }
+        ctx.drawImage(cropImage, 0, 0, cw, ch);
+        ctx.restore();
+      }
+
+      onDone(canvas.toDataURL("image/jpeg", 0.92));
+      closeCropModal(false);
+    }
+
+    modePfp.addEventListener("click", () => setMode("pfp"));
+    modeFullsize.addEventListener("click", () => setMode("fullsize"));
+
+    adjBrightness.addEventListener("input", () => { cropState.brightness = +adjBrightness.value; renderCropImage(); });
+    adjContrast.addEventListener("input",   () => { cropState.contrast   = +adjContrast.value;   renderCropImage(); });
+    adjSaturation.addEventListener("input", () => { cropState.saturation = +adjSaturation.value; renderCropImage(); });
+
+    cropResetAdj.addEventListener("click", () => {
+      cropState.brightness = 100; cropState.contrast = 100; cropState.saturation = 100;
+      adjBrightness.value = 100; adjContrast.value = 100; adjSaturation.value = 100;
+      renderCropImage();
+    });
+
+    cropZoom.addEventListener("input", () => {
+      cropState.scale = parseFloat(cropZoom.value || cropState.minScale);
+      if (!isFinite(cropState.scale)) cropState.scale = cropState.minScale;
+      clampCropPosition();
+      renderCropImage();
+    });
+
+    cropRotate.addEventListener("input", () => {
+      cropState.rotate = parseFloat(cropRotate.value || 0);
+      clampCropPosition();
+      renderCropImage();
+    });
+
+    cropStage.addEventListener("pointerdown", (e) => {
+      if (!cropImage.src) return;
+      cropState.dragging = true;
+      cropState.pointerId = e.pointerId;
+      cropState.startX = e.clientX;
+      cropState.startY = e.clientY;
+      cropState.startOffsetX = cropState.x;
+      cropState.startOffsetY = cropState.y;
+      cropStage.setPointerCapture(e.pointerId);
+    });
+
+    cropStage.addEventListener("pointermove", (e) => {
+      if (!cropState.dragging || e.pointerId !== cropState.pointerId) return;
+      cropState.x = cropState.startOffsetX + (e.clientX - cropState.startX);
+      cropState.y = cropState.startOffsetY + (e.clientY - cropState.startY);
+      clampCropPosition();
+      renderCropImage();
+    });
+
+    function stopCropDrag(e) {
+      if (cropState.dragging && (!e || e.pointerId === cropState.pointerId)) {
+        cropState.dragging = false;
+        try { cropStage.releasePointerCapture(cropState.pointerId); } catch (_) {}
+        cropState.pointerId = null;
+      }
+    }
+
+    cropStage.addEventListener("pointerup", stopCropDrag);
+    cropStage.addEventListener("pointercancel", stopCropDrag);
+    cropCancelBtn.addEventListener("click", () => closeCropModal(true));
+    window.addEventListener("resize", () => {
+      if (!cropModal.classList.contains("show")) return;
+      clampCropPosition();
+      renderCropImage();
+    });
+
+    if (!currentUser || !currentUser.email) { _showToast("Please login first"); window.location.href = "index.html"; }
+
+    function autoGrow(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+    function updateDescCounter() {
+      const ta = document.getElementById("description");
+      const counter = document.getElementById("descCounter");
+      const len = ta.value.length;
+      if (len >= 100) { counter.textContent = len + ' characters ✓'; counter.className = 'char-counter ok'; }
+      else { counter.textContent = len + ' / 100 min'; counter.className = len >= 80 ? 'char-counter warn' : 'char-counter'; }
+    }
+
+    const PHONE_RULES = {
+      "+91":    { digits:10, placeholder:"e.g. 9876543210 (10 digits)" },
+      "+1-usa": { digits:10, placeholder:"e.g. 4155552671 (10 digits)" },
+      "+1-can": { digits:10, placeholder:"e.g. 4165552345 (10 digits)" }
+    };
+
+    function isValidPhoneForCountry(digits, country) {
+      if (digits.length !== 10) return { valid: false, msg: `Must be exactly 10 digits — you entered ${digits.length}` };
+      if (country === "+91") {
+        if (!/^[6-9]/.test(digits)) return { valid: false, msg: "Indian numbers must start with 6, 7, 8 or 9" };
+      } else if (country === "+1-usa" || country === "+1-can") {
+        if (/^[01]/.test(digits)) return { valid: false, msg: "Area code cannot start with 0 or 1" };
+        if (/^.{3}[01]/.test(digits)) return { valid: false, msg: "Exchange code cannot start with 0 or 1" };
+        if (/^(\d)\1{9}$/.test(digits)) return { valid: false, msg: "Please enter a real phone number" };
+      }
+      return { valid: true };
+    }
+
+    function onPhoneCountryChange() {
+      const country = document.getElementById("phoneCountry").value;
+      const rule = PHONE_RULES[country] || PHONE_RULES["+91"];
+      document.getElementById("phone").placeholder = rule.placeholder;
+      document.getElementById("phoneValidation").textContent = "";
+      document.getElementById("phone").value = "";
+    }
+
+    function validatePhone() {
+      const country = document.getElementById("phoneCountry").value;
+      const digits = (document.getElementById("phone").value || "").replace(/\D/g, "");
+      const msgEl = document.getElementById("phoneValidation");
+      if (!digits) { msgEl.textContent = ""; msgEl.className = "phone-validation"; return false; }
+      const result = isValidPhoneForCountry(digits, country);
+      if (!result.valid) { msgEl.textContent = `⚠️ ${result.msg}`; msgEl.className = "phone-validation error"; return false; }
+      msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok"; return true;
+    }
+
+    function draftKey() { return "draft_founder_" + (currentUser?.email || "guest"); }
+    function saveDraft() {
+      const savedPhoto = localStorage.getItem(profilePhotoKey()) || "";
+      const draft = {
+        phoneCountry: document.getElementById("phoneCountry").value,
+        phone: document.getElementById("phone").value,
+        linkedinUrl: "",
+
+        startupName: document.getElementById("startupName").value,
+        description: document.getElementById("description").value,
+        photo: savedPhoto.startsWith('data:image/') ? '__has_photo__' : savedPhoto
+      };
+      try { localStorage.setItem(draftKey(), JSON.stringify(draft)); } catch (e) {}
+    }
+    function loadDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(draftKey()) || 'null');
+        if (!draft) return;
+        if (draft.phoneCountry) {
+          document.getElementById("phoneCountry").value = draft.phoneCountry;
+          document.getElementById("phone").placeholder = (PHONE_RULES[draft.phoneCountry] || PHONE_RULES["+91"]).placeholder;
+        }
+        if (draft.phone) { document.getElementById("phone").value = draft.phone; validatePhone(); }
+        if (draft.startupName) document.getElementById("startupName").value = draft.startupName;
+        if (draft.linkedinUrl) document.getElementById("linkedinUrl").value = draft.linkedinUrl;
+
+        if (draft.description) {
+          const ta = document.getElementById("description");
+          ta.value = draft.description; autoGrow(ta); updateDescCounter();
+        }
+        const savedPhoto = localStorage.getItem(profilePhotoKey()) || "";
+        if (draft.photo && savedPhoto) {
+          const src = draft.photo === '__has_photo__' ? savedPhoto : draft.photo;
+          photoPreview.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          profilePhotoUploaded = true;
+        }
+      } catch(e) {}
+    }
+    function clearDraft() { try { localStorage.removeItem(draftKey()); } catch (e) {} }
+
+    async function loadProfile() {
+      if (!currentUser?.email) return;
+      document.getElementById("fullName").value = currentUser.fullName || "";
+      document.getElementById("email").value = currentUser.email || "";
+      document.getElementById("role").value = currentUser.role || "Founder";
+
+      const sp = currentUser.founderProfile || {};
+      if (sp.phoneCountry) document.getElementById("phoneCountry").value = sp.phoneCountry;
+      if (sp.phone) { const raw = (sp.phone || "").replace(/\D/g, "").slice(-10); document.getElementById("phone").value = raw; validatePhone(); }
+      if (sp.startupName) document.getElementById("startupName").value = sp.startupName;
+      if (sp.linkedinUrl) document.getElementById("linkedinUrl").value = sp.linkedinUrl;
+      if (sp.description) { const ta = document.getElementById("description"); ta.value = sp.description; autoGrow(ta); updateDescCounter(); }
+      if (sp.photo) { photoPreview.innerHTML = `<img src="${sp.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`; profilePhotoUploaded = true; cropState.src = sp.photo; }
+
+      loadDraft();
+      try {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const res = await fetch(`/get-profile?email=${encodeURIComponent(currentUser.email)}`, { cache: 'no-store', headers: { "Authorization": `Bearer ${token}` } });
+        if (!res.ok) throw new Error('Server error');
+        const result = await res.json();
+        if (result.success) {
+          const p = result.profile || {};
+          if (result.profile?.fullName) document.getElementById("fullName").value = result.profile.fullName;
+          if (result.profile?.email) document.getElementById("email").value = result.profile.email;
+          if (p.phoneCountry) document.getElementById("phoneCountry").value = p.phoneCountry;
+          if (p.phone) { const raw = p.phone.replace(/\D/g, ""); document.getElementById("phone").value = raw.slice(-10); validatePhone(); }
+          if (p.startupName) document.getElementById("startupName").value = p.startupName;
+          if (p.linkedinUrl) document.getElementById("linkedinUrl").value = p.linkedinUrl;
+
+          applyFounderLocks(p);
+          if (p.description) { const ta = document.getElementById("description"); ta.value = p.description; autoGrow(ta); updateDescCounter(); }
+          if (p.photo) {
+            photoPreview.innerHTML = `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            try { localStorage.setItem(profilePhotoKey(), p.photo); } catch (e) {}
+            profilePhotoUploaded = true;
+            cropState.src = p.photo;
+          }
+          currentUser.fullName = result.profile?.fullName || currentUser.fullName;
+          currentUser.founderProfile = p;
+          try { localStorage.setItem("currentUser", JSON.stringify(currentUser)); } catch (e) {}
+          clearDraft();
+        }
+      } catch (err) { console.error('loadProfile error:', err); }
+    }
+
+    // ── LinkedIn inline error helpers ──
+    function showLinkedinError(msg) {
+      var existing = document.getElementById("_liErrMsg");
+      if (existing) { existing.textContent = msg; return; }
+      var wrapper = document.getElementById("linkedinUrlWrapper") || document.getElementById("linkedinUrl").parentNode;
+      var el = document.createElement("div");
+      el.id = "_liErrMsg";
+      el.style.cssText = "margin-top:8px;padding:10px 14px;background:#fff;border:1.5px solid #111118;border-radius:6px;display:flex;align-items:flex-start;gap:8px;font-family:'Inter',sans-serif;";
+      el.innerHTML = '<svg width="16" height="16" fill="none" stroke="#111118" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><div><div style="font-size:12px;font-weight:700;color:#111118;margin-bottom:2px;">Duplicate LinkedIn URL</div><div style="font-size:11px;color:#444;line-height:1.5;">' + msg + '</div></div>';
+      wrapper.appendChild(el);
+      document.getElementById("linkedinUrl").style.borderColor = "#111118";
+    }
+    function clearLinkedinError() {
+      var el = document.getElementById("_liErrMsg");
+      if (el) el.remove();
+      var inp = document.getElementById("linkedinUrl");
+      if (inp) inp.style.borderColor = "";
+    }
+
+    // ── LinkedIn Lock Logic (outside DOMContentLoaded so loadProfile can call it) ──
+    function applyFounderLocks(profile) {
+      if (!profile) return;
+      var liInput = document.getElementById("linkedinUrl");
+      var liMsg = document.getElementById("linkedinLockedMsg");
+      if (profile.linkedinLocked && profile.linkedinUrl && liInput) {
+        liInput.readOnly = true;
+        liInput.style.background = "#F4F4F5";
+        liInput.style.cursor = "not-allowed";
+        liInput.title = "LinkedIn URL locked after first save";
+        if (liMsg) liMsg.style.display = "block";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadProfile();
+      const descTA = document.getElementById("description");
+      descTA.addEventListener("input", () => { autoGrow(descTA); updateDescCounter(); saveDraft(); });
+      ["startupName", "linkedinUrl"].forEach(id => { var el=document.getElementById(id); if(el) el.addEventListener("input", saveDraft); });
+      document.getElementById("phone").addEventListener("input", saveDraft);
+      document.getElementById("phoneCountry").addEventListener("change", saveDraft);
+    });
+
+    // ── Smart iPhone photo pre-processor ──────────────────────────────
+    // Fixes: EXIF rotation, 4K canvas crash, huge base64 stall
+    const MAX_UPLOAD_PX = 2048; // downsample anything larger than this
+    const MAX_FILE_MB   = 20;   // raise limit — we'll downsample ourselves
+
+    function getExifOrientation(buffer) {
+      const view = new DataView(buffer);
+      if (view.getUint16(0, false) !== 0xFFD8) return -1;
+      let offset = 2;
+      while (offset < view.byteLength) {
+        const marker = view.getUint16(offset, false); offset += 2;
+        if (marker === 0xFFE1) {
+          if (view.getUint32(offset += 2, false) !== 0x45786966) return -1;
+          const little = view.getUint16(offset += 6, false) === 0x4949;
+          offset += view.getUint32(offset + 4, little);
+          const tags = view.getUint16(offset, little);
+          offset += 2;
+          for (let i = 0; i < tags; i++) {
+            if (view.getUint16(offset + i * 12, little) === 0x0112)
+              return view.getUint16(offset + i * 12 + 8, little);
+          }
+        } else if ((marker & 0xFF00) !== 0xFF00) break;
+        else offset += view.getUint16(offset, false);
+      }
+      return -1;
+    }
+
+    function preprocessImage(file, callback) {
+      const arrayBufReader = new FileReader();
+      arrayBufReader.onload = function(ev) {
+        const orientation = getExifOrientation(ev.target.result);
+        const blobUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = function() {
+          URL.revokeObjectURL(blobUrl);
+          let w = img.naturalWidth, h = img.naturalHeight;
+          // Apply EXIF rotation
+          const rotated = orientation >= 5 && orientation <= 8;
+          if (rotated) [w, h] = [h, w];
+          // Downsample if too large
+          const scale = Math.min(1, MAX_UPLOAD_PX / Math.max(w, h));
+          const cw = Math.round(w * scale), ch = Math.round(h * scale);
+          const canvas = document.createElement("canvas");
+          canvas.width = cw; canvas.height = ch;
+          const ctx = canvas.getContext("2d");
+          ctx.save();
+          // Apply EXIF orientation transform
+          switch (orientation) {
+            case 2: ctx.transform(-1,0,0,1,cw,0); break;
+            case 3: ctx.transform(-1,0,0,-1,cw,ch); break;
+            case 4: ctx.transform(1,0,0,-1,0,ch); break;
+            case 5: ctx.transform(0,1,1,0,0,0); break;
+            case 6: ctx.transform(0,1,-1,0,ch,0); break;
+            case 7: ctx.transform(0,-1,-1,0,ch,cw); break;
+            case 8: ctx.transform(0,-1,1,0,0,cw); break;
+          }
+          if (rotated) ctx.drawImage(img, 0, 0, img.naturalHeight * scale, img.naturalWidth * scale);
+          else ctx.drawImage(img, 0, 0, cw, ch);
+          ctx.restore();
+          callback(canvas.toDataURL("image/jpeg", 0.92));
+        };
+        img.src = blobUrl;
+      };
+      arrayBufReader.readAsArrayBuffer(file);
+    }
+    // ──────────────────────────────────────────────────────────────────
+
+    photoUpload.addEventListener("change", (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      if (file.size > MAX_FILE_MB * 1024 * 1024) { _showToast(`Photo must be less than ${MAX_FILE_MB} MB`); photoUpload.value = ""; return; }
+      preprocessImage(file, (processedDataUrl) => { openCropModal(processedDataUrl); });
+    });
+
+    // Clicking the photo label always opens file manager to pick a new photo
+
+    cropApplyBtn.addEventListener("click", () => {
+      applyCroppedPhoto((croppedDataUrl) => {
+        photoPreview.innerHTML = `<img src="${croppedDataUrl}" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;">`;
+        try { localStorage.setItem(profilePhotoKey(), croppedDataUrl); } catch (e) {}
+        profilePhotoUploaded = true;
+        cropState.src = croppedDataUrl;
+        photoUpload.value = ""; // reset so same file can be picked again
+        saveDraft();
+      });
+    });
+
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      // FIX 4: Strict validation before ANY server call
+      if (!profilePhotoUploaded) { _showToast("Profile photo is required!"); return; }
+      if (!currentUser?.email)   { _showToast("No logged-in user found!");   return; }
+      var _fn = (document.getElementById("fullName")?.value||"").trim();
+      var _sn = (document.getElementById("startupName")?.value||"").trim();
+      var _ds = (document.getElementById("description")?.value||"").trim();
+      var _ph = (document.getElementById("phone")?.value||"").replace(/\D/g,"");
+      if (!_fn) { _showToast("Full name is required!"); document.getElementById("fullName")?.focus(); return; }
+      if (!_sn) { _showToast("Startup name is required!"); document.getElementById("startupName")?.focus(); return; }
+      if (!_ds || _ds.length < 100) { _showToast("Description must be at least 100 characters!"); document.getElementById("description")?.focus(); return; }
+      if (!_ph || _ph.length < 10) { _showToast("Valid phone number is required!"); document.getElementById("phone")?.focus(); return; }
+
+      const fullNameVal = document.getElementById("fullName").value.trim();
+      if (!fullNameVal) return _showToast("Full name is required!");
+
+      const emailVal = document.getElementById("email").value.trim().toLowerCase();
+      if (!emailVal) return _showToast("Email is required!");
+      if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(emailVal)) return _showToast("Only @gmail.com emails are allowed!");
+
+      const phoneCountryVal = document.getElementById("phoneCountry").value;
+      const phoneDigits = document.getElementById("phone").value.replace(/\D/g, "");
+      const phoneCheck = isValidPhoneForCountry(phoneDigits, phoneCountryVal);
+      if (!phoneCheck.valid) { _showToast(`⚠️ Invalid phone number: ${phoneCheck.msg}`); document.getElementById("phone").focus(); return; }
+
+      const linkedinUrlVal = "";
+      if (linkedinUrlVal && !/^https?:\/\/(www\.)?linkedin\.com\/in\/.+/.test(linkedinUrlVal)) { showLinkedinError("Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/yourname)"); document.getElementById("linkedinUrl").focus(); return; }
+      clearLinkedinError();
+      // Check LinkedIn uniqueness before full save
+      try {
+        const _tok = localStorage.getItem("token")||sessionStorage.getItem("token")||"";
+        const _chk = await fetch("/profile/check-linkedin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer "+_tok },
+          body: JSON.stringify({ linkedinUrl: "", userId: currentUser._id })
+        });
+        if (_chk.ok) {
+          const _cd = await _chk.json();
+          if (_cd && _cd.taken) { showLinkedinError("This LinkedIn URL is already registered by another user. Please use your own profile link."); document.getElementById("linkedinUrl").focus(); return; }
+        }
+      } catch(e) { /* server will also catch on save */ }
+
+      const founderProfile = {
+        phone: phoneDigits, phoneCountry: phoneCountryVal,
+        linkedinUrl: "",
+        linkedinLocked: !!linkedinUrlVal,
+        startupName: document.getElementById("startupName").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        photo: (localStorage.getItem(profilePhotoKey()) || "")
+      };
+      if (!founderProfile.startupName || !founderProfile.description || !founderProfile.photo) return _showToast("Please fill all required fields and upload a profile photo!");
+      if (founderProfile.description.length < 100) return _showToast("Description must be at least 100 characters!");
+      try {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        const res = await fetch("/profile/founder", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ email: currentUser.email, newEmail: emailVal, fullName: fullNameVal, role: currentUser.role || "Founder", founderProfile }) });
+        const result = await res.json();
+        if (!result.success) {
+          if (result.field === "linkedinUrl") { showLinkedinError(result.message || "LinkedIn URL already registered."); document.getElementById("linkedinUrl").focus(); }
+          else if (result.field === "phone") {
+            showPremiumToast({ title: "Number Already in Use", msg: "This number is already in use", icon: "📵", dur: 5000 });
+            var ph = document.getElementById("phone");
+            if (ph) { ph.style.borderColor = "#DC2626"; ph.style.boxShadow = "0 0 0 3px rgba(220,38,38,0.15)"; ph.focus(); setTimeout(function(){ ph.style.borderColor = ""; ph.style.boxShadow = ""; }, 3000); }
+          }
+          else { _showToast({ msg: result.message || "Something went wrong", borderColor: "#DC2626" }); }
+          return;
+        }
+        clearLinkedinError();
+        // Use server-returned user so founderProfile is guaranteed complete
+        if (result.user) {
+          const savedUser = result.user;
+          // Preserve fields the server might not return
+          savedUser.token = currentUser.token || undefined;
+          localStorage.setItem("currentUser", JSON.stringify(savedUser));
+          try { sessionStorage.setItem("currentUser", JSON.stringify(savedUser)); } catch(e) {}
+        } else {
+          currentUser.founderProfile = founderProfile;
+          currentUser.fullName = fullNameVal;
+          currentUser.email = emailVal;
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
+          try { sessionStorage.setItem("currentUser", JSON.stringify(currentUser)); } catch(e) {}
+        }
+        clearDraft();
+        try { sessionStorage.setItem("profileJustCompleted", "1"); } catch(e) {}
+        try { localStorage.setItem("profileJustCompleted", "1"); } catch(e) {}
+        showSaveToast("✅ Founder profile saved successfully!");
+      } catch (err) { console.error(err); _showToast("Something went wrong while saving profile!"); }
+    });
+  
+  // B&W Profile Saved modal
+  function showSaveToast(msg){
+    var existing=document.getElementById("_profileSavedOverlay");
+    if(existing) existing.remove();
+    if(!document.getElementById("_profileSavedStyle")){
+      var s=document.createElement("style"); s.id="_profileSavedStyle";
+      s.textContent="@keyframes _psIn{from{opacity:0;transform:translateY(-14px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes _psOut{from{opacity:1}to{opacity:0;transform:scale(0.97)}} ._ps-overlay{position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;backdrop-filter:blur(4px);} ._ps-modal{background:#fff;border-radius:16px;padding:2rem 1.75rem;width:min(360px,92vw);box-shadow:0 32px 80px rgba(0,0,0,0.28);animation:_psIn 0.28s cubic-bezier(0.4,0,0.2,1) both;font-family:'Sora','Inter',sans-serif;text-align:center;} ._ps-icon{width:52px;height:52px;border-radius:50%;background:#111118;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;} ._ps-title{font-size:1rem;font-weight:700;color:#111118;margin-bottom:0.4rem;} ._ps-sub{font-size:0.8rem;color:#555;line-height:1.6;margin-bottom:1.5rem;font-family:'Inter',sans-serif;} ._ps-btn{width:100%;padding:0.8rem 1rem;border-radius:8px;border:none;background:#111118;color:#fff;font-family:'Sora',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.18s;} ._ps-btn:hover{background:#2d2d35;}";
+      document.head.appendChild(s);
+    }
+    var ov=document.createElement("div"); ov.id="_profileSavedOverlay"; ov.className="_ps-overlay";
+    ov.innerHTML='<div class="_ps-modal"><div class="_ps-icon"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><div class="_ps-title">Profile Saved!</div><div class="_ps-sub">Your profile has been saved successfully.<br>Redirecting you now…</div><button class="_ps-btn" id="_psDoneBtn">Got it</button></div>';
+    document.body.appendChild(ov);
+    document.getElementById("_psDoneBtn").onclick=function(){
+      var modal=ov.querySelector("._ps-modal");
+      if(modal) modal.style.animation="_psOut 0.2s ease forwards";
+      setTimeout(function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); window.location.href="connections.html"; },220);
+    };
+    // auto-redirect after 2.5s
+    setTimeout(function(){
+      var modal=ov.querySelector("._ps-modal");
+      if(modal) modal.style.animation="_psOut 0.2s ease forwards";
+      setTimeout(function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); window.location.href="connections.html"; },220);
+    },2500);
+  }
+</script>
+
+<div id="_ssFlashContainer" style="position:fixed;top:68px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:calc(100vw - 32px);"></div>
+<style>
+@keyframes _ssFIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes _ssFOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+._ss-toast{background:#fff;border:1px solid #E4E4E7;border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,0.1);min-width:220px;max-width:300px;pointer-events:all;cursor:pointer;animation:_ssFIn 0.25s ease-out forwards;font-family:'Sora','Inter',sans-serif;}
+._ss-toast.out{animation:_ssFOut 0.3s ease-in forwards;}
+._ss-tavatar{width:36px;height:36px;border-radius:50%;border:1.5px solid #111118;object-fit:cover;flex-shrink:0;background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#111118;}
+._ss-tbody{flex:1;min-width:0;}
+._ss-ttitle{font-size:12px;font-weight:700;color:#111118;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+._ss-tmsg{font-size:11px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+
+    #ss-loader { display:none !important; }
+  
+    /* ══ B&W CROPPER THEME ══ */
+    .crop-modal { background:rgba(17,17,24,0.78) !important; }
+    .crop-panel {
+      background:#fff !important;
+      border:2px solid #111118 !important;
+      border-radius:14px !important;
+      box-shadow:6px 6px 0 #111118, 0 18px 60px rgba(0,0,0,0.24) !important;
+    }
+    .crop-title {
+      font-family:'Sora',sans-serif !important;
+      font-size:1rem !important;
+      font-weight:800 !important;
+      color:#111118 !important;
+      letter-spacing:-.01em !important;
+      margin-bottom:.25rem !important;
+    }
+    .crop-subtitle {
+      font-size:.7rem !important;
+      color:#6B7280 !important;
+      line-height:1.5 !important;
+      margin-bottom:.8rem !important;
+    }
+    .crop-stage {
+      background:#111118 !important;
+      border:1.5px solid #111118 !important;
+      border-radius:12px !important;
+    }
+    .crop-mask::after {
+      border:2px solid #fff !important;
+      box-shadow:0 0 0 9999px rgba(17,17,24,0.55) !important;
+    }
+    .crop-slider-label {
+      font-family:'Sora',sans-serif !important;
+      font-size:.68rem !important;
+      font-weight:700 !important;
+      color:#111118 !important;
+      letter-spacing:.02em !important;
+    }
+    .crop-slider-label svg { opacity:1 !important; color:#111118 !important; }
+    .crop-controls input[type="range"] {
+      accent-color:#111118 !important;
+      height:4px !important;
+    }
+    /* B&W slider track (cross-browser) */
+    .crop-controls input[type="range"]::-webkit-slider-thumb {
+      background:#111118 !important;
+    }
+    .crop-controls input[type="range"]::-moz-range-thumb {
+      background:#111118 !important;
+    }
+    .crop-btn {
+      font-family:'Sora',sans-serif !important;
+      font-size:.78rem !important;
+      font-weight:700 !important;
+      padding:.75rem 1rem !important;
+      border-radius:10px !important;
+      letter-spacing:.02em !important;
+      cursor:pointer !important;
+      transition:all .15s !important;
+    }
+    .crop-btn.secondary {
+      background:#fff !important;
+      color:#111118 !important;
+      border:1.5px solid #111118 !important;
+    }
+    .crop-btn.secondary:hover { background:#F4F4F5 !important; }
+    .crop-btn.primary {
+      background:#111118 !important;
+      color:#fff !important;
+      border:1.5px solid #111118 !important;
+      box-shadow:2px 2px 0 rgba(0,0,0,.2) !important;
+    }
+    .crop-btn.primary:hover { background:#2d2d35 !important; transform:translateY(-1px); }
+
+  </style>
+<script>
+(function(){
+  try {
+    var _cu = null;
+    try { _cu = JSON.parse(sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser") || "null"); } catch(e) {}
+    if (!_cu || !_cu._id) return;
+    var _tok = function(){ return localStorage.getItem("token") || sessionStorage.getItem("token") || ""; };
+    var _unseenNoti = 0, _unseenChat = 0;
+
+    function _updateNotiBadge() {
+      var txt = _unseenNoti > 99 ? "99+" : String(_unseenNoti);
+      ["navNotiBadge","mobNavNotiBadge"].forEach(function(id){
+        var b = document.getElementById(id); if (!b) return;
+        if (_unseenNoti > 0) { b.textContent = txt; b.style.display = "flex"; } else { b.style.display = "none"; b.textContent = ""; }
+      });
+    }
+    function _updateChatBadge() {
+      var txt = _unseenChat > 99 ? "99+" : String(_unseenChat);
+      ["navChatBadge","mobNavChatBadge"].forEach(function(id){
+        var b = document.getElementById(id); if (!b) return;
+        if (_unseenChat > 0) { b.textContent = txt; b.style.display = "flex"; } else { b.style.display = "none"; b.textContent = ""; }
+      });
+    }
+
+    function _showToast(opts) {
+      var c = document.getElementById("_ssFlashContainer"); if (!c) return;
+      var el = document.createElement("div");
+      el.className = "_ss-toast";
+      el.style.borderLeft = "3px solid " + (opts.borderColor || "#111118");
+      var avatarHtml = opts.photo
+        ? '<img class="_ss-tavatar" src="' + opts.photo + '" alt="" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'
+          + '<div class="_ss-tavatar" style="display:none">' + (opts.initials || "?") + '</div>'
+        : '<div class="_ss-tavatar">' + (opts.initials || "?") + '</div>';
+      el.innerHTML = avatarHtml + '<div class="_ss-tbody"><div class="_ss-ttitle">' + opts.title + '</div><div class="_ss-tmsg">' + opts.msg + '</div></div>';
+      el.addEventListener("click", function(){ window.location.href = opts.href || "chat.html"; });
+      c.appendChild(el);
+      setTimeout(function(){ el.classList.add("out"); }, opts.dur || 4000);
+      setTimeout(function(){ if (el.parentNode) el.remove(); }, (opts.dur || 4000) + 350);
+    }
+
+    // Poll notifications badge
+    function _pollNoti() {
+      fetch("/notifications?userId=" + encodeURIComponent(_cu._id), { cache: "no-store", headers: { "Authorization": "Bearer " + _tok() } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (!d || !d.success) return;
+          var valid = ["request_sent","request_received","auto_connected","connected","declined"];
+          _unseenNoti = (d.notifications || []).filter(function(n){ return valid.includes(n.type) && !n.seen; }).length;
+          _updateNotiBadge();
+        }).catch(function(){});
+    }
+
+    // Poll chat unread badge
+    function _pollChat() {
+      fetch("/chat/unread-counts?userId=" + encodeURIComponent(_cu._id), { cache: "no-store", headers: { "Authorization": "Bearer " + _tok() } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (!d || !d.success) return;
+          _unseenChat = Object.values(d.counts || {}).reduce(function(s,c){ return s+c; }, 0);
+          _updateChatBadge();
+        }).catch(function(){});
+    }
+
+    _pollNoti(); _pollChat();
+    setInterval(_pollNoti, 20000);
+    setInterval(_pollChat, 15000);
+    window.addEventListener("focus", function(){ _pollNoti(); _pollChat(); });
+
+    // Real-time socket listeners
+    function _initSocket() {
+      try {
+        var _s = window._ssSocket || window.io({ auth: { userId: _cu._id }, transports: ["websocket","polling"] });
+        window._ssSocket = _s;
+
+        _s.on("notification:new", function(n) {
+          var valid = ["request_sent","request_received","auto_connected","connected","declined"];
+          if (!n || !valid.includes(n.type)) return;
+          _unseenNoti++;
+          _updateNotiBadge();
+          var icon = n.type === "connected" || n.type === "auto_connected" ? "🤝" : n.type === "request_received" ? "📩" : n.type === "declined" ? "❌" : "✅";
+          var title = n.type === "connected" || n.type === "auto_connected" ? "New Connection!" : n.type === "request_received" ? "Connection Request" : "Connection Update";
+          _showToast({ photo: "", initials: icon, title: title, msg: String(n.message || "").substring(0, 60), href: "notifications.html", borderColor: "#16A34A", dur: 5000 });
+        });
+
+        _s.on("chat:newMessage", function(payload) {
+          if (!payload) return;
+          if (String(payload.toUserId || "").trim() !== String(_cu._id || "").trim()) return;
+          _unseenChat++;
+          _updateChatBadge();
+          var name = String(payload.fromUserName || "New Message");
+          var photo = String(payload.fromUserPhoto || "");
+          var msg = String(payload.text || (payload.file ? "[File]" : ""));
+          var initials = name.split(" ").map(function(w){ return w[0]; }).join("").toUpperCase().slice(0,2) || "U";
+          _showToast({ photo: photo, initials: initials, title: name, msg: msg.substring(0, 50), href: "chat.html", borderColor: "#111118", dur: 4000 });
+        });
+      } catch(e) {}
+    }
+    if (typeof window.io !== "undefined") { _initSocket(); }
+    else {
+      var _chk = setInterval(function(){ if (typeof window.io !== "undefined") { clearInterval(_chk); _initSocket(); } }, 200);
+    }
+  } catch(e) {}
+})();
+</script>
+<script src="/socket.io/socket.io.js"></script>    
+<script src="/suspension-screen.js"></script>   
+<script src="/session-guard.js"></script>         
+<script src="/custom-ui.js"></script>              
+<script>
+// STARTUPSYNC UNIVERSAL CLIENT FIXES — by Kashyap Bajaj
+(function(){
+  // 1. Inject minimal CSS via JS (avoids regex damage)
+  if (!document.getElementById('_ssUniversalCSS')) {
+    var style = document.createElement('style');
+    style.id = '_ssUniversalCSS';
+    style.textContent = [
+      'html, body { overflow-x:hidden !important; max-width:100vw !important; }',
+      '*, *::before, *::after { box-sizing:border-box !important; }',
+      '#ss-loader { display:none !important; }',
+      // Hide LinkedIn EVERYWHERE
+      '#linkedinUrl, label[for="linkedinUrl"], #_liErrMsg, #_ssLIErr,',
+      '.linkedin-link, a.linkedin-link, .profile-card .linkedin-link,',
+      '.linkedin-row, .linkedin-form-group { display:none !important; }',
+      '.form-group:has(#linkedinUrl) { display:none !important; }',
+      '.form-group:has(label[for="linkedinUrl"]) { display:none !important; }',
+      // Badges visible when has content
+      '.sb-badge:not(:empty), .nav-badge:not(:empty) { display:flex !important; }',
+      '.nav-badge { background:#EF4444 !important; color:#fff !important; min-width:18px !important; height:18px !important; border-radius:999px !important; font-size:10px !important; font-weight:800 !important; padding:0 5px !important; align-items:center !important; justify-content:center !important; line-height:1 !important; box-sizing:border-box !important; }',
+      // Chat unread - small B&W
+      '.unread-badge { min-width:18px !important; height:18px !important; border-radius:999px !important; background:#111118 !important; color:#fff !important; font-size:9px !important; font-weight:800 !important; padding:0 5px !important; display:flex !important; align-items:center !important; justify-content:center !important; line-height:1 !important; border:1.5px solid #fff !important; box-shadow:0 0 0 1px #111118 !important; box-sizing:border-box !important; }',
+      // Deleted tags B&W
+      '.deleted-tag { background:#111118 !important; color:#fff !important; font-family:Sora,sans-serif !important; font-size:.55rem !important; font-weight:800 !important; letter-spacing:.06em !important; padding:2px 7px !important; border-radius:999px !important; text-transform:uppercase !important; border:1px solid #111118 !important; }',
+      '.deleted-tag.violation { background:#fff !important; color:#111118 !important; border:1.5px solid #111118 !important; }',
+      // B&W cropper sliders
+      '.crop-controls input[type="range"], .crop-adjustments input[type="range"] {',
+      '  -webkit-appearance:none !important; appearance:none !important;',
+      '  width:100% !important; height:8px !important;',
+      '  background:#111118 !important; border-radius:999px !important;',
+      '  outline:none !important; cursor:pointer !important; margin:10px 0 !important;',
+      '}',
+      '.crop-controls input[type="range"]::-webkit-slider-runnable-track,',
+      '.crop-adjustments input[type="range"]::-webkit-slider-runnable-track {',
+      '  height:8px !important; background:#111118 !important; border-radius:999px !important;',
+      '}',
+      '.crop-controls input[type="range"]::-webkit-slider-thumb,',
+      '.crop-adjustments input[type="range"]::-webkit-slider-thumb {',
+      '  -webkit-appearance:none !important; appearance:none !important;',
+      '  width:22px !important; height:22px !important; border-radius:50% !important;',
+      '  background:#fff !important; border:3px solid #111118 !important;',
+      '  cursor:pointer !important; margin-top:-7px !important;',
+      '  box-shadow:0 2px 8px rgba(0,0,0,0.3) !important;',
+      '}',
+      '.crop-controls input[type="range"]::-moz-range-track,',
+      '.crop-adjustments input[type="range"]::-moz-range-track {',
+      '  height:8px !important; background:#111118 !important; border-radius:999px !important;',
+      '}',
+      '.crop-controls input[type="range"]::-moz-range-thumb,',
+      '.crop-adjustments input[type="range"]::-moz-range-thumb {',
+      '  width:22px !important; height:22px !important; border-radius:50% !important;',
+      '  background:#fff !important; border:3px solid #111118 !important;',
+      '}',
+      // Footer
+      '.ss-footer { width:100% !important; padding:1.5rem 1rem !important; margin-top:2rem !important; text-align:center !important; border-top:1.5px solid #111118 !important; background:#fff !important; }',
+      '.ss-footer .ss-footer-line { font-family:Sora,sans-serif !important; font-size:.7rem !important; font-weight:600 !important; color:#111118 !important; letter-spacing:.08em !important; text-transform:uppercase !important; }',
+      '.ss-footer .ss-footer-name { font-weight:800 !important; color:#111118 !important; }',
+      '.ss-footer .ss-footer-tag { font-family:Inter,sans-serif !important; font-size:.65rem !important; color:#6B7280 !important; margin-top:.25rem !important; letter-spacing:.04em !important; }'
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
+  // 2. Avatar NO-FLASH — preload photo BEFORE showing initials
+  function initAvatarNoFlash() {
+    var el = document.getElementById('sbAvatar');
+    if (!el) return;
+    try {
+      var cu = JSON.parse(localStorage.getItem("currentUser") || sessionStorage.getItem("currentUser") || "null");
+      if (!cu) return;
+      var name = (cu.fullName || "U").trim();
+      var parts = name.split(/\s+/).filter(Boolean);
+      var initials = parts.map(function(w){return w[0]||"";}).join("").substring(0,2).toUpperCase() || "U";
+      var isFounder = (cu.role||"").toLowerCase()==="founder";
+      var p = isFounder ? (cu.founderProfile||{}) : (cu.investorProfile||{});
+      var photo = (p.photo || cu.photo || "").trim();
+      el.style.opacity = "1";
+      el.style.background = "#111118";
+      el.style.color = "#fff";
+      if (photo && (photo.startsWith("data:image/") || photo.startsWith("http") || photo.startsWith("/"))) {
+        var img = new Image();
+        var loaded = false;
+        img.onload = function() {
+          loaded = true;
+          el.innerHTML = "";
+          var i = document.createElement("img");
+          i.src = photo;
+          i.style.cssText = "width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;";
+          el.appendChild(i);
+        };
+        img.onerror = function() { if (!loaded) el.textContent = initials; };
+        img.src = photo;
+        setTimeout(function() { if (!loaded && !el.querySelector("img")) el.textContent = initials; }, 200);
+      } else {
+        el.textContent = initials;
+      }
+      el.style.cursor = "pointer";
+      el.addEventListener("click", function() {
+        var role = (cu.role||"").toLowerCase();
+        window.location.href = role === "founder" ? "founder-dashboard.html" : "investor-dashboard.html";
+      });
+      if (cu._id) {
+        fetch("/get-user?userId=" + encodeURIComponent(cu._id), { cache:"no-store", headers:{ "Authorization":"Bearer " + (localStorage.getItem("token")||sessionStorage.getItem("token")||"") } })
+          .then(function(r){return r.json();})
+          .then(function(d){
+            if (d && d.success && d.photo && d.photo.trim()) {
+              var i = new Image();
+              i.onload = function() {
+                el.innerHTML = "";
+                var ie = document.createElement("img");
+                ie.src = d.photo;
+                ie.style.cssText = "width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;";
+                el.appendChild(ie);
+              };
+              i.src = d.photo;
+            }
+          })
+          .catch(function(){});
+      }
+    } catch(e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initAvatarNoFlash);
+  else initAvatarNoFlash();
+
+  // 3. Ensure badges DOM exist
+  function ensureBadges() {
+    var ids = ["navNotiBadge","mobNavNotiBadge","navChatBadge","mobNavChatBadge","mobChatBadge"];
+    ids.forEach(function(id) {
+      if (!document.getElementById(id)) {
+        var b = document.createElement("span");
+        b.id = id;
+        b.style.cssText = "display:none;position:absolute;top:-999px;left:-999px;visibility:hidden;pointer-events:none;";
+        document.body.appendChild(b);
+      }
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ensureBadges);
+  else ensureBadges();
+
+  // 4. LOGOUT CLEANUP — sets flag BEFORE clearing storage
+  function cleanupOnLogout() {
+    try {
+      localStorage.setItem('_ss_loggingOut', '1');
+      sessionStorage.setItem('_ss_loggingOut', '1');
+      var keys = [];
+      for (var i=0; i<localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && (k.indexOf("ss_activetab_")===0 || k.indexOf("ss_tab_")===0)) keys.push(k);
+      }
+      keys.forEach(function(k){ localStorage.removeItem(k); });
+      setTimeout(function() {
+        try { localStorage.removeItem('_ss_loggingOut'); } catch(e) {}
+        try { sessionStorage.removeItem('_ss_loggingOut'); } catch(e) {}
+      }, 5000);
+    } catch(e) {}
+  }
+  document.addEventListener("click", function(ev) {
+    var el = ev.target;
+    while (el && el !== document.body) {
+      var attr = el.getAttribute && el.getAttribute("onclick");
+      if (attr && (attr.indexOf("/logout")!==-1 || attr.indexOf("Logout")!==-1)) { cleanupOnLogout(); break; }
+      el = el.parentElement;
+    }
+  }, true);
+})();
+</script>
+
+<!-- FIX 1: Premium B&W Toast Container -->
+<div id="ss-premium-toast-container"></div>
+<script>
+function showPremiumToast(opts) {
+  var container = document.getElementById('ss-premium-toast-container');
+  if (!container) return;
+  var toast = document.createElement('div');
+  toast.className = 'ss-premium-toast';
+  var icon  = document.createElement('div'); icon.className  = 'ss-pt-icon';  icon.textContent = opts.icon  || '\u2705';
+  var body  = document.createElement('div'); body.className  = 'ss-pt-body';
+  var title = document.createElement('div'); title.className = 'ss-pt-title'; title.textContent = opts.title || 'Notice';
+  var msg   = document.createElement('div'); msg.className   = 'ss-pt-msg';   msg.textContent   = opts.msg   || '';
+  var close = document.createElement('button');
+  close.className = 'ss-pt-close';
+  close.textContent = '\u2715';
+  close.addEventListener('click', function() { toast.remove(); });
+  body.appendChild(title);
+  body.appendChild(msg);
+  toast.appendChild(icon);
+  toast.appendChild(body);
+  toast.appendChild(close);
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.classList.add('ss-pt-out');
+    setTimeout(function() { if (toast.parentNode) toast.remove(); }, 320);
+  }, opts.dur || 5000);
+}
+</script>
+
+
+<script id="ss-form-enter-fix">
+// FIX 4: Prevent Enter key from accidentally submitting profile form
+// Only textarea should allow Enter (multiline)
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('profileForm');
+  if (!form) return;
+  form.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      var tag = (e.target.tagName || '').toLowerCase();
+      // Allow Enter in textarea only
+      if (tag !== 'textarea') {
+        e.preventDefault();
+        e.stopPropagation();
+        // Move focus to next field instead
+        var inputs = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([disabled]), textarea, select'));
+        var idx = inputs.indexOf(e.target);
+        if (idx > -1 && idx < inputs.length - 1) {
+          inputs[idx + 1].focus();
+        }
+        return false;
+      }
+    }
+  }, true);
+});
+</script>
+
+</body>
+</html>

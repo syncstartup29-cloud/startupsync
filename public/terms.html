@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Terms and Conditions - Startup Sync</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"/></noscript>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { background:#F7F7F8; }
+    :root {
+      --bg:#F7F7F8; --card-bg:#FFFFFF; --input-bg:#F4F4F5; --input-border:#E4E4E7;
+      --text-primary:#111118; --text-secondary:#6B7280; --text-muted:#9CA3AF;
+      --accent:#111118; --accent-hover:#2d2d35; --border:#E4E4E7;
+      --radius:12px; --font-h:'Sora', sans-serif; --font-b:'Inter', sans-serif;
+      --ease:cubic-bezier(0.4,0,0.2,1);
+      --shadow-card:0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08);
+    }
+    body {
+      min-height:100vh; font-family:var(--font-b);
+      background:var(--bg); color:var(--text-primary);
+      overflow-x:hidden; padding:1.5rem 1.25rem;
+      -webkit-font-smoothing:antialiased;
+    }
+    button, input, textarea, select { font-family:inherit; font-size:16px; }
+
+    .container {
+      position:relative; z-index:10; width:100%; max-width:860px;
+      margin:0 auto; display:flex; flex-direction:column;
+      min-height:calc(100vh - 3rem);
+    }
+
+    /* Header */
+    .header { display:flex; justify-content:center; margin-bottom:1.5rem; }
+    .logo-container { display:flex; align-items:center; gap:12px; }
+    .logo-icon {
+      width:3.5rem; height:3.5rem; border-radius:50%;
+      background:#f4f4f5; border:1.5px solid #333;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      animation:logoGlow 4s ease-in-out infinite;
+    }
+    @keyframes logoGlow {
+      0%,100% { box-shadow:0 0 0 0 rgba(17,17,24,0.12); border-color:#333; }
+      50%      { box-shadow:0 0 0 6px rgba(17,17,24,0.12); border-color:#555; }
+    }
+    .logo-icon svg { color:var(--accent); }
+    .logo-text {
+      font-family:var(--font-h); font-size:1.3rem; font-weight:700;
+      color:var(--text-primary); letter-spacing:0.04em;
+    }
+    .logo-text sup { font-size:0.42em; vertical-align:super; font-weight:600; color:#111118; margin-left:1px; letter-spacing:0; }
+
+    /* Card */
+    .card {
+      position:relative; background:var(--card-bg); border-radius:var(--radius);
+      border:1px solid var(--border); box-shadow:var(--shadow-card);
+      animation: cardIn 0.45s var(--ease) both, borderLightning 3.5s ease-in-out infinite; overflow: visible;
+      flex:1; display:flex; flex-direction:column;
+    }
+    .card::before { display: none !important; }
+    @keyframes accentSlide { 0%{background-position:0% 0;} 50%{background-position:100% 0;} 100%{background-position:0% 0;} }
+    @keyframes cardIn { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+
+    .card-header {
+      padding:1.75rem 2rem; border-bottom:1px solid var(--border); text-align:center;
+    }
+    /* ── Page title — bumped up ── */
+    .page-title    { font-family:var(--font-h); font-size:1.6rem; font-weight:700; color:var(--text-primary); letter-spacing:0.04em; margin-bottom:0.5rem; }
+    .page-subtitle { font-size:0.88rem; color:#111118; letter-spacing:0.04em; font-family:var(--font-b); }
+
+    .terms-content { flex:1; overflow-y:auto; padding:1.75rem 2rem; }
+    .terms-content::-webkit-scrollbar { width:6px; }
+    .terms-content::-webkit-scrollbar-track { background:transparent; }
+    .terms-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .terms-content::-webkit-scrollbar-thumb:hover { background:#D1D5DB; }
+
+    .term-section { margin-bottom:1.8rem; }
+
+    /* ── Section titles — bumped up ── */
+    .section-title {
+      font-family:var(--font-h); font-size:1.05rem; font-weight:700;
+      color:var(--text-primary); letter-spacing:0.02em;
+      margin-bottom:0.6rem; display:flex; align-items:center; gap:6px;
+    }
+    .section-number { color:var(--accent); }
+
+    /* ── Body text — bumped up ── */
+    .section-text { font-size:0.98rem; line-height:1.85; color:#111118; font-family:var(--font-b); }
+    .section-list { padding-left:1.4rem; font-size:0.98rem; line-height:1.85; color:#111118; font-family:var(--font-b); }
+    .section-list li { margin-bottom:0.5rem; }
+
+    /* ── Contact email — bumped up ── */
+    .contact-email {
+      color:var(--accent); font-weight:600; text-decoration:none;
+      font-family:var(--font-b); font-size:0.98rem;
+      transition:color 0.2s; display:inline-block; margin-top:0.4rem;
+    }
+    .contact-email:hover { color:var(--accent-hover); text-decoration:underline; }
+
+    .card-footer { border-top:1px solid var(--border); padding:1.5rem 2rem; display:flex; flex-direction:column; gap:1rem; }
+    .checkbox-container { display:flex; align-items:center; gap:10px; }
+    .terms-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+
+    /* ── Checkbox label — bumped up ── */
+    .checkbox-label { font-size:0.98rem; color:var(--text-primary); cursor:pointer; font-family:var(--font-b); line-height:1.5; }
+
+    /* ── Accept button — bumped up ── */
+    .accept-button {
+      width:100%; padding:0.92rem 1rem; border:none; border-radius:8px;
+      font-family:var(--font-h); font-size:0.92rem; font-weight:600;
+      letter-spacing:0.04em; cursor:not-allowed;
+      background:var(--input-bg); color:var(--text-muted);
+      border:1.5px solid var(--border);
+      transition:transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.15s;
+      position:relative; overflow:hidden;
+      appearance:none; -webkit-appearance:none;
+    }
+    .accept-button:enabled {
+      cursor:pointer; background:var(--accent); color:#FFFFFF;
+      border-color:var(--accent); box-shadow:0 2px 8px rgba(17,17,24,0.12);
+    }
+    .accept-button:enabled::after { content:''; position:absolute; top:0; left:-110%; width:60%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition:left 0.45s var(--ease); transform:skewX(-15deg); }
+    .accept-button:enabled:hover::after { left:150%; }
+    .accept-button:enabled:hover { background:var(--accent-hover); transform:translateY(-1px); box-shadow:0 6px 20px rgba(17,17,24,0.12); }
+    .accept-button:enabled:active { transform:translateY(0); box-shadow:0 2px 6px rgba(17,17,24,0.12); }
+
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+
+    @media(max-width:600px){
+      body { padding: 1.1rem 1rem; }
+      .card-header,.terms-content,.card-footer { padding-left: 1.4rem; padding-right: 1.4rem; }
+      .page-title { font-size: 1.25rem; } .logo-text { font-size: 1.1rem; } .logo-icon { width: 2.8rem; height: 2.8rem; }
+      .section-title { font-size: 0.95rem; } .section-text,.section-list { font-size: 0.9rem; }
+    }
+    @media(max-width:480px){
+      body { padding: 1rem 0.9rem; }
+      .card-header,.terms-content,.card-footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .page-title { font-size: 1.1rem; } .section-text,.section-list { font-size: 0.875rem; }
+    }
+    @media(max-width:400px){
+      body { padding: 0.875rem 0.875rem; }
+      .card-header,.terms-content,.card-footer { padding-left: 1.1rem; padding-right: 1.1rem; }
+      .card-header { padding-top: 1.2rem; padding-bottom: 1.2rem; }
+    }
+    @media(max-width:360px){
+      body { padding: 0.75rem 0.75rem; }
+      .card-header,.terms-content,.card-footer { padding-left: 0.95rem; padding-right: 0.95rem; }
+    }
+    @media(min-width:768px){ body{padding:2.5rem 1.5rem;} }
+    @media(min-width:1200px){ body{padding:3rem 2rem;} }
+    @media(max-height:600px) and (orientation:landscape){ body{padding:0.6rem;} .header{margin-bottom:0.75rem;} .logo-icon{width:2.5rem;height:2.5rem;} .card-header{padding:1rem 1.5rem;} }
+  
+    /* ==SS-BW-START== */
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html{-webkit-text-size-adjust:100%;}
+    body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
+    input,select,textarea{font-size:max(16px,1em)!important;}
+    body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
+
+    /* Page Loader - shows on initial load only */
+    #ss-loader{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .35s ease,visibility .35s ease;}
+    #ss-loader.ss-gone{opacity:0;visibility:hidden;pointer-events:none;}
+    #ss-loader .sll{width:52px;height:52px;border-radius:50%;background:#111118;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:ssLG 2s ease-in-out infinite;}
+    #ss-loader .sll span{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;color:#fff;letter-spacing:.04em;}
+    #ss-loader .sld{display:flex;gap:6px;}
+    #ss-loader .sld span{width:6px;height:6px;border-radius:50%;background:#111118;animation:ssLD 1.4s ease-in-out infinite;}
+    #ss-loader .sld span:nth-child(2){animation-delay:.2s;}
+    #ss-loader .sld span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssLG{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.1),0 2px 12px rgba(0,0,0,.2);}50%{box-shadow:0 0 0 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.32);}}
+    @keyframes ssLD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Nav - TM transparent, logo glow */
+    .top-nav{padding-top:env(safe-area-inset-top,0);}
+
+    /* Black glow on ALL primary buttons */
+    .btn-interested,.btn-accept,.btn-chat,.btn-go-connections,.btn-discover,.btn-unskip,
+    .btn-connect,.submit-btn,.btn-interested,.send-otp-btn,
+    button[type=submit]{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    @keyframes ssBtnG{0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.22);}50%{box-shadow:0 5px 24px rgba(0,0,0,.45),0 0 0 3px rgba(0,0,0,.07);}}
+
+    /* Index/login page - keep existing blue accent but add glow */
+    #submitBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    #confirmOtpBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+
+    /* B&W on index/reset - card top accent white */
+    .container::before,.card::before{background:linear-gradient(90deg,#555 0%,#111 50%,#555 100%)!important;background-size:200% 100%!important;}
+
+    /* Discover cards */
+    .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:3px 3px 0 #111118,0 4px 12px rgba(0,0,0,.07)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
+    .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:5px 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
+    @keyframes ssCardIn{from{opacity:0;transform:translateY(18px) rotate(-1deg) scale(.97);}to{opacity:1;transform:translateY(0) rotate(0) scale(1);}}
+    .profile-grid .profile-card{animation:ssCardIn .4s cubic-bezier(.34,1.3,.64,1) both;}
+
+    /* Connected cards */
+    .connection-card{border:1px solid #e0e0e0!important;box-shadow:0 2px 12px rgba(0,0,0,.06)!important;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s!important;}
+    .connection-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#111118;border-radius:12px 12px 0 0;}
+    .connection-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 22px rgba(0,0,0,.11)!important;}
+
+    /* Skipped cards */
+    .profiles-list .profile-card{border:1px solid #e4e4e7!important;box-shadow:0 1px 6px rgba(0,0,0,.05)!important;opacity:.8;position:relative;overflow:hidden;transition:opacity .2s,transform .2s!important;}
+    .profiles-list .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#d1d1d1;border-radius:12px 12px 0 0;}
+    .profiles-list .profile-card:hover{opacity:1;transform:translateY(-1px)!important;}
+
+    /* Inbox cards */
+    .inbox-card{border:1px solid #e8e8e8!important;box-shadow:0 2px 10px rgba(0,0,0,.06)!important;transition:transform .18s,box-shadow .18s!important;}
+    .inbox-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 18px rgba(0,0,0,.1)!important;}
+
+    /* Role badges */
+    .role-badge.founder,.role-founder{background:#111118!important;color:#fff!important;border:1px solid #111118!important;}
+    .role-badge.investor,.role-investor{background:#fff!important;color:#111118!important;border:1px solid #111118!important;}
+    .connected-tag{background:#f0f0f0!important;border:1px solid #ddd!important;color:#111118!important;}
+    .avatar{border:2px solid #111118!important;}
+    .avatar-wrap{border:2px solid #111118!important;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #111118!important;}
+
+    /* Hide LinkedIn on cards */
+    .linkedin-link{display:none!important;}
+
+    /* Admin B&W */
+    .admin-header{background:#111118!important;color:#fff!important;}
+    .admin-table th{background:#111118!important;color:#fff!important;}
+
+    /* Founder/Investor dashboard - B&W form cards — terms card: static black glow */
+    .card{overflow: visible!important;border:1.5px solid #111118!important;box-shadow:0 0 12px rgba(17,17,24,0.45),0 0 28px rgba(17,17,24,0.22),0 0 48px rgba(17,17,24,0.1),0 4px 24px rgba(0,0,0,0.1)!important;}
+    .save-btn,.btn-save{animation:ssBtnG 2.8s ease-in-out infinite!important;background:#111118!important;color:#fff!important;}
+
+    /* connections empty state */
+    #emptyState{position:relative;overflow:hidden;}
+    #emptyState canvas#ssEC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+    #emptyState .empty-inner{position:relative;z-index:1;}
+    #emptyState.ss-go{opacity:0;transition:opacity .4s ease;pointer-events:none;}
+    #emptyState.ss-gi{opacity:1;transition:opacity .4s ease;}
+    .ss-pills{display:flex;flex-direction:column;gap:8px;width:100%;max-width:260px;margin:1.25rem auto 0;}
+    .ss-pill{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;border:1px solid #ebebeb;background:#fafafa;animation:ssPI 3s ease-in-out infinite;}
+    .ss-pill:nth-child(2){animation-delay:.55s;}.ss-pill:nth-child(3){animation-delay:1.1s;}
+    @keyframes ssPI{0%,100%{opacity:.45;}50%{opacity:1;}}
+    .ss-pdot{width:7px;height:7px;border-radius:50%;background:#111118;flex-shrink:0;}
+    .ss-pdot.g{background:#ccc;}
+    .ss-pt{font-size:.72rem;font-weight:600;color:#333;flex:1;text-align:left;}
+    .ss-ps{font-size:.6rem;font-weight:700;color:#bbb;}
+    .ss-ps.live{color:#111118;}
+    .ss-pr{display:flex;align-items:center;gap:14px;justify-content:center;margin:1rem 0;}
+    .ss-pl-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,#ccc,transparent);}
+    .ss-pd{display:flex;gap:5px;}
+    .ss-pd span{width:5px;height:5px;border-radius:50%;background:#111118;animation:ssPD 1.5s ease-in-out infinite;}
+    .ss-pd span:nth-child(2){animation-delay:.2s;}.ss-pd span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssPD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Welcome mobile */
+    @media(max-width:768px){canvas#welcomeCanvas{display:none!important;}}
+
+    /* Safari */
+    @supports(-webkit-touch-callout:none){
+      .top-nav{position:-webkit-sticky;position:sticky;}
+      .mob-left-rail,.page-content,.ch-body,.users-list{-webkit-overflow-scrolling:touch;}
+    }
+    /* ==SS-BW-END== */
+
+  
+    /* ── Terms B&W Full Fix ── */
+    *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html { -webkit-text-size-adjust:100%; }
+    body { overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+
+    /* All text black */
+    .section-text, .section-list, .section-list li,
+    .page-subtitle, .checkbox-label, p, li, span, label {
+      color:#111118 !important;
+    }
+    .section-number { color:#111118 !important; }
+
+    /* TM transparent circle */
+    .logo-text sup, .nav-logo-circle, .mob-tm-circle {
+      background:transparent !important;
+      border:1.2px solid #111118 !important;
+    }
+
+    /* Buttons B&W + hover */
+    .accept-btn, button:not(.eye-btn) {
+      background:#111118 !important;
+      color:#fff !important;
+      border:none !important;
+      cursor:pointer !important;
+      transition:transform 0.18s ease, box-shadow 0.18s ease !important;
+      animation:termsBtnGlow 2.8s ease-in-out infinite !important;
+    }
+    @keyframes termsBtnGlow {
+      0%,100%{box-shadow:0 2px 8px rgba(0,0,0,0.22);}
+      50%{box-shadow:0 6px 24px rgba(0,0,0,0.45),0 0 0 3px rgba(0,0,0,0.08);}
+    }
+    .accept-btn:hover, button:not(.eye-btn):hover {
+      background:#2d2d35 !important;
+      transform:translateY(-2px) !important;
+      box-shadow:0 8px 24px rgba(0,0,0,0.38) !important;
+    }
+
+    /* Links */
+    a, .contact-email { color:#111118 !important; }
+    a:hover, .contact-email:hover { color:#2d2d35 !important; }
+
+    /* Checkbox accent */
+    .terms-checkbox { accent-color:#111118 !important; }
+
+    /* Responsive */
+    @media(max-width:480px){ body{padding:0.75rem;} .card{padding:1.2rem 1rem;} .page-title{font-size:1.1rem;} .section-text,.section-list{font-size:0.85rem;} }
+    @media(max-width:600px) {
+      body { padding:0.75rem !important; }
+      .card-header { padding:1.25rem 1rem !important; }
+      .terms-content { padding:1.25rem 1rem !important; }
+      .card-footer { padding:1rem !important; }
+      .page-title { font-size:1.2rem !important; }
+      .section-title { font-size:0.95rem !important; }
+      .section-text, .section-list { font-size:0.88rem !important; }
+    }
+    @media(max-width:400px) {
+      body { padding:0.5rem !important; }
+      .page-title { font-size:1.05rem !important; }
+    }
+    @media(max-width:360px) {
+      body { padding:0.4rem !important; font-size:0.85rem !important; }
+    }
+    @media(min-width:768px) {
+      .card { max-width:720px !important; margin:0 auto !important; }
+    }
+    @media(min-width:1200px) {
+      .card { max-width:860px !important; }
+    }
+    @supports(-webkit-touch-callout:none) {
+      * { -webkit-tap-highlight-color:transparent; }
+    }
+    /* ── End Terms B&W ── */
+
+  
+    /* ── TM transparent circle ── */
+    .c-with-tm {
+      position: relative;
+      display: inline-block;
+    }
+    /* Remove inline sup styling for ™ */
+    .logo-text sup { display:none !important; }
+
+  
+    /* ── Lightning border glow — breathing dim/high ── */
+    @keyframes borderLightning {
+      0%   { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0), 0 0 0px rgba(17,17,24,0.0); }
+      15%  { box-shadow: 0 0 8px 2px rgba(17,17,24,0.35), 0 0 20px rgba(17,17,24,0.12); }
+      25%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.08), 0 0 4px rgba(17,17,24,0.04); }
+      40%  { box-shadow: 0 0 18px 4px rgba(17,17,24,0.55), 0 0 40px rgba(17,17,24,0.18); }
+      55%  { box-shadow: 0 0 4px 1px rgba(17,17,24,0.12), 0 0 8px rgba(17,17,24,0.06); }
+      70%  { box-shadow: 0 0 12px 3px rgba(17,17,24,0.42), 0 0 28px rgba(17,17,24,0.14); }
+      85%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.06), 0 0 4px rgba(17,17,24,0.03); }
+      100% { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0), 0 0 0px rgba(17,17,24,0.0); }
+    }
+
+    
+    @media(max-width:1024px){ .card{max-width:720px;} }
+  
+  
+    /* ══ Universal TM — plain superscript, visible ══ */
+    .tm-circle,
+    .tm-circle-brand,
+    .nav-tm-circle,
+    .nav-logo-circle,
+    .mob-tm-circle,
+    .brand-tm {
+      display: inline !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      font-family: 'Sora', 'Inter', sans-serif !important;
+      font-size: 0.5em !important;
+      font-weight: 700 !important;
+      color: #111118 !important;
+      vertical-align: baseline !important;
+      position: relative !important;
+      top: -0.55em !important;
+      margin-left: -1px !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+
+  
+    /* ══ MOBILE FIX: Lock header height — no collapse/shift ══ */
+    .top-nav {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
+      background: #fff !important;
+      border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important;
+      flex-shrink: 0 !important;
+    }
+    .top-nav-inner {
+      display: flex !important;
+      align-items: center !important;
+      height: 60px !important;
+      min-height: 60px !important;
+      max-height: 60px !important;
+      padding: 0 20px !important;
+      gap: 4px !important;
+      overflow: visible !important;
+      -webkit-overflow-scrolling: unset !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+    }
+    /* Mobile nav — keep 60px on all screen sizes */
+    @media (max-width: 768px) {
+      .top-nav-inner {
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+        padding: 0 14px !important;
+        gap: 2px !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner {
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+        padding: 0 10px !important;
+        gap: 1px !important;
+      }
+    }
+    /* Fast touch response */
+    .nav-btn, button, a {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    /* Smooth scrolling on all pages */
+    html { -webkit-text-size-adjust: 100%; }
+    body { -webkit-overflow-scrolling: touch; }
+
+  
+    /* ══ UNIVERSAL FLEXIBLE HEADER FIX ══ */
+    .top-nav {
+      position: sticky !important; top: 0 !important; z-index: 1000 !important;
+      background: #fff !important; border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important; flex-shrink: 0 !important;
+      padding-top: env(safe-area-inset-top, 0) !important;
+    }
+    .top-nav-inner {
+      display: flex !important; align-items: center !important;
+      min-height: 60px !important; max-height: none !important; height: auto !important;
+      padding: 0 clamp(10px, 3vw, 24px) !important;
+      gap: clamp(4px, 1.5vw, 12px) !important;
+      overflow: visible !important; box-sizing: border-box !important;
+      width: 100% !important; flex-wrap: nowrap !important;
+    }
+    @media (max-width: 768px) {
+      .top-nav-inner { min-height: 56px !important; padding: 0 clamp(8px, 2.5vw, 16px) !important; }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner { min-height: 52px !important; padding: 0 clamp(6px, 2vw, 12px) !important; }
+    }
+    @media (max-width: 360px) {
+      .top-nav-inner { min-height: 48px !important; padding: 0 8px !important; }
+    }
+    /* Nav avatar — flexible size, no glitch */
+    .nav-avatar {
+      opacity: 1 !important; flex-shrink: 0 !important;
+      overflow: hidden !important; cursor: pointer !important;
+    }
+    .nav-avatar img {
+      width: 100% !important; height: 100% !important;
+      border-radius: 50% !important; object-fit: cover !important;
+      object-position: center !important; display: block !important;
+    }
+    /* Touch performance */
+    button, a, .nav-btn, .sb-item, .mob-rail-btn {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    html { -webkit-text-size-adjust: 100% !important; }
+    body { -webkit-overflow-scrolling: touch; overflow-x: hidden !important; }
+</style>
+
+<style id="ss-mobile-global-fix">
+/* ══ FIX 5: Global Mobile Responsiveness ══════════════════ */
+
+/* iOS fill-available height fix — prevents layout collapse when keyboard opens */
+html { height: -webkit-fill-available; }
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left:   env(safe-area-inset-left,   0);
+  padding-right:  env(safe-area-inset-right,  0);
+}
+
+/* Prevent iOS double-tap zoom and font size boost */
+html { -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+
+/* Prevent any input from causing horizontal scroll */
+input, textarea, select, button {
+  max-width: 100%;
+  font-size: max(16px, 1em) !important; /* prevents iOS auto-zoom */
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+/* Keep select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1rem center !important;
+  background-size: 12px 7px !important;
+}
+
+/* Fix sticky nav on all pages */
+.top-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  padding-top: env(safe-area-inset-top, 0) !important;
+}
+
+/* Fix nav avatar always visible */
+.nav-avatar {
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.nav-avatar img {
+  width: 100% !important; height: 100% !important;
+  border-radius: 50% !important; object-fit: cover !important;
+  display: block !important;
+}
+
+/* Chat input — stays above keyboard on iOS */
+.ch-input {
+  position: sticky !important;
+  bottom: 0 !important;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
+  background: #fff !important;
+  z-index: 10 !important;
+}
+
+/* Mobile left rail — safe area bottom */
+.mob-left-rail {
+  padding-bottom: env(safe-area-inset-bottom, 0) !important;
+}
+
+/* Prevent cards/grids from overflowing */
+.profile-grid, .connection-grid, .profiles-list {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Button tap target — min 44px height for iOS HIG */
+@media (max-width: 768px) {
+  .btn, .nav-btn, .mob-rail-btn, button {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+  }
+  /* Font scaling for small screens */
+  .page-header h2 { font-size: clamp(1.3rem, 5vw, 2rem) !important; }
+  .profile-name   { font-size: clamp(0.82rem, 2.5vw, 0.9rem) !important; }
+
+  /* Fix modal/overlay overflow on small screens */
+  .modalBox, .crop-panel {
+    width: min(92vw, 420px) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body { padding: 0.75rem 0.75rem !important; }
+  .card { padding: 1.1rem 0.9rem !important; }
+  .main-content { padding: 1rem 0.75rem !important; }
+}
+
+/* Fix horizontal overflow on all pages */
+*, *::before, *::after { box-sizing: border-box !important; }
+img { max-width: 100%; height: auto; }
+
+/* Fast touch response globally */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+/* ══ End FIX 5 ════════════════════════════════════════════ */
+</style>
+
+
+<style id="ss-checkbox-fix">
+/* ── FIX: Custom checkbox — tick always visible ───────────────────────────── */
+.terms-checkbox {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid #111118 !important;
+  border-radius: 5px !important;
+  background: #fff !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  transition: background 0.15s, border-color 0.15s !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.terms-checkbox:checked {
+  background: #111118 !important;
+  border-color: #111118 !important;
+}
+/* The tick mark — drawn with CSS */
+.terms-checkbox:checked::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 5px !important;
+  top: 2px !important;
+  width: 6px !important;
+  height: 10px !important;
+  border: 2.5px solid #fff !important;
+  border-top: none !important;
+  border-left: none !important;
+  transform: rotate(45deg) !important;
+  display: block !important;
+}
+.terms-checkbox:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(17,17,24,0.15) !important;
+}
+.terms-checkbox:hover:not(:checked) {
+  border-color: #374151 !important;
+  background: #F4F4F5 !important;
+}
+</style>
+
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h1 class="logo-text">STARTUP SYN<span class="c-with-tm">C<span class="tm-circle">™</span></span></h1>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="page-title">TERMS &amp; CONDITIONS</h2>
+        <p class="page-subtitle">Please read carefully before using Startup Sync</p>
+      </div>
+
+      <div class="terms-content">
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">1.</span> Acceptance of Terms</h3>
+          <p class="section-text">By accessing or using Startup Sync, you agree to be bound by these Terms and Conditions. If you do not agree, you may not access or use the platform.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">2.</span> Platform Purpose</h3>
+          <p class="section-text">Startup Sync is a networking platform designed to connect founders and investors. We do not guarantee funding, investments, partnerships, or business success.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">3.</span> User Eligibility</h3>
+          <p class="section-text">Users must be at least 18 years old to use this platform. You are responsible for ensuring that the information you provide is accurate and lawful.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">4.</span> Founder &amp; Investor Responsibilities</h3>
+          <ul class="section-list">
+            <li>Founders must provide truthful information about their startup.</li>
+            <li>Investors must act responsibly and ethically.</li>
+            <li>Users must not misrepresent identity, funding capability, or business details.</li>
+          </ul>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">5.</span> Profile &amp; Privacy</h3>
+          <ul class="section-list">
+            <li>Profile photos are mandatory.</li>
+            <li>Private information such as phone numbers, emails, or documents will not be publicly visible.</li>
+            <li>Users should not share sensitive data unless they trust the other party.</li>
+          </ul>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">6.</span> Messaging &amp; Communication</h3>
+          <ul class="section-list">
+            <li>Users can send unlimited messages.</li>
+            <li>Startup Sync is not responsible for conversations, agreements, or disputes between users.</li>
+            <li>Harassment, spam, or abusive behavior will result in account suspension.</li>
+          </ul>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">7.</span> Data Usage</h3>
+          <ul class="section-list">
+            <li>User data is stored securely.</li>
+            <li>Data may be used to improve platform features.</li>
+            <li>We do not sell private user data.</li>
+          </ul>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">8.</span> Account Suspension &amp; Termination</h3>
+          <p class="section-text">We reserve the right to suspend or terminate accounts that violate these terms, misuse the platform, or engage in illegal activity.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">9.</span> Limitation of Liability</h3>
+          <p class="section-text">Startup Sync is not liable for financial loss, failed investments, or disputes between founders and investors.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">10.</span> Changes to Terms</h3>
+          <p class="section-text">We may update these Terms and Conditions at any time. Continued use of the platform indicates acceptance of the updated terms.</p>
+        </section>
+        <section class="term-section">
+          <h3 class="section-title"><span class="section-number">11.</span> Contact Information</h3>
+          <p class="section-text">For questions or support, contact us at:</p>
+          <a href="/cdn-cgi/l/email-protection#74070d1a1707001506000104464d341319151d185a171b19" class="contact-email">syncstartup29&#64;gmail.com</a>
+        </section>
+      </div>
+
+      <div class="card-footer">
+        <div class="checkbox-container">
+          <input type="checkbox" id="terms-checkbox" class="terms-checkbox">
+          <label for="terms-checkbox" class="checkbox-label">I have read and agree to the Terms &amp; Conditions</label>
+        </div>
+        <button id="accept-button" class="accept-button" disabled>Accept &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+  
+<!-- one-tab enforcement handled by session-guard.js -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/suspension-screen.js"></script>
+<script src="/session-guard.js"></script>
+<script src="/custom-ui.js"></script>
+<!-- FIX: moved inline script AFTER custom-ui.js so _ssAlert() override is active -->
+<script>
+  const checkbox = document.getElementById('terms-checkbox');
+  const acceptButton = document.getElementById('accept-button');
+  let currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || 'null');
+
+  checkbox.addEventListener('change', () => {
+    acceptButton.disabled = !checkbox.checked;
+  });
+
+  acceptButton.addEventListener('click', async () => {
+    if (!checkbox.checked) return;
+    if (!currentUser) { await _ssAlert('No logged-in user!'); window.location.href = 'index.html'; return; }
+
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) { await _ssAlert('Session expired! Please login again.'); window.location.href = 'index.html'; return; }
+
+    try {
+      const res = await fetch("/accept-terms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({})
+      });
+      const result = await res.json();
+      if (!result.success) { await _ssAlert(result.message || "Failed to accept terms!"); return; }
+      currentUser.termsAccepted = true;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+      if (currentUser.role === "Founder") window.location.href = "founder-dashboard.html";
+      else window.location.href = "investor-dashboard.html";
+    } catch (err) {
+      console.error(err);
+      await _ssAlert("Error accepting terms!");
+    }
+  });
+</script>
+
+</body>
+</html>

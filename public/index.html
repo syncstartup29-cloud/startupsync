@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Startup Sync - Login/Signup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"/></noscript>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#F7F7F8; --card-bg:#FFFFFF; --input-bg:#F4F4F5; --input-border:#E4E4E7;
+      --text-primary:#111118; --text-secondary:#6B7280; --text-muted:#9CA3AF;
+      --accent:#111118; --accent-hover:#2d2d35; --border:#E4E4E7;
+      --success:#16A34A; --error:#DC2626; --radius:12px;
+      --font-h:'Sora',sans-serif; --font-b:'Inter',sans-serif;
+      --ease:cubic-bezier(0.4,0,0.2,1);
+      --shadow-card:0 4px 6px rgba(0,0,0,0.04),0 12px 40px rgba(0,0,0,0.08);
+    }
+    html { background:var(--bg); min-height:100%; font-family:var(--font-b); }
+    body { min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:1.5rem 1.25rem; background:var(--bg); overflow-x:hidden; overflow-y:auto; position:relative; color:var(--text-primary); -webkit-font-smoothing:antialiased; }
+    button, input, textarea, select { font-family:inherit; font-size:16px; }
+    .container { margin-top:auto; margin-bottom:auto; }
+    #particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .vignette { position:fixed; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse 85% 85% at 50% 50%,transparent 40%,rgba(240,240,242,0.55) 100%); }
+    .container { position:relative; z-index:10; width:100%; max-width:460px; background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); padding:2.75rem 2.5rem; box-shadow:var(--shadow-card); animation:cardIn 0.45s var(--ease) both; overflow:visible; animation:cardIn 0.45s var(--ease) both, borderLightning 3.5s ease-in-out infinite; }
+    .container::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#888 0%,#111118 50%,#888 100%); background-size:200% 100%; animation:accentSlide 4s ease-in-out infinite; border-radius:var(--radius) var(--radius) 0 0; }
+    @keyframes accentSlide { 0%{background-position:0% 0;} 50%{background-position:100% 0;} 100%{background-position:0% 0;} }
+    @keyframes cardIn { from{opacity:0;transform:translateY(18px) scale(0.97);} to{opacity:1;transform:translateY(0) scale(1);} }
+    .header { text-align:center; margin-bottom:1.8rem; position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; }
+    .logo { display:flex; align-items:center; justify-content:center; width:3.5rem; height:3.5rem; border-radius:50%; background:#111118; border:1.5px solid #333; margin:0 auto 1rem auto; flex-shrink:0; animation:logoGlow 4s ease-in-out infinite; }
+    @keyframes logoGlow { 0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0);border-color:#333;} 50%{box-shadow:0 0 0 6px rgba(0,0,0,0.12);border-color:#555;} }
+    .logo span { font-family:var(--font-h); font-size:1rem; font-weight:700; color:#fff; letter-spacing:0.04em; }
+    .header h1 { font-family:var(--font-h); font-size:1.15rem; font-weight:700; color:var(--text-primary); letter-spacing:0.06em; margin-bottom:0.4rem; line-height:1.2; }
+    .header h1 sup { font-size:0.42em; vertical-align:super; font-weight:600; color:var(--text-secondary); margin-left:1px; letter-spacing:0; }
+    .header p { font-size:0.72rem; color:var(--text-secondary); font-weight:400; letter-spacing:0.04em; font-family:var(--font-b); }
+    form { display:flex; flex-direction:column; gap:1.1rem; position:relative; z-index:2; }
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+    label { font-size:0.72rem; font-weight:600; color:var(--text-primary); letter-spacing:0.02em; font-family:var(--font-b); }
+    input { width:100%; padding:0.78rem 1rem; background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease),box-shadow 0.2s var(--ease),background 0.2s; appearance:none; -webkit-appearance:none; outline:none; -webkit-tap-highlight-color:transparent; }
+    input::placeholder { color:var(--text-muted); }
+    input:focus { background:#FFFFFF; border-color:var(--accent); box-shadow:0 0 0 3px rgba(17,17,24,0.1); color:var(--text-primary); }
+    select { width:100%; padding:0.78rem 2.6rem 0.78rem 1rem !important; background-color:var(--input-bg) !important; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important; background-repeat:no-repeat !important; background-position:right 1rem center !important; background-size:12px 7px !important; border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease),box-shadow 0.2s var(--ease); appearance:none !important; -webkit-appearance:none !important; -moz-appearance:none !important; outline:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    select:focus { background-color:#FFFFFF; border-color:var(--accent); box-shadow:0 0 0 3px rgba(17,17,24,0.1); }
+    select option { background:#FFFFFF; color:var(--text-primary); }
+    select option:checked { background:#f4f4f5; color:#111118; }
+    button { width:100%; padding:0.82rem 1rem; border:none; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; transition:transform 0.15s var(--ease),box-shadow 0.15s var(--ease),background 0.15s; position:relative; overflow:hidden; background:var(--accent); color:#FFFFFF; box-shadow:0 2px 8px rgba(0,0,0,0.2); appearance:none; -webkit-appearance:none; -webkit-tap-highlight-color:transparent; }
+    button::after { content:''; position:absolute; top:0; left:-110%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent); transition:left 0.45s var(--ease); transform:skewX(-15deg); }
+    button:hover::after { left:150%; }
+    button:hover { background:var(--accent-hover); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.32); }
+    button:active { transform:translateY(0); box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+    button:disabled { opacity:0.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+    .btn-sent { background:var(--input-bg) !important; color:var(--text-secondary) !important; border:1.5px solid var(--border) !important; box-shadow:none !important; }
+    .btn-sent:hover { transform:none !important; box-shadow:none !important; background:var(--input-bg) !important; }
+    .otp-banner { display:none; align-items:center; gap:9px; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:8px; padding:10px 14px; font-size:0.75rem; font-weight:500; color:#15803D; margin-top:6px; font-family:var(--font-b); animation:bannerIn 0.3s var(--ease); }
+    .otp-banner.show { display:flex; }
+    @keyframes bannerIn { from{opacity:0;transform:translateY(-6px);} to{opacity:1;transform:translateY(0);} }
+    .otp-banner svg { width:16px; height:16px; flex-shrink:0; color:#16A34A; }
+    .forgot-password-link { display:block; text-align:right; font-size:0.75rem; color:var(--accent); margin-top:0.6rem; text-decoration:none; font-family:var(--font-b); font-weight:500; transition:color 0.2s; position:relative; z-index:2; }
+    .forgot-password-link::after { content:''; display:block; height:1px; background:currentColor; transform:scaleX(0); transform-origin:right; transition:transform 0.25s var(--ease); }
+    .forgot-password-link:hover { color:var(--accent-hover); }
+    .forgot-password-link:hover::after { transform:scaleX(1); transform-origin:left; }
+    .hint { margin-top:5px; font-size:0.72rem; color:var(--text-secondary); line-height:1.5; font-family:var(--font-b); }
+    .hint b { color:var(--text-primary); font-weight:600; }
+    .password-wrapper { position:relative; }
+    .password-wrapper input { padding-right:3.2rem; }
+    .eye-btn { position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:0; color:var(--text-muted); width:auto; box-shadow:none; font-family:var(--font-b); font-size:0.68rem; font-weight:600; letter-spacing:0.04em; transition:color 0.2s; appearance:none; -webkit-appearance:none; }
+    .eye-btn:hover { color:var(--accent); transform:translateY(-50%); box-shadow:none; background:none; }
+    .eye-btn:hover::after { display:none; }
+    .eye-btn:active { transform:translateY(-50%); }
+    #toggleText { font-size:0.82rem; color:var(--text-secondary); font-weight:400; text-align:center; margin-top:0.1rem; font-family:var(--font-b); position:relative; z-index:2; }
+    #toggleText a { color:var(--accent); font-weight:600; text-decoration:none; transition:color 0.2s; }
+    #toggleText a:hover { color:var(--accent-hover); text-decoration:underline; }
+    .otp-actions { display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .login-footer { margin-top:0.15rem; }
+    @media(max-width:480px){ body{padding:1rem;} .container{padding:1.75rem 1.35rem;border-radius:10px;} form{gap:0.95rem;} button{padding:0.82rem;} .header h1{font-size:1rem;} }
+    @media(max-width:400px){ body{padding:0.75rem;} .container{padding:1.4rem 1.1rem;border-radius:10px;} .header h1{font-size:0.95rem;} label{font-size:0.7rem;} input{font-size:0.88rem;padding:0.7rem 0.85rem;} select{font-size:0.88rem;padding:0.7rem 2.4rem 0.7rem 0.85rem !important;} button{font-size:0.8rem;padding:0.78rem;} }
+    @media(max-width:360px){ body{padding:0.5rem;} .container{padding:1.2rem 1rem;} form{gap:0.8rem;} }
+    @media(max-height:600px) and (orientation:landscape){ body{padding:0.6rem;} .container{padding:1.2rem 1.5rem;} .logo{width:2.5rem;height:2.5rem;margin-bottom:0.5rem;} .header{margin-bottom:0.8rem;} form{gap:0.7rem;} }
+    @media(max-width:1024px){ .container{max-width:440px;} }
+    @media(min-width:768px){ .container{max-width:480px;padding:3rem 2.75rem;} }
+    @media(min-width:1200px){ .container{padding:3.25rem 3rem;} }
+  
+    /* ==SS-BW-START== */
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html{-webkit-text-size-adjust:100%;}
+    body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
+    input,select,textarea{font-size:max(16px,1em)!important;}
+    body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
+
+    /* Page Loader - shows on initial load only */
+    #ss-loader{position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .35s ease,visibility .35s ease;}
+    #ss-loader.ss-gone{opacity:0;visibility:hidden;pointer-events:none;}
+    #ss-loader .sll{width:52px;height:52px;border-radius:50%;background:#111118;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:ssLG 2s ease-in-out infinite;}
+    #ss-loader .sll span{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;color:#fff;letter-spacing:.04em;}
+    #ss-loader .sld{display:flex;gap:6px;}
+    #ss-loader .sld span{width:6px;height:6px;border-radius:50%;background:#111118;animation:ssLD 1.4s ease-in-out infinite;}
+    #ss-loader .sld span:nth-child(2){animation-delay:.2s;}
+    #ss-loader .sld span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssLG{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.1),0 2px 12px rgba(0,0,0,.2);}50%{box-shadow:0 0 0 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.32);}}
+    @keyframes ssLD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Nav - TM transparent, logo glow */
+    .top-nav{padding-top:env(safe-area-inset-top,0);}
+
+    /* Black glow on ALL primary buttons */
+    .btn-interested,.btn-accept,.btn-chat,.btn-go-connections,.btn-discover,.btn-unskip,
+    .btn-connect,.submit-btn,.btn-interested,.send-otp-btn,
+    button[type=submit]{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    @keyframes ssBtnG{0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.22);}50%{box-shadow:0 5px 24px rgba(0,0,0,.45),0 0 0 3px rgba(0,0,0,.07);}}
+
+    /* Index/login page - keep existing blue accent but add glow */
+    #submitBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    #confirmOtpBtn{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+
+    /* B&W on index/reset - card top accent white */
+    .container::before,.card::before{background:linear-gradient(90deg,#555 0%,#111 50%,#555 100%)!important;background-size:200% 100%!important;}
+
+    /* Discover cards */
+    .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:3px 3px 0 #111118,0 4px 12px rgba(0,0,0,.07)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
+    .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:5px 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
+    @keyframes ssCardIn{from{opacity:0;transform:translateY(18px) rotate(-1deg) scale(.97);}to{opacity:1;transform:translateY(0) rotate(0) scale(1);}}
+    .profile-grid .profile-card{animation:ssCardIn .4s cubic-bezier(.34,1.3,.64,1) both;}
+
+    /* Connected cards */
+    .connection-card{border:1px solid #e0e0e0!important;box-shadow:0 2px 12px rgba(0,0,0,.06)!important;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s!important;}
+    .connection-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#111118;border-radius:12px 12px 0 0;}
+    .connection-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 22px rgba(0,0,0,.11)!important;}
+
+    /* Skipped cards */
+    .profiles-list .profile-card{border:1px solid #e4e4e7!important;box-shadow:0 1px 6px rgba(0,0,0,.05)!important;opacity:.8;position:relative;overflow:hidden;transition:opacity .2s,transform .2s!important;}
+    .profiles-list .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#d1d1d1;border-radius:12px 12px 0 0;}
+    .profiles-list .profile-card:hover{opacity:1;transform:translateY(-1px)!important;}
+
+    /* Inbox cards */
+    .inbox-card{border:1px solid #e8e8e8!important;box-shadow:0 2px 10px rgba(0,0,0,.06)!important;transition:transform .18s,box-shadow .18s!important;}
+    .inbox-card:hover{transform:translateY(-2px)!important;box-shadow:0 6px 18px rgba(0,0,0,.1)!important;}
+
+    /* Role badges */
+    .role-badge.founder,.role-founder{background:#111118!important;color:#fff!important;border:1px solid #111118!important;}
+    .role-badge.investor,.role-investor{background:#fff!important;color:#111118!important;border:1px solid #111118!important;}
+    .connected-tag{background:#f0f0f0!important;border:1px solid #ddd!important;color:#111118!important;}
+    .avatar{border:2px solid #111118!important;}
+    .avatar-wrap{border:2px solid #111118!important;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #111118!important;}
+
+    /* Hide LinkedIn on cards */
+    .linkedin-link{display:none!important;}
+
+    /* Admin B&W */
+    .admin-header{background:#111118!important;color:#fff!important;}
+    .admin-table th{background:#111118!important;color:#fff!important;}
+
+    /* Founder/Investor dashboard - B&W form cards */
+    .card{box-shadow:0 4px 24px rgba(0,0,0,.08)!important;border:1px solid #e4e4e7!important;}
+    .save-btn,.btn-save{animation:ssBtnG 2.8s ease-in-out infinite!important;background:#111118!important;color:#fff!important;}
+
+    /* connections empty state */
+    #emptyState{position:relative;overflow:hidden;}
+    #emptyState canvas#ssEC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+    #emptyState .empty-inner{position:relative;z-index:1;}
+    #emptyState.ss-go{opacity:0;transition:opacity .4s ease;pointer-events:none;}
+    #emptyState.ss-gi{opacity:1;transition:opacity .4s ease;}
+    .ss-pills{display:flex;flex-direction:column;gap:8px;width:100%;max-width:260px;margin:1.25rem auto 0;}
+    .ss-pill{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;border:1px solid #ebebeb;background:#fafafa;animation:ssPI 3s ease-in-out infinite;}
+    .ss-pill:nth-child(2){animation-delay:.55s;}.ss-pill:nth-child(3){animation-delay:1.1s;}
+    @keyframes ssPI{0%,100%{opacity:.45;}50%{opacity:1;}}
+    .ss-pdot{width:7px;height:7px;border-radius:50%;background:#111118;flex-shrink:0;}
+    .ss-pdot.g{background:#ccc;}
+    .ss-pt{font-size:.72rem;font-weight:600;color:#333;flex:1;text-align:left;}
+    .ss-ps{font-size:.6rem;font-weight:700;color:#bbb;}
+    .ss-ps.live{color:#111118;}
+    .ss-pr{display:flex;align-items:center;gap:14px;justify-content:center;margin:1rem 0;}
+    .ss-pl-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,#ccc,transparent);}
+    .ss-pd{display:flex;gap:5px;}
+    .ss-pd span{width:5px;height:5px;border-radius:50%;background:#111118;animation:ssPD 1.5s ease-in-out infinite;}
+    .ss-pd span:nth-child(2){animation-delay:.2s;}.ss-pd span:nth-child(3){animation-delay:.4s;}
+    @keyframes ssPD{0%,80%,100%{transform:scale(.4);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+
+    /* Welcome mobile */
+    @media(max-width:768px){canvas#welcomeCanvas{display:none!important;}}
+
+    /* Safari */
+    @supports(-webkit-touch-callout:none){
+      .top-nav{position:-webkit-sticky;position:sticky;}
+      .mob-left-rail,.page-content,.ch-body,.users-list{-webkit-overflow-scrolling:touch;}
+    }
+    /* ==SS-BW-END== */
+
+  
+    /* B&W button glow */
+    button:not(.eye-btn):not(.toggle-password):not(.btn-sent) {
+      background: #111118 !important;
+      color: #fff !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+      animation: bwBtnGlow 2.8s ease-in-out infinite !important;
+    }
+    button:not(.eye-btn):not(.toggle-password):not(.btn-sent):hover {
+      background: #2d2d35 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.38) !important;
+    }
+    button:not(.eye-btn):not(.toggle-password):not(.btn-sent):active {
+      transform: translateY(0) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    }
+    @keyframes bwBtnGlow {
+      0%,100% { box-shadow: 0 2px 8px rgba(0,0,0,0.22); }
+      50% { box-shadow: 0 6px 24px rgba(0,0,0,0.45), 0 0 0 3px rgba(0,0,0,0.08); }
+    }
+    /* Container - static black glowing border */
+    .container, .card {
+      overflow: hidden !important;
+      border: 1.5px solid #111118 !important;
+      box-shadow: 0 0 12px rgba(17,17,24,0.45), 0 0 28px rgba(17,17,24,0.22), 0 0 48px rgba(17,17,24,0.1), 0 4px 24px rgba(0,0,0,0.1) !important;
+    }
+    .container::before, .card::before { display: none !important; }
+    .container > *, .card > * { position: relative; z-index: 2; }
+    /* STARTUP SYNC brand heading */
+    .brand-name-heading {
+      overflow: visible;
+      font-family: 'Sora', sans-serif !important;
+      font-size: clamp(1.1rem, 4vw, 1.35rem) !important;
+      font-weight: 800 !important;
+      color: #111118 !important;
+      letter-spacing: 0.1em !important;
+      margin-bottom: 0.2rem !important;
+      line-height: 1.1 !important;
+    }
+    .brand-tm {
+      font-size: 0.45em;
+      vertical-align: super;
+      font-weight: 700;
+      color: #333;
+      margin-left: 1px;
+    }
+
+  
+    /* ── Lightning border glow — breathing dim/high ── */
+    @keyframes borderLightning {
+      0%   { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0), 0 0 0px rgba(17,17,24,0.0); }
+      15%  { box-shadow: 0 0 8px 2px rgba(17,17,24,0.35), 0 0 20px rgba(17,17,24,0.12); }
+      25%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.08), 0 0 4px rgba(17,17,24,0.04); }
+      40%  { box-shadow: 0 0 18px 4px rgba(17,17,24,0.55), 0 0 40px rgba(17,17,24,0.18); }
+      55%  { box-shadow: 0 0 4px 1px rgba(17,17,24,0.12), 0 0 8px rgba(17,17,24,0.06); }
+      70%  { box-shadow: 0 0 12px 3px rgba(17,17,24,0.42), 0 0 28px rgba(17,17,24,0.14); }
+      85%  { box-shadow: 0 0 2px 0px rgba(17,17,24,0.06), 0 0 4px rgba(17,17,24,0.03); }
+      100% { box-shadow: 0 0 0px 0px rgba(17,17,24,0.0), 0 0 0px rgba(17,17,24,0.0); }
+    }
+
+  
+    /* form title small */
+    #form-title {
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.18em !important;
+      color: #111118 !important;
+      text-transform: uppercase !important;
+      margin-bottom: 0.1rem !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+
+  
+    .c-with-tm {
+      position: relative;
+      display: inline-block;
+    }
+
+  
+    /* ── Breathing room — container never touches edges ── */
+    @media(max-width:480px) {
+      body { padding: 0.85rem 0.75rem !important; }
+      .container { padding: 1.5rem 1.15rem !important; }
+    }
+    @media(max-width:400px) {
+      body { padding: 0.75rem 0.65rem !important; }
+      .container { padding: 1.3rem 1rem !important; }
+    }
+    @media(max-width:360px) {
+      body { padding: 0.6rem 0.55rem !important; }
+      .container { padding: 1.1rem 0.9rem !important; }
+    }
+    @media(min-width:768px) {
+      body { padding: 2rem 2rem !important; }
+    }
+    @media(min-width:1200px) {
+      body { padding: 2.5rem 3rem !important; }
+    }
+
+  
+  
+    /* ══ Universal TM — plain superscript, visible ══ */
+    .tm-circle,
+    .tm-circle-brand,
+    .nav-tm-circle,
+    .nav-logo-circle,
+    .mob-tm-circle,
+    .brand-tm {
+      display: inline !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      font-family: 'Sora', 'Inter', sans-serif !important;
+      font-size: 0.5em !important;
+      font-weight: 700 !important;
+      color: #111118 !important;
+      vertical-align: baseline !important;
+      position: relative !important;
+      top: -0.55em !important;
+      margin-left: -1px !important;
+      line-height: 1 !important;
+      padding: 0 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+
+  
+    /* Disable ss-loader — instant page show */
+    #ss-loader { display:none !important; }
+
+  
+    /* ══ MOBILE FIX: Lock header height — no collapse/shift ══ */
+    .top-nav {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 1000 !important;
+      background: #fff !important;
+      border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important;
+      flex-shrink: 0 !important;
+    }
+    .top-nav-inner {
+      display: flex !important;
+      align-items: center !important;
+      height: 60px !important;
+      min-height: 60px !important;
+      max-height: 60px !important;
+      padding: 0 20px !important;
+      gap: 4px !important;
+      overflow: visible !important;
+      -webkit-overflow-scrolling: unset !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+    }
+    /* Mobile nav — keep 60px on all screen sizes */
+    @media (max-width: 768px) {
+      .top-nav-inner {
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+        padding: 0 14px !important;
+        gap: 2px !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner {
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+        padding: 0 10px !important;
+        gap: 1px !important;
+      }
+    }
+    /* Fast touch response */
+    .nav-btn, button, a {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    /* Smooth scrolling on all pages */
+    html { -webkit-text-size-adjust: 100%; }
+    body { -webkit-overflow-scrolling: touch; }
+
+  
+    /* ══ UNIVERSAL FLEXIBLE HEADER FIX ══ */
+    .top-nav {
+      position: sticky !important; top: 0 !important; z-index: 1000 !important;
+      background: #fff !important; border-bottom: 1.5px solid #111118 !important;
+      width: 100% !important; flex-shrink: 0 !important;
+      padding-top: env(safe-area-inset-top, 0) !important;
+    }
+    .top-nav-inner {
+      display: flex !important; align-items: center !important;
+      min-height: 60px !important; max-height: none !important; height: auto !important;
+      padding: 0 clamp(10px, 3vw, 24px) !important;
+      gap: clamp(4px, 1.5vw, 12px) !important;
+      overflow: visible !important; box-sizing: border-box !important;
+      width: 100% !important; flex-wrap: nowrap !important;
+    }
+    @media (max-width: 768px) {
+      .top-nav-inner { min-height: 56px !important; padding: 0 clamp(8px, 2.5vw, 16px) !important; }
+    }
+    @media (max-width: 480px) {
+      .top-nav-inner { min-height: 52px !important; padding: 0 clamp(6px, 2vw, 12px) !important; }
+    }
+    @media (max-width: 360px) {
+      .top-nav-inner { min-height: 48px !important; padding: 0 8px !important; }
+    }
+    /* Nav avatar — flexible size, no glitch */
+    .nav-avatar {
+      opacity: 1 !important; flex-shrink: 0 !important;
+      overflow: hidden !important; cursor: pointer !important;
+    }
+    .nav-avatar img {
+      width: 100% !important; height: 100% !important;
+      border-radius: 50% !important; object-fit: cover !important;
+      object-position: center !important; display: block !important;
+    }
+    /* Touch performance */
+    button, a, .nav-btn, .sb-item, .mob-rail-btn {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    html { -webkit-text-size-adjust: 100% !important; }
+    body { -webkit-overflow-scrolling: touch; overflow-x: hidden !important; }
+
+    /* ═══ STARTUPSYNC™ HEADER — CANONICAL ═══ */
+    nav.top-nav .nav-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; letter-spacing:0.06em !important; white-space:nowrap !important; line-height:1.1 !important; }
+    nav.top-nav .nav-tagline { font-family:'Sora',sans-serif !important; font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; letter-spacing:0.01em !important; white-space:nowrap !important; }
+    @media(max-width:768px){ .mob-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; } .mob-brand-sub { font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; } }
+  
+    /* ═══ PERF: Mobile speed ═══ */
+    img { content-visibility:auto; }
+    .profile-card,.connection-card { contain:layout style; }
+  
+    /* ═══ MOBILE SMOOTHNESS ═══ */
+    @media (max-width: 768px) {
+      * { -webkit-tap-highlight-color: transparent; }
+      html { scroll-behavior: smooth; }
+      button, a, [role="button"] { min-height: 44px; touch-action: manipulation; }
+      input, textarea, select { font-size: 16px !important; }
+      img { max-width: 100%; height: auto; }
+    }
+  </style>
+
+<style id="ss-mobile-global-fix">
+/* ══ FIX 5: Global Mobile Responsiveness ══════════════════ */
+
+/* iOS fill-available height fix — prevents layout collapse when keyboard opens */
+html { height: -webkit-fill-available; }
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left:   env(safe-area-inset-left,   0);
+  padding-right:  env(safe-area-inset-right,  0);
+}
+
+/* Prevent iOS double-tap zoom and font size boost */
+html { -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+
+/* Prevent any input from causing horizontal scroll */
+input, textarea, select, button {
+  max-width: 100%;
+  font-size: max(16px, 1em) !important; /* prevents iOS auto-zoom */
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+/* Keep select arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='none' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1rem center !important;
+  background-size: 12px 7px !important;
+}
+
+/* Fix sticky nav on all pages */
+.top-nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  padding-top: env(safe-area-inset-top, 0) !important;
+}
+
+/* Fix nav avatar always visible */
+.nav-avatar {
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.nav-avatar img {
+  width: 100% !important; height: 100% !important;
+  border-radius: 50% !important; object-fit: cover !important;
+  display: block !important;
+}
+
+/* Chat input — stays above keyboard on iOS */
+.ch-input {
+  position: sticky !important;
+  bottom: 0 !important;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
+  background: #fff !important;
+  z-index: 10 !important;
+}
+
+/* Mobile left rail — safe area bottom */
+.mob-left-rail {
+  padding-bottom: env(safe-area-inset-bottom, 0) !important;
+}
+
+/* Prevent cards/grids from overflowing */
+.profile-grid, .connection-grid, .profiles-list {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Button tap target — min 44px height for iOS HIG */
+@media (max-width: 768px) {
+  .btn, .nav-btn, .mob-rail-btn, button {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+  }
+  /* Font scaling for small screens */
+  .page-header h2 { font-size: clamp(1.3rem, 5vw, 2rem) !important; }
+  .profile-name   { font-size: clamp(0.82rem, 2.5vw, 0.9rem) !important; }
+
+  /* Fix modal/overlay overflow on small screens */
+  .modalBox, .crop-panel {
+    width: min(92vw, 420px) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body { padding: 0.75rem 0.75rem !important; }
+  .card { padding: 1.1rem 0.9rem !important; }
+  .main-content { padding: 1rem 0.75rem !important; }
+}
+
+/* Fix horizontal overflow on all pages */
+*, *::before, *::after { box-sizing: border-box !important; }
+img { max-width: 100%; height: auto; }
+
+/* Fast touch response globally */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+/* ══ End FIX 5 ════════════════════════════════════════════ */
+</style>
+
+</head>
+<body>
+  <canvas id="particles"></canvas>
+  <div class="vignette"></div>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo"><span>SS</span></div>
+      <div class="brand-name-heading">STARTUP SYN<span class="c-with-tm">C<span class="tm-circle-brand">™</span></span></div>
+      <h1 id="form-title">LOGIN</h1>
+      <p style="font-size:0.72rem;color:#111118;letter-spacing:0.04em;font-weight:500;">Where Founders Meet Investors</p>
+    </div>
+
+    <form id="authForm" autocomplete="off">
+      <div class="form-group" id="name-group" style="display:none;">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" placeholder="John Doe" />
+      </div>
+      <div class="form-group" id="password-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="••••••••" required minlength="8"
+            pattern="(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}"
+            title="At least 8 chars, one uppercase, one special character (!@#$%^&*)" />
+          <button type="button" class="eye-btn" id="toggle-password" onclick="togglePassword()" aria-label="Toggle password">SHOW</button>
+        </div>
+      </div>
+      <div class="form-group" id="role-group" style="display:none;">
+        <label for="role">Role</label>
+        <select id="role">
+          <option value="Founder">Founder</option>
+          <option value="Investor">Investor</option>
+        </select>
+      </div>
+      <div class="form-group" id="email-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@gmail.com" required />
+        <button type="button" id="sendOtpBtn" style="display:none;">Send OTP</button>
+        <div class="otp-banner" id="otpSentBanner">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          OTP sent — check your Gmail inbox
+        </div>
+        <p id="otpTagline" class="hint" style="display:none;">
+          To resend OTP click <b>Send OTP</b> again
+        </p>
+      </div>
+      <div class="form-group" id="otp-group" style="display:none;">
+        <label for="otpInput">OTP Code</label>
+        <input type="text" id="otpInput" placeholder="Enter 6-digit OTP"
+          inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
+        <div class="otp-actions">
+          <button type="button" id="confirmOtpBtn">Confirm OTP</button>
+        </div>
+        <p class="hint" style="margin-top:10px;">Not seeing it? Check Spam / Promotions.</p>
+      </div>
+      <button type="submit" id="submitBtn">Login</button>
+      <p id="toggleText">Don't have an account? <a href="#" id="toggleLink">Sign up</a></p>
+    </form>
+
+    <div class="login-footer">
+      <a href="reset-password.html" id="forgotLink" class="forgot-password-link">Forgot password?</a>
+    </div>
+  </div>
+  <script>
+  // ── Auto-clear session on login page load ────────────────────────────────
+  // When user lands on index.html (after logout/redirect), immediately tell
+  // the server to clear activeSessionToken so next login has no conflict.
+  (function() {
+    // Only wipe local storage - do NOT call /logout here.
+    // Calling /logout on every index.html load was breaking the one-tab rule:
+    // when session-guard kicked an old tab and redirected to index.html,
+    // this code was wiping the NEW session token from the server too.
+    // Explicit /logout is only called from the Logout button.
+    try { sessionStorage.removeItem("token"); sessionStorage.removeItem("currentUser"); } catch(e) {}
+    try { localStorage.removeItem("token"); localStorage.removeItem("currentUser"); } catch(e) {}
+  })();
+  </script>
+  <script>
+// ── SS Session Guard — index.html ────────────────────────────────────────────
+// Rules:
+//   • Same account, 2 tabs/devices → BLOCK (server sessionConflict modal handles it)
+//   • Different accounts, different tabs → ALLOWED (keyed per userId)
+//   • Private tab → Socket.IO only (localStorage/BroadcastChannel not available)
+//   • Kicked out → animation shown then redirect to index.html
+
+window._ssInitGuard = function(userId) {
+  if (!userId || window._ssGuardRunning) return;
+  window._ssGuardRunning = true;
+
+  var myTabId    = Date.now() + "_" + Math.random().toString(36).slice(2);
+  var channelKey = "ss_tab_" + userId;   // scoped per userId → different accounts don't interfere
+  var storageKey = "ss_activetab_" + userId;
+
+  // ── Force-logout: show animation then redirect ───────────────────────────
+  window._showForceLogoutScreen = function() {
+    if (window._ssForceLogoutDone) return;
+    window._ssForceLogoutDone = true;
+    try { localStorage.removeItem("currentUser"); } catch(e) {}
+    try { localStorage.removeItem("token"); } catch(e) {}
+    try { sessionStorage.removeItem("currentUser"); } catch(e) {}
+    try { sessionStorage.removeItem("token"); } catch(e) {}
+    try { localStorage.removeItem(storageKey); } catch(e) {}
+    _ssShowKickedAnimation();
+  };
+
+  // ── BroadcastChannel: kick same-account tabs in same browser ─────────────
+  // Will silently fail in private tab (isolated storage) — that's fine,
+  // Socket.IO covers cross-tab kicks for private tabs via the server.
+  var bc;
+  try {
+    bc = new BroadcastChannel(channelKey);
+    bc.onmessage = function(e) {
+      if (e.data && e.data.type === "ss:takeover" && e.data.tabId !== myTabId) {
+        bc.close();
+        window._showForceLogoutScreen();
+      }
+    };
+    bc.postMessage({ type: "ss:takeover", tabId: myTabId });
+  } catch(e) {}
+
+  // ── localStorage fallback (Safari / iOS — no BroadcastChannel) ───────────
+  // Scoped to userId so two different accounts in two tabs don't kick each other.
+  try { localStorage.setItem(storageKey, myTabId); } catch(e) {}
+  window.addEventListener("storage", function(ev) {
+    if (ev.key === storageKey && ev.newValue && ev.newValue !== myTabId) {
+      window._showForceLogoutScreen();
+    }
+  });
+
+  // ── Tab close: clean up BroadcastChannel only, do NOT beacon-logout ───────
+  // We intentionally removed sendBeacon here.
+  // Beaconing /logout was clearing activeSessionToken on the server, which made
+  // the NEXT login always succeed silently (no conflict modal) — breaking the
+  // single-session rule. The server token stays alive until the user explicitly
+  // logs out or a new login/takeover invalidates it.
+  //
+  // ⚠️ IMPORTANT: Do NOT remove storageKey here.
+  // pagehide fires on BOTH tab close AND page navigation (e.g. redirect to connections.html).
+  // Removing storageKey on navigation was wiping the tab marker immediately after login,
+  // causing the second tab to see no active tab and bypass the conflict check entirely.
+  // storageKey is only cleaned up in _showForceLogoutScreen / _ssShowKickedAnimation (kicked)
+  // or when the BroadcastChannel takeover message is received (same-browser kick).
+  window.addEventListener("pagehide", function() {
+    try {
+      if (bc) { bc.close(); bc = null; }
+    } catch(e) {}
+  });
+};
+
+// NOTE: _ssInitGuard is NOT called on page load here — only called from finishLogin().
+// Calling it on load would fire ss:takeover and kick the already-logged-in tab
+// just because someone opened the login page.
+</script>
+  <script>
+  (function () {
+    const canvas = document.getElementById('particles');
+    if (!canvas) return;
+    // Performance detection: reduce animation on mobile/low-end devices
+    const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+    const isLowEnd = navigator.hardwareConcurrency <= 2 || (navigator.deviceMemory && navigator.deviceMemory <= 2);
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // On very low-end or reduced-motion, skip animation entirely — just show plain background
+    if (prefersReduced || (isMobile && isLowEnd)) { canvas.style.display='none'; return; }
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    // Reduce node count on mobile for performance
+    const NODE_COUNT = isMobile ? 22 : 55;
+    const CONNECT_DIST = isMobile ? 100 : 160;
+    const SPEED_MULT = isMobile ? 0.6 : 1;
+    function makeNodes() {
+      const cols = Math.ceil(Math.sqrt(NODE_COUNT * (W / H)));
+      const rows = Math.ceil(NODE_COUNT / cols);
+      const cellW = W / cols, cellH = H / rows, arr = [];
+      for (let i = 0; i < NODE_COUNT; i++) {
+        const col = i % cols, row = Math.floor(i / cols);
+        const x = cellW * col + cellW * 0.1 + Math.random() * cellW * 0.8;
+        const y = cellH * row + cellH * 0.1 + Math.random() * cellH * 0.8;
+        const angle = Math.random() * Math.PI * 2, speed = (0.25 + Math.random() * 0.35) * SPEED_MULT;
+        arr.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, r: Math.random()*1.4+0.5, phase: Math.random()*Math.PI*2 });
+      }
+      return arr;
+    }
+    let nodes = makeNodes();
+    window.addEventListener('resize', () => { nodes = makeNodes(); });
+    let lastTime = 0;
+    const TARGET_FPS = isMobile ? 30 : 60;
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+    function draw(timestamp) {
+      requestAnimationFrame(draw);
+      if (timestamp - lastTime < FRAME_INTERVAL) return;
+      lastTime = timestamp;
+      ctx.fillStyle = '#F7F7F8'; ctx.fillRect(0, 0, W, H);
+      nodes.forEach(n => { n.x += n.vx; n.y += n.vy; if(n.x<0||n.x>W) n.vx*=-1; if(n.y<0||n.y>H) n.vy*=-1; n.phase+=0.018; });
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i+1; j < nodes.length; j++) {
+          const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y, d=Math.sqrt(dx*dx+dy*dy);
+          if (d < CONNECT_DIST) {
+            ctx.beginPath(); ctx.moveTo(nodes[i].x,nodes[i].y); ctx.lineTo(nodes[j].x,nodes[j].y);
+            ctx.strokeStyle=`rgba(0,0,0,${(1-d/CONNECT_DIST)*0.1})`; ctx.lineWidth=0.7; ctx.stroke();
+          }
+        }
+      }
+      // Skip glow on mobile for performance
+      nodes.forEach(n => {
+        const pulse=0.5+0.5*Math.sin(n.phase), radius=n.r*(0.8+0.5*pulse), alpha=0.5+0.5*pulse;
+        if (!isMobile) {
+          const glow=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,radius*6);
+          glow.addColorStop(0,`rgba(0,0,0,${alpha*0.08})`); glow.addColorStop(1,'rgba(0,0,0,0)');
+          ctx.beginPath(); ctx.arc(n.x,n.y,radius*6,0,Math.PI*2); ctx.fillStyle=glow; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(n.x,n.y,radius,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,0,0,${alpha*0.15})`; ctx.fill();
+      });
+    }
+    requestAnimationFrame(draw);
+  })();
+  </script>
+
+  <script>
+    (function () {
+    function _(id){ return document.getElementById(id); }
+    function safeTrim(v){ return (v||"").toString().trim(); }
+    function focusIfExists(ids) {
+      for (const id of ids) { const el=document.getElementById(id); if(el){ el.focus(); el.style.boxShadow="0 0 0 3px rgba(239,68,68,0.4)"; setTimeout(()=>(el.style.boxShadow=""),1200); return true; } }
+      return false;
+    }
+    function showServerMessage(result){ _ssAlert((result&&(result.message||result.error))||"Something went wrong"); }
+    function isValidGmail(email){
+      var e=(email||"").toLowerCase().trim();
+      // Must be @gmail.com only
+      if(!/^[a-zA-Z0-9._%+\-]+@gmail\.com$/.test(e)) return false;
+      var local=e.split("@")[0];
+      if(local.length<2) return false;
+
+      // Block known spam/system locals
+      var SPAM_LOCALS=["noreply","no-reply","donotreply","do-not-reply","mailer-daemon","postmaster","admin","test","info","support","abuse","spam","fake","null","undefined","tempuser","throwaway"];
+      if(SPAM_LOCALS.includes(local)) return false;
+
+      // Block obviously fake patterns — random strings of numbers only
+      if(/^\d+$/.test(local) && local.length > 8) return false;
+
+      // Block consecutive dots or starting/ending with dot
+      if(/\.\./.test(local) || local.startsWith('.') || local.endsWith('.')) return false;
+
+      // Block patterns like aaa@gmail.com, aaaaaaaaaa (repeated chars > 6)
+      if(/^(.)\1{6,}$/.test(local)) return false;
+
+      // Block typical temp-email local patterns
+      var TEMP_PATTERNS=[/^temp/,/^trash/,/^junk/,/^spam/,/^fake/,/^discard/,/^throwaway/,/^mailinator/,/^guerrilla/,/^yopmail/];
+      for(var i=0;i<TEMP_PATTERNS.length;i++){
+        if(TEMP_PATTERNS[i].test(local)) return false;
+      }
+
+      return true;
+    }
+
+    // Extra check: show inline error if email looks suspicious
+    function getEmailError(email){
+      var e=(email||"").toLowerCase().trim();
+      if(!e) return "Email is required";
+      if(!e.endsWith("@gmail.com")) return "Only @gmail.com addresses are allowed";
+      if(!isValidGmail(e)) return "Please enter a real Gmail address";
+      return null;
+    }
+    function setCurrentUser(user){ localStorage.setItem("currentUser",JSON.stringify(user)); try{sessionStorage.setItem("currentUser",JSON.stringify(user));}catch(e){} }
+
+    const form=_("authForm"); if(!form) return;
+    const formTitle=_("form-title"), submitBtn=_("submitBtn"), nameGroup=_("name-group"),
+          passwordGroup=_("password-group"), roleGroup=_("role-group"), emailGroup=_("email-group"),
+          otpGroup=_("otp-group"), fullNameInput=_("fullName"), emailInput=_("email"),
+          passwordInput=_("password"), roleSelect=_("role"), otpInput=_("otpInput"),
+          sendOtpBtn=_("sendOtpBtn"), confirmOtpBtn=_("confirmOtpBtn"),
+          otpSentBanner=_("otpSentBanner"), otpTagline=_("otpTagline"),
+          toggleText=_("toggleText"), forgotPasswordLink=document.querySelector(".forgot-password-link");
+
+    const STATE_KEY="sc_auth_state_v5", DRAFT_KEY="sc_auth_draft_v5";
+    let isLogin=true, otpSent=false, otpSendingLock=false, otpBannerShownThisSession=false;
+
+    function loadState(){ try{ const s=JSON.parse(localStorage.getItem(STATE_KEY)||"{}"); isLogin=(s.mode==="signup")?false:true; otpSent=!!s.otpSent; }catch{} }
+    function saveState(){ try{ localStorage.setItem(STATE_KEY,JSON.stringify({mode:isLogin?"login":"signup",otpSent:!!otpSent})); }catch{} }
+    function loadDraft(){ try{ const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); if(fullNameInput) fullNameInput.value=d.fullName||""; if(emailInput) emailInput.value=d.email||""; if(roleSelect) roleSelect.value=d.role||"Founder"; }catch{} }
+    function saveDraft(){ try{ localStorage.setItem(DRAFT_KEY,JSON.stringify({fullName:fullNameInput?fullNameInput.value:"",email:emailInput?emailInput.value:"",role:roleSelect?roleSelect.value:"Founder"})); }catch{} }
+
+    async function sendOtp(email){
+      if(otpSendingLock) return false; otpSendingLock=true;
+      if(sendOtpBtn) sendOtpBtn.disabled=true;
+      try{ const res=await fetch("/auth/send-otp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})}); const data=await res.json(); if(!data?.success){showServerMessage(data);return false;} return true; }
+      catch(err){ _ssAlert("Server error while sending OTP."); return false; }
+      finally{ setTimeout(()=>{otpSendingLock=false;if(sendOtpBtn)sendOtpBtn.disabled=false;},500); }
+    }
+
+    async function verifyOtp(email,otp){
+      try{ const res=await fetch("/auth/verify-otp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,otp})}); const data=await res.json(); if(!data?.success){showServerMessage(data);return false;} return true; }
+      catch(err){ _ssAlert("Server error while verifying OTP."); return false; }
+    }
+
+    async function signupUser(payload){
+      try{ const res=await fetch("/signup",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); const result=await res.json(); if(!result?.success){showServerMessage(result);return null;} return result; }
+      catch(err){ _ssAlert("Server error during signup."); return null; }
+    }
+
+    function reorderGroups(){
+      const all=[nameGroup,emailGroup,passwordGroup,roleGroup,otpGroup].filter(Boolean);
+      all.forEach(g=>g.parentNode&&g.parentNode.removeChild(g));
+      if(isLogin){ form.insertBefore(emailGroup,submitBtn); form.insertBefore(passwordGroup,submitBtn); form.insertBefore(nameGroup,submitBtn); form.insertBefore(roleGroup,submitBtn); form.insertBefore(otpGroup,submitBtn); }
+      else{ form.insertBefore(nameGroup,submitBtn); form.insertBefore(passwordGroup,submitBtn); form.insertBefore(roleGroup,submitBtn); form.insertBefore(emailGroup,submitBtn); form.insertBefore(otpGroup,submitBtn); }
+    }
+
+    function hideOtpUI(){ otpSent=false; otpBannerShownThisSession=false; if(otpGroup) otpGroup.style.display="none"; if(otpSentBanner) otpSentBanner.classList.remove("show"); if(otpTagline) otpTagline.style.display="none"; if(otpInput) otpInput.value=""; }
+
+    function applyModeUI(){
+      reorderGroups();
+      if(isLogin){
+        if(formTitle) formTitle.innerHTML='LOGIN';
+        if(submitBtn) submitBtn.textContent="Login";
+        if(nameGroup) nameGroup.style.display="none"; if(roleGroup) roleGroup.style.display="none";
+        if(sendOtpBtn) sendOtpBtn.style.display="none"; if(otpSentBanner) otpSentBanner.classList.remove("show");
+        if(otpTagline) otpTagline.style.display="none"; if(otpGroup) otpGroup.style.display="none";
+        if(emailInput) emailInput.placeholder="you@gmail.com";
+        if(forgotPasswordLink) forgotPasswordLink.style.display="block";
+        hideOtpUI();
+        if(toggleText) toggleText.innerHTML=`Don't have an account? <a href="#" id="toggleLink">Sign up</a>`;
+      } else {
+        if(formTitle) formTitle.innerHTML='SIGN UP';
+        if(submitBtn) submitBtn.textContent="Signup";
+        if(nameGroup) nameGroup.style.display="flex"; if(roleGroup) roleGroup.style.display="flex";
+        if(sendOtpBtn) sendOtpBtn.style.display="block"; if(otpTagline) otpTagline.style.display="block";
+        if(otpSentBanner&&otpSent&&otpBannerShownThisSession) otpSentBanner.classList.add("show");
+        if(emailInput) emailInput.placeholder="Enter email to receive OTP";
+        if(otpGroup) otpGroup.style.display=otpSent?"flex":"none";
+        if(forgotPasswordLink) forgotPasswordLink.style.display="none";
+        if(toggleText) toggleText.innerHTML=`Already have an account? <a href="#" id="toggleLink">Login</a>`;
+      }
+      const toggleLink=document.getElementById("toggleLink");
+      if(toggleLink){ toggleLink.onclick=(e)=>{ e.preventDefault(); isLogin=!isLogin; if(isLogin) hideOtpUI(); saveState(); applyModeUI(); }; }
+    }
+
+    loadState(); loadDraft(); applyModeUI(); saveState();
+    if(fullNameInput) fullNameInput.addEventListener("input",saveDraft);
+    if(emailInput) emailInput.addEventListener("input",saveDraft);
+    if(roleSelect) roleSelect.addEventListener("change",saveDraft);
+
+    if(sendOtpBtn){ sendOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;} const ok=await sendOtp(email); if(!ok) return; otpSent=true; saveState(); if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);} if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
+
+    if(confirmOtpBtn){ confirmOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const fullName=safeTrim(fullNameInput?.value), password=passwordInput?.value||"", role=roleSelect?.value||"", email=safeTrim(emailInput?.value).toLowerCase(), otp=safeTrim(otpInput?.value); if(!fullName||!role||!email||!password){_ssAlert("Full name, role, email and password are required for signup.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters.");return;} if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(!otpSent){_ssAlert("Please click Send OTP first.");return;} if(!/^\d{6}$/.test(otp)){_ssAlert("Enter valid 6 digit OTP");focusIfExists(["otpInput"]);return;} const otpOk=await verifyOtp(email,otp); if(!otpOk) return; const signupResult=await signupUser({fullName,email,password,role}); if(!signupResult) return;
+      // ── Multi-account guard: only show modal if another account is ACTIVELY logged in on server ──
+      const _existing=(()=>{try{return JSON.parse(localStorage.getItem("currentUser")||"null");}catch{return null;}})();
+      const _existingToken=localStorage.getItem("token")||sessionStorage.getItem("token")||"";
+      if(_existing&&_existing._id&&_existingToken&&_existing._id!==signupResult.user._id){
+        try{
+          const _chk=await fetch("/session/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:_existingToken})});
+          const _chkData=await _chk.json();
+          if(_chkData.active){showSwitchAccountModal(signupResult,email,_existingToken);return;}
+        }catch{}
+        // Session not active on server — clear stale data silently and proceed
+        localStorage.removeItem("currentUser");localStorage.removeItem("token");
+        sessionStorage.removeItem("currentUser");sessionStorage.removeItem("token");
+      }
+      // Save token immediately after signup so terms page works
+      sessionStorage.setItem("token", signupResult.token);
+      try{ localStorage.setItem("token", signupResult.token); }catch(e){}
+      setCurrentUser(signupResult.user);
+      // ── Mark as new user for welcome page ──
+      localStorage.setItem("newUser_" + email, "true");
+      _ssAlert("✅ Signup successful! Please log in to continue."); isLogin=true; hideOtpUI(); saveState(); applyModeUI(); if(passwordInput) passwordInput.value=""; if(emailInput) emailInput.focus(); }); }
+
+    // ── Switch-account modal: a DIFFERENT user is already logged in ────────
+    function showSwitchAccountModal(signupResult, email, oldToken) {
+      if (!document.getElementById("switchAccountModal")) {
+        const overlay = document.createElement("div");
+        overlay.id = "switchAccountModal";
+        overlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px);";
+        overlay.innerHTML = `
+          <div style="background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:2.25rem 2rem;width:min(400px,94vw);box-shadow:0 32px 80px rgba(0,0,0,0.22);animation:_scSlideUp 0.35s cubic-bezier(0.4,0,0.2,1) both;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
+              <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <div style="font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:700;color:#0a0a0a;margin-bottom:0.45rem;">Another account is active</div>
+            <p style="font-size:0.78rem;color:#555;margin-bottom:1.6rem;line-height:1.75;font-family:'Inter',sans-serif;">A different account is currently logged in on this browser. What would you like to do?</p>
+            <div style="height:1px;background:#ebebeb;margin-bottom:1.25rem;"></div>
+            <div style="display:flex;gap:0.65rem;flex-direction:column;">
+              <button id="swSwitchBtn" style="width:100%;padding:0.8rem 1rem;border-radius:8px;border:none;background:#0a0a0a;color:#fff;font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.18s;">Use new account — log out existing</button>
+              <button id="swStayBtn" style="width:100%;padding:0.8rem 1rem;border-radius:8px;border:1px solid #ddd;background:#fafafa;color:#0a0a0a;font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.18s;">Stay logged in as existing account</button>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+      }
+      const overlay = document.getElementById("switchAccountModal");
+      overlay.style.display = "flex";
+
+      document.getElementById("swSwitchBtn").onclick = async () => {
+        overlay.style.display = "none";
+        // Force-logout old session on server + emit socket to other device in realtime
+        if (oldToken) await fetch("/session/force-logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: oldToken }) }).catch(() => {});
+        localStorage.removeItem("currentUser"); localStorage.removeItem("token");
+        sessionStorage.removeItem("currentUser"); sessionStorage.removeItem("token");
+        // Save new account
+        sessionStorage.setItem("token", signupResult.token);
+        try { localStorage.setItem("token", signupResult.token); } catch(e) {}
+        setCurrentUser(signupResult.user);
+        localStorage.setItem("newUser_" + email, "true");
+        _ssAlert("✅ Signup successful! Please log in to continue."); isLogin=true; hideOtpUI(); saveState(); applyModeUI(); if(passwordInput) passwordInput.value=""; if(emailInput) emailInput.focus();
+      };
+
+      document.getElementById("swStayBtn").onclick = () => {
+        overlay.style.display = "none";
+        // Discard the new signup session silently, keep existing user
+        fetch("/logout", { method: "POST", headers: { "Authorization": `Bearer ${signupResult.token}` } }).catch(() => {});
+      };
+    }
+
+    // ── Keyframes for takeover success screen ───────────────────────────────
+    if (!document.getElementById("_ssKfStyle2")) {
+      var s2 = document.createElement("style"); s2.id = "_ssKfStyle2";
+      s2.textContent = "@keyframes _ssFadeIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}";
+      document.head.appendChild(s2);
+    }
+
+    // ── 3s "Logging you in" animation shown to the TAKING-OVER device ──────
+    function _showTakeoverSuccessScreen(onDone) {
+      var ov = document.createElement("div");
+      ov.style.cssText = "position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:2147483647;font-family:'Sora',sans-serif;";
+      ov.innerHTML =
+        '<div style="display:flex;flex-direction:column;align-items:center;animation:_ssFadeIn 0.4s cubic-bezier(0.4,0,0.2,1) both;">' +
+          '<div style="font-size:0.62rem;font-weight:600;letter-spacing:0.16em;color:#aaa;text-transform:uppercase;margin-bottom:2rem;">StartupSync™</div>' +
+          '<div style="width:64px;height:64px;border-radius:50%;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;background:#f4f4f5;">' +
+            '<svg width="26" height="26" fill="none" stroke="#111118" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' +
+          '</div>' +
+          '<div style="font-size:1.05rem;font-weight:700;color:#111118;margin-bottom:0.45rem;letter-spacing:0.01em;text-align:center;">Logging you in…</div>' +
+          '<div style="font-size:0.74rem;color:#6B7280;text-align:center;max-width:240px;line-height:1.75;margin-bottom:2rem;">The other session has been signed out.</div>' +
+          '<div style="width:200px;height:2px;background:#e4e4e7;border-radius:2px;overflow:hidden;">' +
+            '<div id="_ssTakeoverBar" style="width:0%;height:100%;background:#111118;border-radius:2px;transition:width 3s linear;"></div>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          var bar = document.getElementById("_ssTakeoverBar");
+          if (bar) bar.style.width = "100%";
+        });
+      });
+      setTimeout(function() {
+        document.body.removeChild(ov);
+        onDone();
+      }, 3000);
+    }
+
+    // ── Session-conflict modal helper ───────────────────────
+    function showSessionConflictModal(userId, user, email) {
+      // Inject keyframes once
+      if (!document.getElementById("_scModalStyle")) {
+        var ms = document.createElement("style"); ms.id = "_scModalStyle";
+        ms.textContent =
+          "@keyframes _scSlideUp{from{opacity:0;transform:translateY(18px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}" +
+          "#sessionConflictModal .sc-btn-primary:hover{background:#222!important}" +
+          "#sessionConflictModal .sc-btn-secondary:hover{background:#f0f0f0!important}";
+        document.head.appendChild(ms);
+      }
+      // Build modal if not already present
+      if (!document.getElementById("sessionConflictModal")) {
+        const overlay = document.createElement("div");
+        overlay.id = "sessionConflictModal";
+        overlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px);";
+        overlay.innerHTML = `
+          <div style="background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:2.25rem 2rem;width:min(400px,94vw);box-shadow:0 32px 80px rgba(0,0,0,0.22);animation:_scSlideUp 0.35s cubic-bezier(0.4,0,0.2,1) both;">
+            <!-- Icon -->
+            <div style="width:48px;height:48px;border-radius:50%;background:#0a0a0a;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
+              <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <!-- Title -->
+            <div style="font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:700;color:#0a0a0a;margin-bottom:0.45rem;letter-spacing:0.01em;">Your account is logged in somewhere else</div>
+            <!-- Subtitle -->
+            <p style="font-size:0.78rem;color:#555;margin-bottom:1.6rem;line-height:1.75;font-family:'Inter',sans-serif;">An active session was found on another device or tab. Choose what to do next.</p>
+            <!-- Divider -->
+            <div style="height:1px;background:#ebebeb;margin-bottom:1.25rem;"></div>
+            <div style="display:flex;gap:0.65rem;flex-direction:column;">
+              <button id="scTakeoverBtn" class="sc-btn-primary" style="width:100%;padding:0.8rem 1rem;border-radius:8px;border:none;background:#0a0a0a;color:#fff;font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.18s;">
+                Login from this device
+              </button>
+              <button id="scCancelBtn" class="sc-btn-secondary" style="width:100%;padding:0.8rem 1rem;border-radius:8px;border:1px solid #ddd;background:#fafafa;color:#0a0a0a;font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.18s;">
+                Cancel
+              </button>
+              <p id="scErrorMsg" style="display:none;font-size:0.7rem;color:#c00;text-align:center;font-family:'Inter',sans-serif;margin-top:2px;"></p>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+      }
+      const overlay = document.getElementById("sessionConflictModal");
+      // ── Reset modal state so re-opening is always clean ──
+      var _errEl = document.getElementById("scErrorMsg");
+      if (_errEl) _errEl.style.display = "none";
+      var _takeBtn = document.getElementById("scTakeoverBtn");
+      if (_takeBtn) { _takeBtn.textContent = "Login from this device"; _takeBtn.disabled = false; }
+      overlay.style.display = "flex";
+
+      document.getElementById("scTakeoverBtn").onclick = async () => {
+        window._takingOver = true;
+        const btn = document.getElementById("scTakeoverBtn");
+        const errEl = document.getElementById("scErrorMsg");
+        if (btn) { btn.textContent = "Logging in…"; btn.disabled = true; }
+        try {
+          // Disconnect the conflict socket so this device won't kick itself
+          if (window._ssSocket) { try { window._ssSocket.disconnect(); } catch(e) {} window._ssSocket = null; window._ssSocketRunning = false; }
+
+          overlay.style.display = "none";
+
+          // Force login instantly — no permission needed, old device gets kicked automatically
+          const res = await fetch("/login/force", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
+          const result = await res.json();
+
+          if (!result?.success) {
+            window._takingOver = false;
+            overlay.style.display = "flex";
+            if (btn) { btn.textContent = "Login from this device"; btn.disabled = false; }
+            if (errEl) { errEl.textContent = result?.message || "Failed. Please try again."; errEl.style.display = "block"; }
+            return;
+          }
+          // Show success animation then complete login
+          _showTakeoverSuccessScreen(function() {
+            finishLogin(result.token, result.user, email);
+          });
+        } catch(e) {
+          window._takingOver = false;
+          overlay.style.display = "flex";
+          if (btn) { btn.textContent = "Login from this device"; btn.disabled = false; }
+          if (errEl) { errEl.textContent = "Server error. Please try again."; errEl.style.display = "block"; }
+        }
+      };
+
+      document.getElementById("scCancelBtn").onclick = () => {
+        overlay.style.display = "none";
+        window._takingOver = false;
+        // Reset submit button so user can try logging in again cleanly
+        var sb = document.getElementById("submitBtn");
+        if (sb) { sb.disabled = false; sb.textContent = "Login"; }
+        // Disconnect the conflict socket — new device stays logged out
+        if (window._ssSocket) { try { window._ssSocket.disconnect(); } catch(e) {} window._ssSocket = null; window._ssSocketRunning = false; }
+      };
+    }
+
+    function finishLogin(token, user, email) {
+      if (user.role === "Investor" && user.investorProfile) { user.investorProfile.photo = user.investorProfile.photo || ""; }
+      if (user.role === "Founder" && user.founderProfile) { user.founderProfile.photo = user.founderProfile.photo || ""; localStorage.setItem("profilePhoto", user.founderProfile.photo || ""); try { sessionStorage.setItem("profilePhoto", user.founderProfile.photo || ""); } catch(e) {} }
+      sessionStorage.setItem("token", token);
+      try { localStorage.setItem("token", token); } catch(e) {}
+      setCurrentUser(user);
+      // ── Start session guard NOW — kicks any other open tab immediately ──
+      // Reset flags so _ssInitGuard always runs fresh on login (not skipped by stale state)
+      if (user._id) { window._ssGuardRunning = false; window._ssForceLogoutDone = false; window._ssInitGuard(user._id.toString()); window._ssInitSocket(user._id.toString(), true); }
+      if (localStorage.getItem("newUser_" + email) === "true") { localStorage.removeItem("newUser_" + email); window.location.href = "welcome.html"; return; }
+      if (!user.termsAccepted) { window.location.href = "terms.html"; return; }
+      const founderDone = user.role === "Founder" && user.founderProfile?.startupName;
+      const investorDone = user.role === "Investor" && user.investorProfile?.investmentFocus;
+      if (!(founderDone || investorDone)) { window.location.href = (user.role === "Founder") ? "founder-dashboard.html" : "investor-dashboard.html"; return; }
+      window.location.href = "connections.html";
+    }
+
+    form.addEventListener("submit",async(e)=>{ e.preventDefault(); const email=safeTrim(emailInput?.value).toLowerCase(), password=passwordInput?.value||""; if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(isLogin){ if(!email||!password){_ssAlert("Email and password are required.");return;} try{ const res=await fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})}); const result=await res.json();
+      // ── Session conflict: another device is logged in ──
+      if(result?.sessionConflict){
+        // Connect with listenForKick=false: joins the room so server can find OLD device, but new device will NOT self-kick
+        if (window._ssInitSocket) window._ssInitSocket(result.userId, false);
+        showSessionConflictModal(result.userId, result.user, email);
+        return;
+      }
+      if(!result?.success){showServerMessage(result);return;} finishLogin(result.token, result.user, email); }catch(err){_ssAlert("Server error. Please try again.");} return; } _ssAlert("Please use Confirm OTP to complete signup."); });
+  })();
+  </script>
+  <script>
+  function togglePassword(){
+    const input=document.getElementById("password"), btn=document.getElementById("toggle-password");
+    if(input.type==="password"){input.type="text";btn.textContent="HIDE";}
+    else{input.type="password";btn.textContent="SHOW";}
+  }
+  </script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  SHARED KICKED-OUT ANIMATION
+  //  Used by both _ssInitGuard (normal tab) and _ssInitSocket
+  //  (incognito tab where _ssInitGuard may never have run).
+  //  Self-contained: wipes both storages itself before animating.
+  // ══════════════════════════════════════════════════════════
+  window._ssShowKickedAnimation = function() {
+    // Wipe auth from both storages (safe even if localStorage blocked in incognito)
+    try { localStorage.removeItem("currentUser"); } catch(e) {}
+    try { localStorage.removeItem("token"); } catch(e) {}
+    try { sessionStorage.removeItem("currentUser"); } catch(e) {}
+    try { sessionStorage.removeItem("token"); } catch(e) {}
+
+    // Inject keyframes immediately — before any rAF so animation works on first paint
+    if (!document.getElementById("_ssKfStyle")) {
+      var kfStyle = document.createElement("style");
+      kfStyle.id = "_ssKfStyle";
+      kfStyle.textContent =
+        "@keyframes _ssFadeIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}" +
+        "@keyframes _ssPulseRing{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0.08)}50%{box-shadow:0 0 0 10px rgba(0,0,0,0)}}";
+      document.head.appendChild(kfStyle);
+    }
+    var ov = document.createElement("div");
+    ov.style.cssText = "position:fixed;inset:0;background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2147483647;font-family:'Sora',sans-serif;padding:1.5rem;box-sizing:border-box;";
+    ov.innerHTML =
+      '<div style="display:flex;flex-direction:column;align-items:center;animation:_ssFadeIn 0.4s cubic-bezier(0.4,0,0.2,1) both;width:100%;max-width:340px;">' +
+        '<div style="font-size:0.62rem;font-weight:600;letter-spacing:0.16em;color:#aaa;text-transform:uppercase;margin-bottom:2rem;">StartupSync™</div>' +
+        '<div style="width:72px;height:72px;border-radius:50%;border:1.5px solid #e4e4e7;display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;background:#f4f4f5;animation:_ssPulseRing 2.5s ease-in-out infinite;flex-shrink:0;">' +
+          '<svg width="28" height="28" fill="none" stroke="#DC2626" stroke-width="1.6" viewBox="0 0 24 24" style="width:28px;height:28px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>' +
+        '</div>' +
+        '<div style="font-size:1.1rem;font-weight:700;color:#111118;margin-bottom:0.6rem;letter-spacing:0.01em;text-align:center;line-height:1.4;">Your account was logged in<br>somewhere else</div>' +
+        '<div style="font-size:0.76rem;color:#6B7280;text-align:center;max-width:270px;line-height:1.75;margin-bottom:2.25rem;">This session has been ended.<br>Redirecting you to login…</div>' +
+        '<div style="width:200px;height:2px;background:#e4e4e7;border-radius:2px;overflow:hidden;">' +
+          '<div id="_ssBar" style="width:0%;height:100%;background:#DC2626;border-radius:2px;transition:width 3s linear;"></div>' +
+        '</div>' +
+        '<div style="margin-top:0.85rem;font-size:0.65rem;color:#9CA3AF;letter-spacing:0.06em;">3 seconds</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    // Two rAF ticks ensure the browser has painted the overlay before starting the bar transition
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        var bar = document.getElementById("_ssBar");
+        if (bar) bar.style.width = "100%";
+      });
+    });
+    setTimeout(function() { window.location.href = "index.html"; }, 3200);
+  };
+
+  // ══════════════════════════════════════════════════════════
+  //  SESSION SOCKET — single-session enforcement via Socket.IO
+  //  Rules:
+  //    _ssInitSocket(userId, true)  = real logged-in session → listens for kick
+  //    _ssInitSocket(userId, false) = conflict probe only    → does NOT self-kick
+  //
+  //  Incognito-safe: the forceLogout handler calls _ssShowKickedAnimation()
+  //  directly — it does NOT rely on _showForceLogoutScreen being defined,
+  //  which only exists after _ssInitGuard runs (which needs localStorage).
+  // ══════════════════════════════════════════════════════════
+  window._ssInitSocket = function(userId, listenForKick) {
+    if (!userId) return;
+    // Destroy previous socket first
+    if (window._ssSocket) {
+      try { window._ssSocket.disconnect(); } catch(e) {}
+      window._ssSocket = null;
+      window._ssSocketRunning = false;
+    }
+    window._ssSocketRunning = true;
+    window._ssSocketUserId = userId;
+    try {
+      var socket = window.io({ auth: { userId: userId }, transports: ["websocket", "polling"] });
+      window._ssSocket = socket;
+      if (listenForKick === true) {
+        socket.on("auth:forceLogout", function(payload) {
+          // Ignore if WE are the one doing the takeover
+          if (window._takingOver) return;
+          // Ignore if the newToken matches our own token (we are the new session)
+          // Check sessionStorage FIRST — that's the only storage available in incognito
+          var myToken = "";
+          try { myToken = sessionStorage.getItem("token") || ""; } catch(e) {}
+          try { if (!myToken) myToken = localStorage.getItem("token") || ""; } catch(e) {}
+          if (payload && payload.newToken && myToken && payload.newToken === myToken) return;
+          // We are the OLD session being kicked — show animation
+          // Use the shared helper directly (works in both normal + incognito tabs)
+          if (window._ssForceLogoutDone) return;
+          window._ssForceLogoutDone = true;
+          window._ssShowKickedAnimation();
+        });
+      }
+    } catch(e) { console.error("Socket init error:", e); }
+  };
+
+  // If already logged in on page load (e.g. user hit back button) → start listening.
+  // sessionStorage checked FIRST so incognito tabs (no localStorage) are picked up.
+  (function() {
+    try {
+      var stored = "";
+      try { stored = sessionStorage.getItem("currentUser") || ""; } catch(e) {}
+      try { if (!stored) stored = localStorage.getItem("currentUser") || ""; } catch(e) {}
+      var cu = JSON.parse(stored || "null");
+      if (cu && cu._id) window._ssInitSocket(cu._id.toString(), true);
+    } catch(e) {}
+  })();
+  </script>
+  <script src="/custom-ui.js"></script>
+
+<script>
+// Clear logout flag on login page load
+(function(){
+  try {
+    localStorage.removeItem('_ss_loggingOut');
+    sessionStorage.removeItem('_ss_loggingOut');
+  } catch(e) {}
+})();
+
+  // ── Inline toast (replaces native alert) ──
+  function _ssAlert(msg){ 
+    var t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111118;color:#fff;padding:10px 20px;border-radius:10px;font-family:Sora,sans-serif;font-size:0.8rem;font-weight:600;z-index:2147483647;box-shadow:0 4px 20px rgba(0,0,0,0.25);max-width:90vw;text-align:center;';
+    document.body.appendChild(t);
+    setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},3000);
+  }
+
+  function _ssAlert(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111118;color:#fff;padding:10px 20px;border-radius:10px;font-family:Sora,sans-serif;font-size:.8rem;font-weight:600;z-index:2147483647;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center;';document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},3000);}
+</script>
+</body>
+</html>
