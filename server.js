@@ -165,15 +165,22 @@ mongoose.connect(process.env.MONGO_URI, {
   });
 
 // ── Email transporter ─────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const sendEmail = async (to, subject, html) => {
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: "StartupSync", email: "syncstartup29@gmail.com" },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html,
+    }),
+  });
+  return response.json();
+};
 // ── Rate Limiters ─────────────────────────────────────────
 // OTP limiter — max 5 OTP requests per IP per 10 minutes
 const otpLimiter = rateLimit({
