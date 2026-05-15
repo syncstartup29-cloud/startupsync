@@ -166,13 +166,14 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ── Email transporter ─────────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-  tls: {
-    rejectUnauthorized: false,
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
-
 // ── Rate Limiters ─────────────────────────────────────────
 // OTP limiter — max 5 OTP requests per IP per 10 minutes
 const otpLimiter = rateLimit({
