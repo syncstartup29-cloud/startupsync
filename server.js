@@ -156,7 +156,7 @@ mongoose.connect(process.env.MONGO_URI, {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
-  bufferCommands: false,createTransport
+  bufferCommands: false,
 })
   .then(async () => { console.log("✅ MongoDB Connected"); await ensureIndexes(); })
   .catch((err) => {
