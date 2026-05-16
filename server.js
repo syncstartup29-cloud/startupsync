@@ -402,7 +402,7 @@ io.use((socket, next) => {
   if (!token) return next(new Error("Token required"));
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.userId !== userId) return next(new Error("Token mismatch"));
+    if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
   } catch {
     return next(new Error("Invalid or expired token"));
   }
