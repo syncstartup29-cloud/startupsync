@@ -71,20 +71,6 @@
     .eye-btn:hover { color:var(--accent); transform:translateY(-50%); box-shadow:none; background:none; }
     .eye-btn:hover::after { display:none; }
     .eye-btn:active { transform:translateY(-50%); }
-    /* ✅ Password Strength Meter */
-    .pwd-strength-wrap { margin-top:6px; display:none; }
-    .pwd-strength-bar { height:4px; border-radius:4px; background:#E4E4E7; overflow:hidden; margin-bottom:4px; }
-    .pwd-strength-fill { height:100%; width:0%; border-radius:4px; transition:width 0.3s, background 0.3s; }
-    .pwd-strength-label { font-size:0.65rem; font-weight:600; color:#6B7280; }
-    .pwd-strength-fill.weak { background:#EF4444; width:33%; }
-    .pwd-strength-fill.medium { background:#F59E0B; width:66%; }
-    .pwd-strength-fill.strong { background:#22C55E; width:100%; }
-    .pwd-strength-label.weak { color:#EF4444; }
-    .pwd-strength-label.medium { color:#F59E0B; }
-    .pwd-strength-label.strong { color:#22C55E; }
-    /* ✅ Force reset banner */
-    .force-reset-banner { display:none; background:#FEF2F2; border:1.5px solid #FECACA; border-radius:8px; padding:10px 14px; font-size:0.78rem; color:#B91C1C; margin-top:8px; line-height:1.6; text-align:center; }
-    .force-reset-banner a { color:#B91C1C; font-weight:700; text-decoration:underline; cursor:pointer; }
     #toggleText { font-size:0.82rem; color:var(--text-secondary); font-weight:400; text-align:center; margin-top:0.1rem; font-family:var(--font-b); position:relative; z-index:2; }
     #toggleText a { color:var(--accent); font-weight:600; text-decoration:none; transition:color 0.2s; }
     #toggleText a:hover { color:var(--accent-hover); text-decoration:underline; }
@@ -591,16 +577,6 @@ a, button, [role="button"] {
             title="At least 8 chars, one uppercase, one special character (!@#$%^&*)" />
           <button type="button" class="eye-btn" id="toggle-password" onclick="togglePassword()" aria-label="Toggle password">SHOW</button>
         </div>
-        <!-- ✅ Password Strength Meter — only shown on signup -->
-        <div class="pwd-strength-wrap" id="pwdStrengthWrap">
-          <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwdStrengthFill"></div></div>
-          <span class="pwd-strength-label" id="pwdStrengthLabel">Weak</span>
-        </div>
-        <!-- ✅ Force reset banner — shown when weak password detected on login -->
-        <div class="force-reset-banner" id="forceResetBanner">
-          ⚠️ Your password doesn't meet security requirements.<br>
-          <a onclick="window.location.href='reset-password.html'">Reset your password</a> to continue.
-        </div>
       </div>
       <div class="form-group" id="role-group" style="display:none;">
         <label for="role">Role</label>
@@ -857,34 +833,6 @@ window._ssInitGuard = function(userId) {
     const STATE_KEY="sc_auth_state_v5", DRAFT_KEY="sc_auth_draft_v5";
     let isLogin=true, otpSent=false, otpSendingLock=false, otpBannerShownThisSession=false;
 
-    // ✅ PASSWORD STRENGTH METER
-    function checkPasswordStrength(pwd){
-      const wrap = _("pwdStrengthWrap");
-      const fill  = _("pwdStrengthFill");
-      const label = _("pwdStrengthLabel");
-      if(!wrap||!fill||!label) return;
-      if(!pwd){ wrap.style.display='none'; return; }
-      wrap.style.display='block';
-      const hasLen     = pwd.length >= 8;
-      const hasLetter  = /[a-zA-Z]/.test(pwd);
-      const hasNumber  = /[0-9]/.test(pwd);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
-      const score = [hasLen, hasLetter, hasNumber, hasSpecial].filter(Boolean).length;
-      fill.className = 'pwd-strength-fill';
-      label.className = 'pwd-strength-label';
-      if(score <= 2){ fill.classList.add('weak'); label.classList.add('weak'); label.textContent='Weak'; }
-      else if(score === 3){ fill.classList.add('medium'); label.classList.add('medium'); label.textContent='Medium'; }
-      else { fill.classList.add('strong'); label.classList.add('strong'); label.textContent='Strong ✓'; }
-    }
-
-    // Show/hide strength meter based on login/signup mode
-    function updateStrengthMeterVisibility(){
-      const wrap = _("pwdStrengthWrap");
-      if(wrap) wrap.style.display = isLogin ? 'none' : (passwordInput?.value ? 'block' : 'none');
-      const banner = _("forceResetBanner");
-      if(banner) banner.style.display = 'none';
-    }
-
     function loadState(){ try{ const s=JSON.parse(localStorage.getItem(STATE_KEY)||"{}"); isLogin=(s.mode==="signup")?false:true; otpSent=!!s.otpSent; }catch{} }
     function saveState(){ try{ localStorage.setItem(STATE_KEY,JSON.stringify({mode:isLogin?"login":"signup",otpSent:!!otpSent})); }catch{} }
     function loadDraft(){ try{ const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); if(fullNameInput) fullNameInput.value=d.fullName||""; if(emailInput) emailInput.value=d.email||""; if(roleSelect) roleSelect.value=d.role||"Founder"; }catch{} }
@@ -896,14 +844,6 @@ window._ssInitGuard = function(userId) {
       try{ const res=await fetch("/auth/send-otp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})}); const data=await res.json(); if(!data?.success){showServerMessage(data);return false;} return true; }
       catch(err){ _ssAlert("Server error while sending OTP."); return false; }
       finally{ setTimeout(()=>{otpSendingLock=false;if(sendOtpBtn)sendOtpBtn.disabled=false;},500); }
-    }
-
-    // ✅ Password input listener — show strength meter on signup
-    if(passwordInput){
-      passwordInput.addEventListener('input', function(){
-        if(!isLogin) checkPasswordStrength(this.value);
-        else { const wrap=_("pwdStrengthWrap"); if(wrap) wrap.style.display='none'; }
-      });
     }
 
     async function verifyOtp(email,otp){
@@ -949,7 +889,7 @@ window._ssInitGuard = function(userId) {
         if(toggleText) toggleText.innerHTML=`Already have an account? <a href="#" id="toggleLink">Login</a>`;
       }
       const toggleLink=document.getElementById("toggleLink");
-      if(toggleLink){ toggleLink.onclick=(e)=>{ e.preventDefault(); isLogin=!isLogin; if(isLogin) hideOtpUI(); saveState(); applyModeUI(); updateStrengthMeterVisibility(); if(passwordInput) passwordInput.value=''; const wrap=_("pwdStrengthWrap"); if(wrap) wrap.style.display='none'; }; }
+      if(toggleLink){ toggleLink.onclick=(e)=>{ e.preventDefault(); isLogin=!isLogin; if(isLogin) hideOtpUI(); saveState(); applyModeUI(); }; }
     }
 
     loadState(); loadDraft(); applyModeUI(); saveState();
@@ -957,7 +897,15 @@ window._ssInitGuard = function(userId) {
     if(emailInput) emailInput.addEventListener("input",saveDraft);
     if(roleSelect) roleSelect.addEventListener("change",saveDraft);
 
-    if(sendOtpBtn){ sendOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;} const ok=await sendOtp(email); if(!ok) return; otpSent=true; saveState(); if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);} if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
+    if(sendOtpBtn){ sendOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return;
+      // ✅ FIX: Validate password BEFORE sending OTP
+      const pwd=passwordInput?.value||"";
+      if(!pwd){_ssAlert("Please enter a password first.");return;}
+      if(pwd.length<8){_ssAlert("Password must be at least 8 characters.");return;}
+      if(!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;}
+      if(!/[0-9]/.test(pwd)){_ssAlert("Password must include at least one number.");return;}
+      if(!/[a-zA-Z]/.test(pwd)){_ssAlert("Password must include at least one letter.");return;}
+      const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;} const ok=await sendOtp(email); if(!ok) return; otpSent=true; saveState(); if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);} if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
 
     if(confirmOtpBtn){ confirmOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const fullName=safeTrim(fullNameInput?.value), password=passwordInput?.value||"", role=roleSelect?.value||"", email=safeTrim(emailInput?.value).toLowerCase(), otp=safeTrim(otpInput?.value); if(!fullName||!role||!email||!password){_ssAlert("Full name, role, email and password are required for signup.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters and include a letter, number and special character.");return;} if(!/[!@#$%^&*(),.?":{}|<>]/.test(password)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;} if(!/[0-9]/.test(password)){_ssAlert("Password must include at least one number.");return;} if(!/[a-zA-Z]/.test(password)){_ssAlert("Password must include at least one letter.");return;} if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(!otpSent){_ssAlert("Please click Send OTP first.");return;} if(!/^\d{6}$/.test(otp)){_ssAlert("Enter valid 6 digit OTP");focusIfExists(["otpInput"]);return;} const otpOk=await verifyOtp(email,otp); if(!otpOk) return; const signupResult=await signupUser({fullName,email,password,role}); if(!signupResult) return;
       // ── Multi-account guard: only show modal if another account is ACTIVELY logged in on server ──
@@ -1172,17 +1120,7 @@ window._ssInitGuard = function(userId) {
       window.location.href = "connections.html";
     }
 
-    form.addEventListener("submit",async(e)=>{ e.preventDefault(); const email=safeTrim(emailInput?.value).toLowerCase(), password=passwordInput?.value||""; if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;}  if(isLogin){ if(!email||!password){_ssAlert("Email and password are required.");return;}
-      // ✅ FIX: Check password strength on login — show warning banner but allow if existing user
-      const isWeakPassword = password.length<8 || !/[!@#$%^&*(),.?":{}|<>]/.test(password) || !/[0-9]/.test(password) || !/[a-zA-Z]/.test(password);
-      if(isWeakPassword){
-        const banner = _("forceResetBanner");
-        if(banner) banner.style.display = 'block';
-        _ssAlert("⚠️ Weak password detected! Please reset your password for security.");
-        return;
-      }
-      if(_("forceResetBanner")) _("forceResetBanner").style.display = 'none';
-      try{ const res=await fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})}); const result=await res.json();
+    form.addEventListener("submit",async(e)=>{ e.preventDefault(); const email=safeTrim(emailInput?.value).toLowerCase(), password=passwordInput?.value||""; if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;}  if(isLogin){ if(!email||!password){_ssAlert("Email and password are required.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters and include a letter, number and special character.");return;} if(!/[!@#$%^&*(),.?":{}|<>]/.test(password)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;} if(!/[0-9]/.test(password)){_ssAlert("Password must include at least one number.");return;} if(!/[a-zA-Z]/.test(password)){_ssAlert("Password must include at least one letter.");return;}try{ const res=await fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})}); const result=await res.json();
       // ── Session conflict: another device is logged in ──
       if(result?.sessionConflict){
         // Connect with listenForKick=false: joins the room so server can find OLD device, but new device will NOT self-kick
