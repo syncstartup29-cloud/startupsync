@@ -1875,7 +1875,10 @@ app.post("/chat/send", authMiddleware, async (req, res) => {
 
     await ChatConversation.updateOne({ _id: convo._id }, { $set: { lastMessageText: cleanText, lastMessageAt: new Date() } });
 
-    const payload = { _id: msg._id, fromUserId: msg.senderId, toUserId: msg.receiverId, text: msg.text, createdAt: msg.createdAt, seen: msg.seen, seenAt: msg.seenAt };
+    const sender = await User.findById(fromUserId).select("fullName role founderProfile.photo investorProfile.photo").lean();
+    const fromUserName  = sender?.fullName || "";
+    const fromUserPhoto = sender?.role === "Founder" ? (sender?.founderProfile?.photo || "") : (sender?.investorProfile?.photo || "");
+    const payload = { _id: msg._id, fromUserId: msg.senderId, toUserId: msg.receiverId, text: msg.text, createdAt: msg.createdAt, seen: msg.seen, seenAt: msg.seenAt, fromUserName, fromUserPhoto };
     io.to(roomFromPairKey(pairKey)).emit("chat:newMessage", payload);
     const roomName2 = roomFromPairKey(pairKey);
     const roomSockets2 = await io.in(roomName2).allSockets();
