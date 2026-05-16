@@ -2045,18 +2045,23 @@
       const parts = name.split(/\s+/).filter(Boolean);
       const initials = parts.map(w => w[0] || '').join('').substring(0,2).toUpperCase() || 'U';
 
-      function showInitials(){ el.innerHTML = ''; el.textContent = initials; el.style.opacity='1'; }
+      function showInitials(){ el.innerHTML = ''; el.textContent = initials; el.style.color='#fff'; el.style.opacity='1'; }
       function showPhoto(src){
+        if(!src || src.trim() === '') { showInitials(); return; }
         el.innerHTML = '';
         const img = document.createElement('img');
         img.src = src;
         img.alt = name;
+        img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;';
+        img.onload = function(){ el.style.color = 'transparent'; el.style.opacity='1'; };
         img.onerror = function(){ showInitials(); };
         el.appendChild(img);
       }
 
-      const p = cu.founderProfile || cu.investorProfile || {};
-      const localPhoto = (p.photo || currentUser?.photo || '').trim();
+      // ✅ FIX: Check founderProfile AND investorProfile for photo
+      const isFounder = (cu.role||'').toLowerCase() === 'founder';
+      const p = isFounder ? (cu.founderProfile || {}) : (cu.investorProfile || {});
+      const localPhoto = (p.photo || cu.photo || localStorage.getItem('profilePhoto') || sessionStorage.getItem('profilePhoto') || '').trim();
 
       if(localPhoto && (localPhoto.startsWith('data:image/') || localPhoto.startsWith('http') || localPhoto.startsWith('/'))) {
         showPhoto(localPhoto);
@@ -2064,22 +2069,15 @@
         showInitials();
       }
 
-      fetch('/get-user?userId=' + encodeURIComponent(cu._id), { cache: 'no-store', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')||sessionStorage.getItem('token')||''}` } })
+      // ✅ FIX: Fetch full user profile to get latest photo
+      fetch('/get-profile', { cache: 'no-store', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')||sessionStorage.getItem('token')||''}` } })
         .then(r => r.json())
         .then(d => {
-          if(d?.success && d.photo && d.photo.trim()) {
-            const serverPhoto = d.photo.trim();
-            const currentSrc = el.querySelector('img')?.src || '';
-            if(!currentSrc || currentSrc !== serverPhoto) {
+          if(d?.success) {
+            const profile = d.profile || {};
+            const serverPhoto = (profile.photo || '').trim();
+            if(serverPhoto && (serverPhoto.startsWith('http') || serverPhoto.startsWith('/') || serverPhoto.startsWith('data:'))) {
               showPhoto(serverPhoto);
-            }
-            if(d.fullName && d.fullName.trim() && d.fullName.trim().length > 3) {
-              const freshUser = getUser();
-              if(freshUser && freshUser.fullName !== d.fullName) {
-                freshUser.fullName = d.fullName.trim();
-                localStorage.setItem('currentUser', JSON.stringify(freshUser));
-                syncMeName();
-              }
             }
           }
         })

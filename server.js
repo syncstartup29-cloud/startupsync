@@ -732,8 +732,8 @@ app.post("/signup", loginLimiter, async (req, res) => {
     if (FAKE_LOCALS.includes(localPart))
       return res.json({ success: false, message: "Please use a real Gmail address." });
 
-    if (password.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(password))
-      return res.json({ success: false, message: "Password must be at least 8 characters and include a special character" });
+    if (password.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(password) || !/[0-9]/.test(password) || !/[a-zA-Z]/.test(password))
+      return res.json({ success: false, message: "Password must be at least 8 characters and include a letter, number and special character" });
 
     const otpData = await Otp.findOne({ email });
     if (!otpData || otpData.verified !== true)
