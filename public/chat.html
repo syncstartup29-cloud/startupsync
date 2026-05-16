@@ -1385,7 +1385,7 @@
 
     function initSocket(){
       try{
-        socket=io({auth:{userId:currentUser._id}});
+        socket=io({auth:{userId:currentUser._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||''}});
         socket.on('connect',()=>{ socket.emit('presence:whoIsOnline',resp=>{ (resp?.onlineUserIds||[]).forEach(id=>onlineUsers.add(String(id))); renderUsers(); updateHeadOnline(); }); });
         socket.on('presence:update',({userId,online})=>{ online?onlineUsers.add(String(userId)):onlineUsers.delete(String(userId)); renderUsers(); if(selectedPeer&&String(selectedPeer._id)===String(userId)) updateHeadOnline(); });
         socket.on('connection:removed',({removedBy,removedByName})=>{ showSysAlert('🔴 '+(removedByName||'A user')+' removed you from their connections.'); connections=connections.filter(c=>String(c._id)!==String(removedBy)); if(selectedPeer&&String(selectedPeer._id)===String(removedBy)){ selectedPeer=null; saveSelectedPeer(null); messages=[]; closeChat(); } renderUsers(); });

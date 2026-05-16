@@ -1520,7 +1520,7 @@
   function initChatSocket(){
     if(!window.io){ console.warn('socket.io not ready'); return; }
     try{
-      const socket=window.io({auth:{userId:currentUser._id},transports:["websocket","polling"]});
+      const socket=window.io({auth:{userId:currentUser._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||''},transports:["websocket","polling"]});
       socket.on("chat:newMessage",(payload)=>{
         if(String(payload?.toUserId||"")!==String(currentUser._id)) return;
         totalUnread++;
