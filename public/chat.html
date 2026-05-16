@@ -1398,7 +1398,20 @@
             if(!inCurrent){ unreadCounts[from]=(unreadCounts[from]||0)+1; const _st=(payload.text===null||payload.text===undefined)?'':(typeof payload.text==='string'?payload.text:(typeof payload.text==='object'?'':String(payload.text)));
               // FIX 2: If file message — show file name in toast instead of empty text
               const _toastText = _st || (payload.file ? ('📎 ' + (payload.fileName || 'File')) : 'New message');
-              const _senderConn=connections.find(c=>String(c._id)===String(from)); if(_senderConn){ showToastDirect(String(_senderConn.fullName||'New Message'),_toastText,String(getPhoto(_senderConn)||''),from); renderUsers(); updateMobChatBadge(); } else { apiGet('/get-user?userId='+encodeURIComponent(from)).then(function(d){ const _n=(d&&d.success)?(d.fullName||d.name||'New Message'):'New Message'; const _ph=(d&&d.success)?(d.photo||(d.founderProfile&&d.founderProfile.photo)||(d.investorProfile&&d.investorProfile.photo)||''):''; const _ft2 = _st || (payload.file ? ('📎 ' + (payload.fileName || 'File')) : 'New message'); showToastDirect(_n,_ft2,_ph,from); }).catch(()=>showToastDirect('New Message',_st||'','',from)); renderUsers(); updateMobChatBadge(); } return; }
+              // ✅ FIX: Use fromUserPhoto and fromUserName from payload directly
+              const _fromName = String(payload.fromUserName || '');
+              const _fromPhoto = String(payload.fromUserPhoto || '');
+              const _senderConn=connections.find(c=>String(c._id)===String(from)); 
+              if(_senderConn){ 
+                const _photo = _fromPhoto || String(getPhoto(_senderConn)||'');
+                const _name = _fromName || String(_senderConn.fullName||'New Message');
+                showToastDirect(_name,_toastText,_photo,from); renderUsers(); updateMobChatBadge(); 
+              } else if(_fromName && _fromPhoto) {
+                // ✅ Use payload data directly — no need to fetch
+                showToastDirect(_fromName,_toastText,_fromPhoto,from); renderUsers(); updateMobChatBadge();
+              } else { 
+                apiGet('/get-user?userId='+encodeURIComponent(from)).then(function(d){ const _n=(d&&d.success)?(d.fullName||d.name||'New Message'):'New Message'; const _ph=(d&&d.success)?(d.photo||(d.founderProfile&&d.founderProfile.photo)||(d.investorProfile&&d.investorProfile.photo)||''):''; const _ft2 = _st || (payload.file ? ('📎 ' + (payload.fileName || 'File')) : 'New message'); showToastDirect(_n,_ft2,_ph,from); }).catch(()=>showToastDirect('New Message',_st||'','',from)); renderUsers(); updateMobChatBadge(); 
+              } return; }
           }
           if(!selectedPeer?._id) return;
           const peer=String(selectedPeer._id);
@@ -1878,19 +1891,21 @@
       name  = String(name  || 'New Message');
       text  = String(text  || '');
       photo = String(photo || '');
-      if (typeof chatToast === 'function') {
-        chatToast(name, text || 'New message', photo, 'chat.html');
-        return;
-      }
-      // DOM-only fallback — zero quote conflicts
+      // ✅ FIX: Don't use chatToast — handle directly with photo support
       var old=document.querySelector('.chat-toast'); if(old) old.remove();
       if(toastTimer) clearTimeout(toastTimer);
       var t=document.createElement('div'); t.className='chat-toast';
       var init=name.split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2)||'?';
       var av=document.createElement('div');
-      if(photo&&(photo.startsWith('http')||photo.startsWith('/'))){
+      // ✅ FIX: Check all valid photo URL formats including Cloudinary
+      if(photo&&(photo.startsWith('http')||photo.startsWith('/')||photo.startsWith('data:image/'))){
         var im=document.createElement('img'); im.src=photo;
-        im.style.cssText='width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;';
+        im.style.cssText='width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid #111118;';
+        im.onerror=function(){ 
+          av.removeChild(im);
+          av.style.cssText='width:36px;height:36px;border-radius:50%;background:#111118;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;';
+          av.textContent=init;
+        };
         av.appendChild(im);
       } else {
         av.style.cssText='width:36px;height:36px;border-radius:50%;background:#111118;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;';
