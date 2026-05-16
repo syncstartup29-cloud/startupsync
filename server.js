@@ -1826,7 +1826,7 @@ app.get("/chat/history", authMiddleware, async (req, res) => {
       success: true,
       messages: msgs
         // FIX: filter out messages where sender was deleted and requester is not the sender
-        .filter(m => !(m.senderDeleted && m.senderId?.toString() !== userId && !m.file))
+        .filter(m => true)
         .map(m => ({
         _id: m._id,
         fromUserId: m.senderId,
