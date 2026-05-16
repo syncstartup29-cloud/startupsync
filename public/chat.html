@@ -1385,7 +1385,7 @@
 
     function initSocket(){
       try{
-        socket=io({auth:{userId:currentUser._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||''}});
+        socket=io({auth:{userId:currentUser._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||''}, transports:['websocket','polling']});
         socket.on('connect',()=>{ socket.emit('presence:whoIsOnline',resp=>{ (resp?.onlineUserIds||[]).forEach(id=>onlineUsers.add(String(id))); renderUsers(); updateHeadOnline(); }); });
         socket.on('presence:update',({userId,online})=>{ online?onlineUsers.add(String(userId)):onlineUsers.delete(String(userId)); renderUsers(); if(selectedPeer&&String(selectedPeer._id)===String(userId)) updateHeadOnline(); });
         socket.on('connection:removed',({removedBy,removedByName})=>{ showSysAlert('🔴 '+(removedByName||'A user')+' removed you from their connections.'); connections=connections.filter(c=>String(c._id)!==String(removedBy)); if(selectedPeer&&String(selectedPeer._id)===String(removedBy)){ selectedPeer=null; saveSelectedPeer(null); messages=[]; closeChat(); } renderUsers(); });
@@ -1908,8 +1908,13 @@
     function showToast(u,text){ var name=String(u&&u.fullName?u.fullName:'New Message'); var photo=getPhoto(u)||''; var id=u&&u._id?u._id:''; showToastDirect(name, text, photo, id); }
 
     async function selectPeer(peer){ if(_msgFetching) return; _msgFetching=true; setTimeout(function(){_msgFetching=false;},500);
-      // Clear unread count for this peer immediately
-      if(peer&&peer._id){ unreadCounts[String(peer._id)]=0; updateChatBadge(); updateSidebarUnread(); }
+      // ✅ FIX: Clear unread count for this peer immediately
+      if(peer&&peer._id){ 
+        unreadCounts[String(peer._id)]=0; 
+        updateChatBadge(); 
+        updateMobChatBadge();
+        updateSidebarUnread(); 
+      }
       var _prevPeerId = selectedPeer&&selectedPeer._id ? String(selectedPeer._id) : null;
       selectedPeer=peer; saveSelectedPeer(peer._id);
       unreadCounts[String(peer._id)]=0; renderUsers(); updateChatBadge(); updateMobChatBadge(); openChat(); mobOpenChat(); renderHeader(peer);
@@ -1933,7 +1938,19 @@
         enableInput();
         await loadHistory();
       }
-      if(socket?.connected){ socket.emit('chat:join',{otherId:peer._id},resp=>{ if(resp?.success) setTimeout(()=>socket?.emit('chat:seen',{otherId:peer._id}),200); }); }
+      // ✅ FIX: Join room AND mark seen immediately
+      if(socket?.connected){ 
+        socket.emit('chat:join',{otherId:peer._id},resp=>{ 
+          if(resp?.success) {
+            setTimeout(()=>{
+              socket?.emit('chat:seen',{otherId:peer._id});
+              // ✅ Also clear via API to ensure server-side unread count resets
+              fetch('/chat/unread-counts?userId='+encodeURIComponent(currentUser._id),{cache:'no-store',headers:{"Authorization":"Bearer "+_tok()}})
+                .then(r=>r.json()).then(d=>{ if(d?.success&&d.counts){ unreadCounts=d.counts; updateChatBadge(); updateMobChatBadge(); updateSidebarUnread(); }}).catch(()=>{});
+            },300); 
+          }
+        }); 
+      }
     }
 
     async function loadHistory(){

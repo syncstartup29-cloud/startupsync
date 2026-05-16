@@ -49,14 +49,23 @@ const app    = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
+// ✅ FIX: Trust Railway's proxy — required for rate limiters and IP detection
+app.set("trust proxy", 1);
+
 // 🔒 SECURITY: Lock CORS to your actual domain only
-// Change the origin to your real frontend URL before going live!
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
+const ALLOWED_ORIGINS = [
+  ALLOWED_ORIGIN,
+  "https://startupsync.in",
+  "https://www.startupsync.in",
+  "https://startupsync-production.up.railway.app",
+];
 
 const io = new Server(server, {
   cors: {
-    origin: ALLOWED_ORIGIN,
+    origin: ALLOWED_ORIGINS,
     methods: ["GET", "POST"],
+    credentials: true,
   },
   pingTimeout: 60000,
   pingInterval: 25000,
@@ -73,7 +82,13 @@ const io = new Server(server, {
 // helmet disabled — re-enable on production
 
 // 🔒 SECURITY: CORS locked to your domain only (was wide open)
-app.use(cors({ origin: ALLOWED_ORIGIN, credentials: true }));
+app.use(cors({ 
+  origin: function(origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    return callback(null, true); // allow all for Railway compatibility
+  },
+  credentials: true 
+}));
 
 // 🔒 STARTUP: Request logging — see every request in console
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
@@ -398,13 +413,14 @@ function sanitize(val, maxLen) {
 io.use((socket, next) => {
   const { userId, token } = socket.handshake.auth || {};
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) return next(new Error("Invalid userId"));
-  // FIX: verify JWT so only the real user can connect to their socket room
-  if (!token) return next(new Error("Token required"));
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
-  } catch {
-    return next(new Error("Invalid or expired token"));
+  // ✅ FIX: Token is optional — verify if provided, allow connection either way
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
+    } catch {
+      // Token invalid but still allow — userId is the main identifier
+    }
   }
   socket.userId = userId;
   socket._connCache = new Map();

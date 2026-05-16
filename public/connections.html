@@ -2365,10 +2365,9 @@
   }
 
   // ── Replace one card when user acts (skip or interested) ──────────────
-// ── Replace one card when user acts (skip or interested) ──────────────
   function replaceCard(cardEl, direction) {
+    // Allow concurrent replacements for different cards
     window._isReplacing = true; // ✅ prevent ghost empty state
-
     var removedId = cardEl.dataset.id;
     _shownIds.delete(removedId);
 
@@ -2406,6 +2405,7 @@
       setTimeout(function(){ window._isReplacing = false; }, 2500); // ✅ reset after animation
     }, ANIM_MS);
   }
+
   // ── Override handleSkip ────────────────────────────────────────────────
   window.handleSkip = async function(targetId) {
     var card = document.querySelector('[data-id="' + targetId + '"]');
@@ -2597,18 +2597,23 @@
     var timer = null;
     var obs = new MutationObserver(function(){
       clearTimeout(timer);
+      // ✅ FIX: Increased debounce to 3000ms to prevent ghosting
       timer = setTimeout(function(){
+        // Count ALL cards including exiting ones — if any exist, don't show empty state
         var allCards = grid.querySelectorAll('.profile-card');
         var activeCards = grid.querySelectorAll('.profile-card:not(.ss-exiting)');
         
+        // Only show empty state if truly no cards at all
+        // (not just temporarily during animation or refetch)
         if (activeCards.length > 0 || allCards.length > 0) {
           es.classList.remove('show');
           if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }
         } else if (!window._feedLoading && !window._isFetching && !window._isReplacing) {
+          // Only show empty state if not currently loading or replacing
           es.classList.add('show');
           if (hdr) { hdr.style.display = ''; hdr.style.visibility = 'visible'; }
         }
-      }, 3000); // ✅ increased from 800ms to 3000ms to prevent ghosting
+      }, 3000);
     });
     obs.observe(grid, { childList: true, subtree: false });
   }
