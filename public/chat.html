@@ -2104,7 +2104,7 @@
     $('attachBtn').addEventListener('click',()=>$('fileInput').click());
     $('fileInput').addEventListener('change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return; if(!selectedPeer?._id){ showToast('Select a conversation first'); return; } await sendFile(f); });
 
-    (async function init(){ try{ initSocket(); setupEmoji(); await loadConnections(); await loadUnread(); setInterval(loadUnread,30000); }catch(err){ console.error(err); } })();
+    (async function init(){ try{ initSocket(); setupEmoji(); await loadConnections(); await loadUnread(); setInterval(loadUnread,15000); }catch(err){ console.error(err); } })();
   </script>
   <script>
   function toggleFS(){
