@@ -586,7 +586,7 @@ a, button, [role="button"] {
       <div class="form-group" id="email-group">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="you@gmail.com" required />
-        <button type="button" id="sendOtpBtn" style="display:none;">Send OTP</button>
+        <button type="button" id="sendOtpBtn" style="display:none;" onclick="window._handleSendOtp(event)">Send OTP</button>
         <div class="otp-banner" id="otpSentBanner">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -895,15 +895,20 @@ window._ssInitGuard = function(userId) {
     if(emailInput) emailInput.addEventListener("input",saveDraft);
     if(roleSelect) roleSelect.addEventListener("change",saveDraft);
 
-    if(sendOtpBtn){ sendOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return;
-      // ✅ FIX: Validate password BEFORE sending OTP
-      const pwd=passwordInput?.value||"";
-      if(!pwd){_ssAlert("Please enter a password first.");return;}
-      if(pwd.length<8){_ssAlert("Password must be at least 8 characters.");return;}
-      if(!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;}
-      if(!/[0-9]/.test(pwd)){_ssAlert("Password must include at least one number.");return;}
-      if(!/[a-zA-Z]/.test(pwd)){_ssAlert("Password must include at least one letter.");return;}
+    if(sendOtpBtn){ sendOtpBtn.addEventListener("_validatedClick",async(e)=>{ if(isLogin) return;
       const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;} const ok=await sendOtp(email); if(!ok) return; otpSent=true; saveState(); if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);} if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
+
+    // ✅ Global handler for Send OTP button — validates password first
+    window._handleSendOtp = async function(e){
+      e.preventDefault(); e.stopPropagation();
+      const pwd = document.getElementById('password')?.value||'';
+      if(!pwd){_ssAlert('Please enter a password first.');return;}
+      if(pwd.length<8){_ssAlert('Password must be at least 8 characters.');return;}
+      if(!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)){_ssAlert('Password must include at least one special character (!@#$%^&*).');return;}
+      if(!/[0-9]/.test(pwd)){_ssAlert('Password must include at least one number.');return;}
+      if(!/[a-zA-Z]/.test(pwd)){_ssAlert('Password must include at least one letter.');return;}
+      document.getElementById('sendOtpBtn').dispatchEvent(new CustomEvent('_validatedClick'));
+    };
 
     if(confirmOtpBtn){ confirmOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const fullName=safeTrim(fullNameInput?.value), password=passwordInput?.value||"", role=roleSelect?.value||"", email=safeTrim(emailInput?.value).toLowerCase(), otp=safeTrim(otpInput?.value); if(!fullName||!role||!email||!password){_ssAlert("Full name, role, email and password are required for signup.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters and include a letter, number and special character.");return;} if(!/[!@#$%^&*(),.?":{}|<>]/.test(password)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;} if(!/[0-9]/.test(password)){_ssAlert("Password must include at least one number.");return;} if(!/[a-zA-Z]/.test(password)){_ssAlert("Password must include at least one letter.");return;} if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(!otpSent){_ssAlert("Please click Send OTP first.");return;} if(!/^\d{6}$/.test(otp)){_ssAlert("Enter valid 6 digit OTP");focusIfExists(["otpInput"]);return;} const otpOk=await verifyOtp(email,otp); if(!otpOk) return; const signupResult=await signupUser({fullName,email,password,role}); if(!signupResult) return;
       // ── Multi-account guard: only show modal if another account is ACTIVELY logged in on server ──
