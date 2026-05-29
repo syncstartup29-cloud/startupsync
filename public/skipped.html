@@ -977,7 +977,7 @@ a, button, [role="button"] {
       function initSkippedSocket(){
         if(typeof window.io==="undefined") { setTimeout(initSkippedSocket, 200); return; }
         // Reuse session-guard socket if available
-        const socket = window._ssSocket || window.io({auth:{userId:currentUser._id},transports:["websocket","polling"]});
+        const socket = window._ssSocket || window.io({auth:{userId:currentUser._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
         if(!window._ssSocket) window._ssSocket = socket;
 
         // ✅ Remove skipped card instantly when that user deletes their account

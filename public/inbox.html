@@ -1066,7 +1066,7 @@ a, button, [role="button"] {
       if(!sock){
         // Fallback: wait for session-guard to set up the socket
         if(typeof window.io === "undefined") { setTimeout(bindInboxSocket, 300); return; }
-        sock = window.io({auth:{userId:currentUser._id},transports:["websocket","polling"]});
+        sock = window.io({auth:{userId:currentUser._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
         window._ssSocket = sock;
       }
       // Real-time: reload inbox on any connection event

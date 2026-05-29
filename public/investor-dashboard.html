@@ -1527,7 +1527,7 @@ window._showToast = function(opts) {
     window.addEventListener("focus",function(){_pollNoti();_pollChat();});
     function _initSocket(){
       try{
-        var _s=window._ssSocket||window.io({auth:{userId:_cu._id},transports:["websocket","polling"]});
+        var _s=window._ssSocket||window.io({auth:{userId:_cu._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
         window._ssSocket=_s;
         _s.on("notification:new",function(n){
           var valid=["request_sent","request_received","auto_connected","connected","declined"];

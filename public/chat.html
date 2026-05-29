@@ -2322,7 +2322,7 @@ function initSock(){
   var u=usr();if(!u||!u._id)return;
   setTimeout(function(){
     try{
-      var s=window.io({auth:{userId:u._id},transports:["websocket","polling"]});
+      var s=window.io({auth:{userId:u._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
       s.on("notification:new",function(n){
         if(!["request_sent","request_received","auto_connected","connected","declined"].includes(n.type))return;
         _items.unshift({type:n.type,message:n.message||"",messagePreview:"",senderName:n.senderName||"",senderPhoto:n.senderPhoto||"",seen:false,createdAt:n.createdAt||new Date().toISOString()});

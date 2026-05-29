@@ -963,7 +963,7 @@ a, button, [role="button"] {
       // If socket.io already loaded (from session-guard), reuse window.io
       function setupNotiSocket(){
         try{
-          var _s=window.io({auth:{userId:currentUser._id},transports:["websocket","polling"]});
+          var _s=window.io({auth:{userId:currentUser._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
           _s.on("notification:new",function(notif){
             var list=document.getElementById("notiList");
             if(!list) return;

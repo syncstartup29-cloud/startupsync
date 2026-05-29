@@ -1164,7 +1164,7 @@ a, button, [role="button"] {
       if(!_cu||!_cu._id) return;
       function initSocket(){
         // Reuse session-guard socket if available
-        var _s = window._ssSocket || window.io({auth:{userId:_cu._id},transports:["websocket","polling"]});
+        var _s = window._ssSocket || window.io({auth:{userId:_cu._id,token:localStorage.getItem("token")||sessionStorage.getItem("token")||""},transports:["websocket","polling"]});
         if(!window._ssSocket) window._ssSocket = _s;
         _s.on("connection:removed",function(){ if(!window._connLoading){window._connLoading=true;loadConnected().finally(function(){window._connLoading=false;});} showRailToast("ℹ️ A connection was removed"); });
         _s.on("account:deleted",function(d){
