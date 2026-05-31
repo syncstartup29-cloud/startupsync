@@ -1267,7 +1267,7 @@
           <form class="form-row" id="chatForm" autocomplete="off">
             <div class="text-wrap">
               <div class="upload-prog" id="uploadProgress">Uploading...</div>
-              <textarea class="msg-input" id="messageInput" placeholder="Write a message..." rows="1" style="font-size:1.1rem !important;height:46px !important;"></textarea>
+              <textarea class="msg-input" id="messageInput" placeholder="Write a message here..." rows="1"></textarea>
             </div>
             <button class="icon-btn" type="button" id="emojiBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
             <button class="icon-btn" type="button" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
@@ -2701,6 +2701,22 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
       });
     });
   });
+})();
+</script>
+<script>
+// Force font size via MutationObserver
+(function(){
+  if(window.innerWidth < 769) return;
+  function applySize(){
+    var el = document.getElementById('messageInput');
+    if(!el) return;
+    if(el.style.fontSize !== '1.1rem'){
+      el.style.cssText = (el.style.cssText || '') + ';font-size:1.1rem!important;height:46px!important;';
+    }
+  }
+  setInterval(applySize, 300);
+  window.addEventListener('load', applySize);
+  document.addEventListener('DOMContentLoaded', applySize);
 })();
 </script>
 </body>
