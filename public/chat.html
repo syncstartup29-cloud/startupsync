@@ -153,9 +153,9 @@
     .blocked-msg svg { width:60px; height:60px; color:#EF4444; margin-bottom:16px; }
     .blocked-msg h3 { font-family:var(--font-h); font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:8px; }
     .blocked-msg p { font-size:0.78rem; color:var(--sub); max-width:280px; line-height:1.6; }
-    .ch-input { padding:clamp(10px,1.2vw,16px) clamp(14px,1.5vw,20px); border-top:1px solid var(--border); background:var(--white); flex-shrink:0; }
+    .ch-input { padding:12px 16px; border-top:1px solid var(--border); background:var(--white); flex-shrink:0; width:100%; box-sizing:border-box; }
     .ch-input.disabled { opacity:.6; pointer-events:none; }
-    .form-row { display:flex; gap:8px; align-items:center; }
+    .form-row { display:flex; gap:8px; align-items:center; width:100%; }
     .text-wrap { flex:1; min-width:0; position:relative; }
     .upload-prog { position:absolute; bottom:50px; left:0; right:0; background:var(--white); border:1.5px solid var(--border); border-radius:8px; padding:7px 12px; font-size:0.7rem; font-weight:700; color:var(--sub); display:none; z-index:10; }
     .msg-input { display:block; width:100%; height:clamp(44px,5.5vw,56px); border-radius:clamp(22px,2.8vw,28px); border:1.5px solid var(--border); background:#F4F4F5; outline:none; padding:clamp(10px,1.2vw,16px) clamp(14px,1.8vw,22px); font-size:clamp(0.88rem,1.1vw,1rem); font-weight:400; color:var(--text); transition:.15s; resize:none; overflow:hidden; -webkit-tap-highlight-color:transparent; }
@@ -2714,5 +2714,37 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
   });
 })();
 </script>
+
+<style id="final-input-fix">
+#chatInput {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 16px !important;
+}
+#chatForm {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.text-wrap {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+#messageInput {
+  width: 100% !important;
+  height: 52px !important;
+  font-size: 16px !important;
+  padding: 14px 20px !important;
+  border-radius: 26px !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+#messageInput::placeholder {
+  font-size: 16px !important;
+  color: #9CA3AF !important;
+  opacity: 1 !important;
+}
+</style>
 </body>
 </html>
