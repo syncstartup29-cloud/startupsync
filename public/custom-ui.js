@@ -509,7 +509,7 @@
     if (!window.io) return;
     try {
       // Reuse session-guard socket — never create a duplicate
-      _sk = window._ssSocket || window.io({ auth: { userId: _cu._id }, transports: ["websocket", "polling"] });
+      _sk = window._ssSocket || window.io({ auth: { userId: _cu._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||'' }, transports: ["websocket", "polling"] });
       window._ssSocket = _sk;
 
       if (_sk.connected) { _fetchNotis(); }
@@ -529,6 +529,18 @@
         var icon  = (n.type === "connected" || n.type === "auto_connected") ? "🤝" : n.type === "request_received" ? "📩" : n.type === "declined" ? "❌" : "✅";
         var title = (n.type === "connected" || n.type === "auto_connected") ? "New Connection!" : n.type === "request_received" ? "Connection Request" : "Connection Update";
         _showNotifToast(icon, title, String(n.message || "").substring(0, 60));
+      });
+
+      // ✅ FIX: Block notification on EVERY page
+      _sk.on("user:blocked", function(payload) {
+        if (!payload) return;
+        var name = String(payload.byUserName || "A user");
+        _showNotifToast("⛔", "You've been blocked", name + " has removed you from their connections.");
+        // Redirect to connections page after 3 seconds if on chat page
+        var page = (window.location.pathname.split("/").pop() || "").toLowerCase();
+        if (page === "chat.html") {
+          setTimeout(function() { window.location.href = "connections.html"; }, 3000);
+        }
       });
 
       // ── Chat toast (every page — including chat page) ───────────────────

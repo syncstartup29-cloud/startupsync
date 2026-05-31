@@ -243,9 +243,9 @@
     /* Discover cards */
     .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:3px 3px 0 #111118,0 4px 12px rgba(0,0,0,.07)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
     .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:5px 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
-    @keyframes ssCardIn{from{opacity:0;transform:translateY(18px) rotate(-1deg) scale(.97);}to{opacity:1;transform:translateY(0) rotate(0) scale(1);}}
-    /* FIX: 'both' holds opacity:0 before delay fires — causes ghost on re-render. Use 'forwards' */
-    .profile-grid .profile-card{animation:ssCardIn .3s cubic-bezier(.34,1.3,.64,1) forwards;}
+    @keyframes ssCardIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+    /* FIX: Simpler animation - no rotate, less movement = no glitch on desktop */
+    .profile-grid .profile-card{animation:ssCardIn .2s ease-out forwards;will-change:opacity,transform;}
 
     /* Connected cards */
     .connection-card{border:1px solid #e0e0e0!important;box-shadow:0 2px 12px rgba(0,0,0,.06)!important;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s!important;}
