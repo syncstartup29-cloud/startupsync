@@ -2703,5 +2703,35 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
   });
 })();
 </script>
+
+<style id="ss-input-stretch-fix">
+/* Force input bar to always stretch full width regardless of layout */
+#chatInput {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 10px 14px !important;
+}
+#chatForm {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-sizing: border-box !important;
+}
+.text-wrap {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 0 !important;
+}
+#messageInput {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  min-width: 0 !important;
+}
+.chat-section.open {
+  width: 100% !important;
+}
+</style>
 </body>
 </html>
