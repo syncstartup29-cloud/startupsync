@@ -167,8 +167,8 @@
     .msg-input:disabled { cursor:not-allowed; opacity:.6; }
     /* ✅ FIX: Desktop placeholder size */
     @media(min-width:769px){
-      .msg-input { font-size:0.88rem !important; height:44px !important; }
-      .msg-input::placeholder { font-size:0.88rem !important; }
+      .msg-input { font-size:1rem !important; height:56px !important; }
+      .msg-input::placeholder { font-size:1rem !important; }
     }
     .icon-btn { width:clamp(38px,3vw,44px); height:clamp(38px,3vw,44px); border-radius:10px; border:none; cursor:pointer; background:transparent; color:var(--sub); display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     .icon-btn:hover { background:#F4F4F5; color:var(--text); }
@@ -1074,13 +1074,18 @@
     }
   /* ✅ DESKTOP CHAT INPUT FIX */
   @media(min-width:769px){
-    .ch-input { padding: 14px 18px !important; }
+    .ch-input { padding: 16px 24px !important; }
     .msg-input { 
-      height: 52px !important; 
-      font-size: 0.88rem !important;
-      padding: 14px 20px !important;
-      border-radius: 26px !important;
+      height: 56px !important; 
+      font-size: 1rem !important;
+      padding: 16px 24px !important;
+      border-radius: 28px !important;
+      font-weight: 400 !important;
     }
+    .msg-input::placeholder { font-size: 1rem !important; }
+    .icon-btn { width: 44px !important; height: 44px !important; }
+    #sendBtn { width: 50px !important; height: 50px !important; border-radius: 14px !important; }
+    .form-row { gap: 12px !important; }
   }
   </style>
 <script>
