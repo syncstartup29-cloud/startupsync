@@ -153,28 +153,28 @@
     .blocked-msg svg { width:60px; height:60px; color:#EF4444; margin-bottom:16px; }
     .blocked-msg h3 { font-family:var(--font-h); font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:8px; }
     .blocked-msg p { font-size:0.78rem; color:var(--sub); max-width:280px; line-height:1.6; }
-    .ch-input { padding:12px 16px; border-top:1px solid var(--border); background:var(--white); flex-shrink:0; width:100%; box-sizing:border-box; }
+    .ch-input { padding:10px 14px; border-top:1px solid var(--border); background:var(--white); flex-shrink:0; }
     .ch-input.disabled { opacity:.6; pointer-events:none; }
-    .form-row { display:flex; gap:8px; align-items:center; width:100%; }
+    .form-row { display:flex; gap:8px; align-items:center; }
     .text-wrap { flex:1; min-width:0; position:relative; }
     .upload-prog { position:absolute; bottom:50px; left:0; right:0; background:var(--white); border:1.5px solid var(--border); border-radius:8px; padding:7px 12px; font-size:0.7rem; font-weight:700; color:var(--sub); display:none; z-index:10; }
-    .msg-input { display:block; width:100%; height:clamp(44px,5.5vw,56px); border-radius:clamp(22px,2.8vw,28px); border:1.5px solid var(--border); background:#F4F4F5; outline:none; padding:clamp(10px,1.2vw,16px) clamp(14px,1.8vw,22px); font-size:clamp(0.88rem,1.1vw,1rem); font-weight:400; color:var(--text); transition:.15s; resize:none; overflow:hidden; -webkit-tap-highlight-color:transparent; }
+    .msg-input { display:block; width:100%; height:40px; border-radius:20px; border:1.5px solid var(--border); background:#F4F4F5; outline:none; padding:9px 14px; font-size:0.88rem; font-weight:500; color:var(--text); transition:.15s; resize:none; overflow:hidden; -webkit-tap-highlight-color:transparent; }
     /* FIX 3: Placeholder — must override the browser default opacity on iOS + be specific enough */
-    .msg-input::placeholder { color:var(--muted); opacity:1 !important; font-size:clamp(0.88rem,1.1vw,1rem); }
+    .msg-input::placeholder { color:var(--muted); opacity:1 !important; font-size:0.88rem; }
     input::placeholder,
     textarea::placeholder { color:#6B7280; opacity:1; }
     .msg-input:focus { border-color:var(--text); background:var(--white); }
     .msg-input:disabled { cursor:not-allowed; opacity:.6; }
     /* ✅ FIX: Desktop placeholder size */
     @media(min-width:769px){
-      .msg-input { font-size:0.88rem !important; height:44px !important; }
-      .msg-input::placeholder { font-size:0.88rem !important; }
+      .msg-input { font-size:1rem !important; height:44px !important; }
+      .msg-input::placeholder { font-size:1rem !important; }
     }
-    .icon-btn { width:clamp(38px,3vw,44px); height:clamp(38px,3vw,44px); border-radius:10px; border:none; cursor:pointer; background:transparent; color:var(--sub); display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
+    .icon-btn { width:38px; height:38px; border-radius:10px; border:none; cursor:pointer; background:transparent; color:var(--sub); display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     .icon-btn:hover { background:#F4F4F5; color:var(--text); }
     .icon-btn:disabled { opacity:.4; cursor:not-allowed; }
     .icon-btn svg { width:18px; height:18px; }
-    .send-btn { width:clamp(40px,3.2vw,48px); height:clamp(40px,3.2vw,48px); border-radius:10px; border:none; cursor:pointer; background:var(--text); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
+    .send-btn { width:40px; height:40px; border-radius:10px; border:none; cursor:pointer; background:var(--text); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     .send-btn:hover { background:#2d2d35; transform:scale(1.05); }
     .send-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
     .send-btn svg { width:18px; height:18px; }
@@ -272,8 +272,7 @@
     html{-webkit-text-size-adjust:100%;}
     body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
     body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
-    /* iOS zoom prevention — mobile only */
-    @media (max-width:767px){input,select,textarea{font-size:max(16px,1em)!important;}}
+    input,select,textarea{font-size:max(16px,1em)!important;}
     body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
 
     /* Page Loader - shows on initial load only */
@@ -1072,16 +1071,6 @@
       .bubble { font-size: 0.8rem !important; padding: 8px 10px !important; }
       .ch-input-wrap { padding: 6px 10px !important; }
     }
-  /* ✅ DESKTOP CHAT INPUT FIX */
-  @media(min-width:769px){
-    .ch-input { padding: 14px 18px !important; }
-    .msg-input { 
-      height: 52px !important; 
-      font-size: 0.88rem !important;
-      padding: 14px 20px !important;
-      border-radius: 26px !important;
-    }
-  }
   </style>
 <script>
 (function(){
@@ -1278,7 +1267,7 @@
           <form class="form-row" id="chatForm" autocomplete="off">
             <div class="text-wrap">
               <div class="upload-prog" id="uploadProgress">Uploading...</div>
-              <textarea class="msg-input" id="messageInput" placeholder="Write a message..." rows="1" style="font-size:18px!important;height:56px!important;padding:16px 22px!important;border-radius:28px!important;"></textarea>
+              <textarea class="msg-input" id="messageInput" placeholder="Write a message..." rows="1"></textarea>
             </div>
             <button class="icon-btn" type="button" id="emojiBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
             <button class="icon-btn" type="button" id="attachBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
@@ -2714,37 +2703,5 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
   });
 })();
 </script>
-
-<style id="final-input-fix">
-#chatInput {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  padding: 12px 16px !important;
-}
-#chatForm {
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-.text-wrap {
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-#messageInput {
-  width: 100% !important;
-  height: 52px !important;
-  font-size: 16px !important;
-  padding: 14px 20px !important;
-  border-radius: 26px !important;
-  box-sizing: border-box !important;
-  display: block !important;
-}
-#messageInput::placeholder {
-  font-size: 16px !important;
-  color: #9CA3AF !important;
-  opacity: 1 !important;
-}
-</style>
 </body>
 </html>
