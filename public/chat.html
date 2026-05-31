@@ -165,6 +165,11 @@
     textarea::placeholder { color:#6B7280; opacity:1; }
     .msg-input:focus { border-color:var(--text); background:var(--white); }
     .msg-input:disabled { cursor:not-allowed; opacity:.6; }
+    /* ✅ FIX: Desktop placeholder size */
+    @media(min-width:769px){
+      .msg-input { font-size:1rem !important; height:44px !important; }
+      .msg-input::placeholder { font-size:1rem !important; }
+    }
     .icon-btn { width:38px; height:38px; border-radius:10px; border:none; cursor:pointer; background:transparent; color:var(--sub); display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     .icon-btn:hover { background:#F4F4F5; color:var(--text); }
     .icon-btn:disabled { opacity:.4; cursor:not-allowed; }
