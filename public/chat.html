@@ -167,8 +167,8 @@
     .msg-input:disabled { cursor:not-allowed; opacity:.6; }
     /* ✅ FIX: Desktop placeholder size */
     @media(min-width:769px){
-      .msg-input { font-size:0.88rem !important; height:44px !important; }
-      .msg-input::placeholder { font-size:0.88rem !important; }
+      .msg-input { font-size:1rem !important; height:44px !important; }
+      .msg-input::placeholder { font-size:1rem !important; }
     }
     .icon-btn { width:38px; height:38px; border-radius:10px; border:none; cursor:pointer; background:transparent; color:var(--sub); display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     .icon-btn:hover { background:#F4F4F5; color:var(--text); }
@@ -273,7 +273,7 @@
     body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
     body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
     /* iOS zoom prevention — mobile only */
-    @media (max-width:767px){input,select,textarea{font-size:max(16px,1em)!important;}}
+    @media (max-width:768px){input,select,textarea{font-size:max(16px,1em)!important;}}
     body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
 
     /* Page Loader - shows on initial load only */
@@ -1074,13 +1074,22 @@
     }
   /* ✅ DESKTOP CHAT INPUT FIX */
   @media(min-width:769px){
-    .ch-input { padding: 14px 18px !important; }
+    .ch-input { padding: 16px 20px !important; }
     .msg-input { 
-      height: 52px !important; 
-      font-size: 0.88rem !important;
-      padding: 14px 20px !important;
-      border-radius: 26px !important;
+      height: 56px !important; 
+      font-size: 1rem !important;
+      padding: 16px 22px !important;
+      border-radius: 28px !important;
+      font-weight: 400 !important;
     }
+    .msg-input::placeholder {
+      font-size: 1rem !important;
+      color: #9CA3AF !important;
+      opacity: 1 !important;
+    }
+    .form-row { gap: 12px !important; }
+    .icon-btn { width: 44px !important; height: 44px !important; }
+    #sendBtn { width: 48px !important; height: 48px !important; }
   }
   </style>
 <script>
