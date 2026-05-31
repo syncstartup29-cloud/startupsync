@@ -272,7 +272,7 @@
     html{-webkit-text-size-adjust:100%;}
     body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
     body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
-    input,select{font-size:max(16px,1em)!important;} textarea{font-size:max(16px,1em)!important;} body .ch-input textarea.msg-input{font-size:1.1rem!important;height:46px!important;}
+    /* font-size rule moved to mobile-only below */
     body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
 
     /* Page Loader - shows on initial load only */
@@ -1062,7 +1062,7 @@
       * { -webkit-tap-highlight-color: transparent; }
       html { scroll-behavior: smooth; }
       button, a, [role="button"] { min-height: 44px; min-width: 44px; touch-action: manipulation; }
-      input, select { font-size: 16px !important; } textarea:not(.msg-input) { font-size: 16px !important; } /* prevents iOS zoom on focus */
+      input, textarea, select { font-size: 16px !important; } /* prevents iOS zoom on focus */
     }
     @media (max-width: 480px) {
       .bubble-img  { max-width: 130px !important; border-radius: 10px !important; }
