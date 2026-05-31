@@ -272,7 +272,8 @@
     html{-webkit-text-size-adjust:100%;}
     body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
     body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
-    input,select,textarea{font-size:max(16px,1em)!important;}
+    input:not(.msg-input),select,textarea:not(.msg-input){font-size:max(16px,1em)!important;}
+    @media(min-width:769px){ .msg-input, #messageInput { font-size:1.05rem !important; height:44px !important; } }
     body{padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0);}
 
     /* Page Loader - shows on initial load only */
@@ -2701,23 +2702,6 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
       });
     });
   });
-})();
-</script>
-<script>
-// ✅ Fix chat input font size on desktop
-(function(){
-  function fix(){
-    if(window.innerWidth < 769) return;
-    var inp = document.getElementById('messageInput');
-    if(!inp) return;
-    inp.style.setProperty('font-size', '1.05rem', 'important');
-    inp.style.setProperty('height', '44px', 'important');
-  }
-  // Run multiple times to ensure it sticks
-  document.addEventListener('DOMContentLoaded', fix);
-  window.addEventListener('load', fix);
-  setTimeout(fix, 500);
-  setTimeout(fix, 1500);
 })();
 </script>
 </body>
