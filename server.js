@@ -682,8 +682,8 @@ app.post("/reset-password", async (req, res) => {
 
     if (!email || !otp || !newPassword) return res.json({ success: false, message: "All fields required" });
     if (!/^\d{6}$/.test(otp)) return res.json({ success: false, message: "OTP must be 6 digits" });
-    if (newPassword.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(newPassword))
-      return res.json({ success: false, message: "Password must be 8+ chars with special character" });
+    if (newPassword.length < 8 || !/[!@#$%^&*(),.?":{}|<>]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[a-zA-Z]/.test(newPassword))
+      return res.json({ success: false, message: "Password must be at least 8 characters and include a letter, number and special character" });
 
     const otpRecord = await Otp.findOne({ email });
     if (!otpRecord || otpRecord.otp !== otp) return res.json({ success: false, message: "Invalid OTP" });

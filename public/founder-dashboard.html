@@ -1586,7 +1586,7 @@ window._showToast = function(opts) {
     // Real-time socket listeners
     function _initSocket() {
       try {
-        var _s = window._ssSocket || window.io({ auth: { userId: _cu._id }, transports: ["websocket","polling"] });
+        var _s = window._ssSocket || window.io({ auth: { userId: _cu._id, token: localStorage.getItem('token')||sessionStorage.getItem('token')||'' }, transports: ["websocket","polling"] });
         window._ssSocket = _s;
 
         _s.on("notification:new", function(n) {

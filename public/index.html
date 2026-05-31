@@ -896,11 +896,9 @@ window._ssInitGuard = function(userId) {
     if(roleSelect) roleSelect.addEventListener("change",saveDraft);
 
     if(sendOtpBtn){ sendOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); 
-      console.log('sendOtpBtn clicked, isLogin=', isLogin);
       if(isLogin) return;
-      // ✅ FIX: Validate password BEFORE sending OTP
+      // ✅ Validate password BEFORE sending OTP
       const pwd=passwordInput?.value||"";
-      console.log('pwd=', pwd);
       if(!pwd){_ssAlert("Please enter a password first.");return;}
       if(pwd.length<8){_ssAlert("Password must be at least 8 characters.");return;}
       if(!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;}
