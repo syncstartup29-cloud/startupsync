@@ -2704,25 +2704,20 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
 })();
 </script>
 <script>
-// ✅ FINAL FIX: Force chat input font size on desktop using JS
+// ✅ Fix chat input font size on desktop
 (function(){
-  if(window.innerWidth < 769) return;
-  var style = document.createElement('style');
-  style.textContent = 
-    '#messageInput { font-size: 1.05rem !important; height: 44px !important; }' +
-    '#messageInput::placeholder { font-size: 1.05rem !important; color: #6B7280 !important; opacity: 1 !important; }';
-  document.head.appendChild(style);
-  // Also set via element style to beat any !important
-  function fixInput(){
+  function fix(){
+    if(window.innerWidth < 769) return;
     var inp = document.getElementById('messageInput');
-    if(inp){
-      inp.style.setProperty('font-size', '1.05rem', 'important');
-      inp.style.setProperty('height', '44px', 'important');
-    }
+    if(!inp) return;
+    inp.style.setProperty('font-size', '1.05rem', 'important');
+    inp.style.setProperty('height', '44px', 'important');
   }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', fixInput);
-  } else { fixInput(); }
+  // Run multiple times to ensure it sticks
+  document.addEventListener('DOMContentLoaded', fix);
+  window.addEventListener('load', fix);
+  setTimeout(fix, 500);
+  setTimeout(fix, 1500);
 })();
 </script>
 </body>
