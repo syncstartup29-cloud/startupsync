@@ -1071,23 +1071,6 @@
       .bubble { font-size: 0.8rem !important; padding: 8px 10px !important; }
       .ch-input-wrap { padding: 6px 10px !important; }
     }
-    /* ✅ FINAL FIX: Override global 16px rule for chat input on desktop */
-    @media (min-width: 769px) {
-      textarea.msg-input,
-      .msg-input,
-      #messageInput {
-        font-size: 1.05rem !important;
-        height: 44px !important;
-        padding: 10px 16px !important;
-      }
-      textarea.msg-input::placeholder,
-      .msg-input::placeholder,
-      #messageInput::placeholder {
-        font-size: 1.05rem !important;
-        color: #6B7280 !important;
-        opacity: 1 !important;
-      }
-    }
   </style>
 <script>
 (function(){
@@ -2718,6 +2701,28 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
       });
     });
   });
+})();
+</script>
+<script>
+// ✅ FINAL FIX: Force chat input font size on desktop using JS
+(function(){
+  if(window.innerWidth < 769) return;
+  var style = document.createElement('style');
+  style.textContent = 
+    '#messageInput { font-size: 1.05rem !important; height: 44px !important; }' +
+    '#messageInput::placeholder { font-size: 1.05rem !important; color: #6B7280 !important; opacity: 1 !important; }';
+  document.head.appendChild(style);
+  // Also set via element style to beat any !important
+  function fixInput(){
+    var inp = document.getElementById('messageInput');
+    if(inp){
+      inp.style.setProperty('font-size', '1.05rem', 'important');
+      inp.style.setProperty('height', '44px', 'important');
+    }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', fixInput);
+  } else { fixInput(); }
 })();
 </script>
 </body>
