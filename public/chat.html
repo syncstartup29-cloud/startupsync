@@ -273,6 +273,11 @@
     body{overflow-x:hidden;-webkit-font-smoothing:antialiased;}
     body,button,input,select,textarea{font-family:'Sora','Inter',sans-serif!important;}
     input,select,textarea{font-size:max(16px,1em)!important;}
+/* StartupSync fix: override mobile zoom-prevention rule for desktop message input */
+@media (min-width:768px){
+  textarea#messageInput.msg-input,
+  textarea#messageInput.msg-input::placeholder{font-size:0.88rem!important;}
+}
     /* StartupSync fix: override mobile zoom-prevention rule for desktop message input */
     @media (min-width:768px){
       textarea#messageInput.msg-input,
