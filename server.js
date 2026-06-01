@@ -53,7 +53,7 @@ const { Server } = require("socket.io");
 app.set("trust proxy", 1);
 
 // 🔒 SECURITY: Lock CORS to your actual domain only
-const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "http://localhost:3000";
+const ALLOWED_ORIGIN = process.env.FRONTEND_URL || "https://startupsync-production.up.railway.app";
 const ALLOWED_ORIGINS = [
   ALLOWED_ORIGIN,
   "https://startupsync.in",
@@ -161,7 +161,7 @@ async function ensureIndexes() {
     await ChatMessage.collection.createIndex({ conversationId: 1, createdAt: 1 });
     await ChatConversation.collection.createIndex({ pairKey: 1 }, { unique: true });
     await ChatConversation.collection.createIndex({ participants: 1 });
-    console.log("✅ MongoDB indexes ensured");
+    // console.log("✅ MongoDB indexes ensured");
   } catch(e) { console.error("⚠️ Index error (non-fatal):", e.message); }
 }
 
@@ -173,7 +173,7 @@ mongoose.connect(process.env.MONGO_URI, {
   socketTimeoutMS: 45000,
   bufferCommands: false,
 })
-  .then(async () => { console.log("✅ MongoDB Connected"); await ensureIndexes(); })
+  .then(async () => { await ensureIndexes(); })
   .catch((err) => {
     console.error("❌ MongoDB Error:", err);
     process.exit(1); // 🔒 STARTUP: Exit if DB fails — don't run without a database
@@ -2226,16 +2226,16 @@ app.use((err, req, res, next) => {
 // ════════════════════════════════════════════════════════
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Server + Socket.IO running on port ${PORT}`));
+server.listen(PORT, () => { /* server started */ });
 
 // 🔒 STARTUP: Graceful shutdown — waits for active requests to finish
 // before closing DB connection. Prevents data corruption on restart.
 function gracefulShutdown(signal) {
-  console.log(`\n${signal} received. Shutting down gracefully...`);
+  // console.log(`\n${signal} received. Shutting down gracefully...`);
   server.close(async () => {
-    console.log("✅ HTTP server closed");
+    // console.log("✅ HTTP server closed");
     await mongoose.connection.close();
-    console.log("✅ MongoDB connection closed");
+    // console.log("✅ MongoDB connection closed");
     process.exit(0);
   });
   // Force kill after 10 seconds if stuck
