@@ -1432,6 +1432,15 @@
         socket.on('chat:seenUpdate',({byUserId})=>{ if(!selectedPeer) return; const mine=String(currentUser._id),peer=String(selectedPeer._id); if(String(byUserId)!==peer) return; messages=messages.map(m=>String(m.fromUserId)===mine?{...m,seen:true}:m); renderMessages(); });
         socket.on('chat:messageDeleted',({messageId})=>{ messages=messages.map(m=>String(m._id)===String(messageId)?{...m,text:'🚫 This message was deleted',file:'',edited:false,deleted:true}:m); renderMessages(); });
         socket.on('chat:messageEdited',({messageId,text})=>{ messages=messages.map(m=>String(m._id)===String(messageId)?{...m,text,edited:true}:m); renderMessages(); scrollBottom(); });
+        socket.on('chat:unreadUpdate',({fromUserId})=>{
+          // ✅ FIX: Sender deleted a message — refresh unread counts for receiver
+          if(unreadCounts[String(fromUserId)]>0){
+            unreadCounts[String(fromUserId)]=Math.max(0,unreadCounts[String(fromUserId)]-1);
+            updateChatBadge(); updateMobChatBadge(); updateSidebarUnread();
+          }
+          // Also re-fetch from server for accuracy
+          loadUnread();
+        });
         socket.on('account:deleted',({deletedUserId, reason})=>{
           const _r = reason === 'violation' ? 'violation' : 'self';
           // ✅ PERSIST to localStorage immediately — survives reload + loadConnections()

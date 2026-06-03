@@ -1983,11 +1983,12 @@ app.post("/chat/delete", authMiddleware, async (req, res) => {
     if (!m) return res.json({ success: false });
     if (m.senderId.toString() !== userId.toString()) return res.json({ success: false, message: "Not allowed" });
 
-    await ChatMessage.updateOne({ _id: messageId }, { $set: { deleted: true, text: "", file: "" } });
+    await ChatMessage.updateOne({ _id: messageId }, { $set: { deleted: true, text: "", file: "", seen: true, seenAt: new Date() } });
 
     const room = roomFromPairKey(makePairKey(userId, peerId));
     io.to(room).emit("chat:messageDeleted", { messageId: messageId.toString() });
     io.to(peerId.toString()).emit("chat:messageDeleted", { messageId: messageId.toString() });
+    io.to(`user:${peerId}`).emit("chat:unreadUpdate", { fromUserId: userId });
 
     return res.json({ success: true });
   } catch (e) {
