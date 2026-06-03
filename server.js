@@ -1004,7 +1004,9 @@ app.post("/account/delete", authMiddleware, async (req, res) => {
 
     await Promise.all([
       ChatConversation.updateMany({ participants: userId }, { $set: { archived: true, archivedAt: new Date() } }),
-      ChatMessage.updateMany({ $or: [{ senderId: userId }, { receiverId: userId }] }, { $set: { senderDeleted: true } }),
+      // ✅ FIX: Mark all unread messages from deleted user as seen — clears receiver's badge
+      ChatMessage.updateMany({ senderId: userId, seen: false }, { $set: { seen: true, seenAt: new Date(), senderDeleted: true } }),
+      ChatMessage.updateMany({ receiverId: userId }, { $set: { senderDeleted: true } }),
       // FIX: stamp clearedAt for this userId so if they re-register (new _id),
       // the old conversation is sealed and history won't leak back
       ChatConversation.updateMany(
@@ -2056,8 +2058,8 @@ app.get("/chat/unread-counts", authMiddleware, async (req, res) => {
       {
         $match: {
           receiverId: new mongoose.Types.ObjectId(userId),
-          seen: false,
-          deleted: { $ne: true },
+          seen: { $ne: true },
+          $or: [{ deleted: { $exists: false } }, { deleted: false }, { deleted: null }],
         },
       },
       {
