@@ -1020,7 +1020,8 @@ a, button, [role="button"] {
       if(resp && resp.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); }
       else{ _ssAlert("❌ "+(resp && resp.message||"Try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; }
     }catch(e){ _ssAlert("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; }
-  });
+  })
+  .catch(function(err){ console.error("connected.html error:", err); });
 
   function closeConfirm(){ pendingDeleteId=null; document.getElementById("confirmOverlay").style.display="none"; }
   function openConfirm(targetId, name){ pendingDeleteId=targetId; document.getElementById("confirmName").textContent=name||"this user"; document.getElementById("confirmOverlay").style.display="flex"; }

@@ -1037,7 +1037,8 @@ a, button, [role="button"] {
       const b=document.getElementById(id); if(!b) return;
       if(totalUnread>0){b.textContent=txt;b.style.display="flex";}
       else{b.style.display="none";b.textContent="";}
-    });
+    })
+    .catch(function(err){ console.error("inbox.html error:", err); });
   }
   async function loadUnreadCounts(){
     try{

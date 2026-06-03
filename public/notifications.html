@@ -918,7 +918,8 @@ a, button, [role="button"] {
     ["navNotiBadge","mobNavNotiBadge"].forEach(function(id){
       var b=document.getElementById(id);
       if(b){ b.textContent=""; b.style.display="none"; }
-    });
+    })
+    .catch(function(err){ console.error("notifications.html error:", err); });
     try{
       await fetch("/notifications/mark-seen",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})});
       localStorage.setItem("notiSeenNow", Date.now());
