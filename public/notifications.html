@@ -853,7 +853,7 @@ a, button, [role="button"] {
     <div class="sb-label">More</div>
     <button class="sb-item" data-nav="help.html" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Help</button>
     <button class="sb-item" onclick="document.getElementById('deleteModal').style.display='flex';document.getElementById('deleteConfirmInput').value='';document.getElementById('modalConfirmBtn').disabled=true;" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Delete</button>
-    <button class="sb-item" onclick="localStorage.removeItem('currentUser');localStorage.removeItem('token');sessionStorage.removeItem('currentUser');sessionStorage.removeItem('token');window.location.href='index.html'" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
+    <button class="sb-item" onclick="try{var _nat=localStorage.getItem('notiAllReadAt');var _nst=localStorage.getItem('notiSeenNow');}catch(_e){}localStorage.removeItem('currentUser');localStorage.removeItem('token');sessionStorage.removeItem('currentUser');sessionStorage.removeItem('token');try{if(_nat)localStorage.setItem('notiAllReadAt',_nat);if(_nst)localStorage.setItem('notiSeenNow',_nst);}catch(_e){}window.location.href='index.html'" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
   </nav>
   <div class="page-content">
     <main class="main-content">
@@ -918,8 +918,7 @@ a, button, [role="button"] {
     ["navNotiBadge","mobNavNotiBadge"].forEach(function(id){
       var b=document.getElementById(id);
       if(b){ b.textContent=""; b.style.display="none"; }
-    })
-    .catch(function(err){ console.error("notifications.html error:", err); });
+    });
     try{
       await fetch("/notifications/mark-seen",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})});
       localStorage.setItem("notiSeenNow", Date.now());
@@ -956,6 +955,18 @@ a, button, [role="button"] {
   var _recentMarkAll = Date.now() - (parseInt(localStorage.getItem("notiAllReadAt")||"0")) < 30000;
   if(_recentMarkAll) window._ssNotiAllRead = true;
   loadNotifications();
+  // Auto mark-seen on page visit — clears badge immediately
+  try {
+    var _tok = localStorage.getItem("token")||sessionStorage.getItem("token")||"";
+    fetch("/notifications/mark-seen",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+_tok},body:JSON.stringify({userId:currentUser._id})})
+      .then(function(){ 
+        localStorage.setItem("notiAllReadAt", String(Date.now()));
+        window._ssNotiAllRead = true;
+        ["navNotiBadge","mobNavNotiBadge"].forEach(function(id){
+          var b=document.getElementById(id); if(b){b.textContent="";b.style.display="none";}
+        });
+      }).catch(function(){});
+  } catch(_e) {}
 
   // Fix #12: Real-time notification push — no more disappearing notifications
   (function(){
