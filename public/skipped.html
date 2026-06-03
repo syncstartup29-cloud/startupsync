@@ -877,7 +877,8 @@ a, button, [role="button"] {
   document.getElementById("modalCancelBtn")?.addEventListener("click",()=>{ document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteModal")?.addEventListener("click",e=>{ if(e.target===document.getElementById("deleteModal")) document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteConfirmInput")?.addEventListener("input",()=>{ document.getElementById("modalConfirmBtn").disabled=document.getElementById("deleteConfirmInput").value.trim()!=="delete your account"; });
-  document.getElementById("modalConfirmBtn")?.addEventListener("click",async()=>{ document.getElementById("modalConfirmBtn").disabled=true; document.getElementById("modalConfirmBtn").textContent="Deleting..."; try{ const resp=await fetch("/account/delete",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})}).then(r=>r.json()); if(resp && resp.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); }else{ _ssAlert("❌ "+(resp && resp.message||"Try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } }catch(e){ _ssAlert("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } });
+  document.getElementById("modalConfirmBtn")?.addEventListener("click",async()=>{ document.getElementById("modalConfirmBtn").disabled=true; document.getElementById("modalConfirmBtn").textContent="Deleting..."; try{ const resp=await fetch("/account/delete",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})}).then(r=>r.json())
+      .catch(function(err){ console.error("[skipped.html] fetch error:", err); }); if(resp && resp.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); }else{ _ssAlert("❌ "+(resp && resp.message||"Try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } }catch(e){ _ssAlert("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } });
 
   function safe(v){ return (v??'').toString(); }
   function getInitial(name){ return (safe(name)[0]||"U").toUpperCase(); }
@@ -1046,7 +1047,8 @@ a, button, [role="button"] {
       });
       if (cu._id) {
         fetch("/get-user?userId=" + encodeURIComponent(cu._id), { cache: "no-store", headers: { "Authorization": "Bearer " + (localStorage.getItem("token")||sessionStorage.getItem("token")||"") }})
-        .then(function(r){return r.json();})
+        .then(function(r){return r.json()
+      .catch(function(err){ console.error("[skipped.html] fetch error:", err); });})
         .then(function(d){ if (d && d.success && d.photo && d.photo.trim()) { var i=new Image(); i.onload=function(){ el.innerHTML=""; var ie=document.createElement("img"); ie.src=d.photo; el.appendChild(ie); }; i.src=d.photo; } })
         .catch(function(){});
       }

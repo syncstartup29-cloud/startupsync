@@ -1569,7 +1569,8 @@
   document.getElementById("modalCancelBtn")?.addEventListener("click",()=>{ document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteModal")?.addEventListener("click",e=>{ if(e.target===document.getElementById("deleteModal")) document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteConfirmInput")?.addEventListener("input",()=>{ document.getElementById("modalConfirmBtn").disabled=document.getElementById("deleteConfirmInput").value.trim()!=="delete your account"; });
-  document.getElementById("modalConfirmBtn")?.addEventListener("click",async()=>{ document.getElementById("modalConfirmBtn").disabled=true; document.getElementById("modalConfirmBtn").textContent="Deleting..."; try{ const resp=await fetch("/account/delete",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})}).then(r=>r.json()); if(resp?.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); } else{ showPopup("❌ "+(resp?.message||"Please try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } }catch(e){ showPopup("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } });
+  document.getElementById("modalConfirmBtn")?.addEventListener("click",async()=>{ document.getElementById("modalConfirmBtn").disabled=true; document.getElementById("modalConfirmBtn").textContent="Deleting..."; try{ const resp=await fetch("/account/delete",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})}).then(r=>r.json())
+      .catch(function(err){ console.error("[connections.html] fetch error:", err); }); if(resp?.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); } else{ showPopup("❌ "+(resp?.message||"Please try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } }catch(e){ showPopup("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } });
 
   function showPopup(msg){ if(!msg) return; const wrap=document.getElementById("popupWrap"); if(!wrap) return; const el=document.createElement("div"); el.style.cssText="background:#fff;border:1px solid #E4E4E7;border-left:3px solid #111118;border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,0.1);font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:500;color:#111118;max-width:300px;pointer-events:none;transition:opacity 0.3s;"; el.textContent=msg; wrap.appendChild(el); setTimeout(()=>{ el.style.opacity="0"; },2400); setTimeout(()=>el.remove(),2900); }
 
@@ -1997,7 +1998,8 @@
           cache: "no-store",
           headers: { "Authorization": "Bearer " + (localStorage.getItem("token")||sessionStorage.getItem("token")||"") }
         })
-        .then(function(r){return r.json();})
+        .then(function(r){return r.json()
+      .catch(function(err){ console.error("[connections.html] fetch error:", err); });})
         .then(function(d){
           if (!d || !d.success) return;
           if (d.photo && d.photo.trim()) showPhoto(d.photo.trim());
@@ -2114,7 +2116,8 @@
       });
       if (cu._id) {
         fetch("/get-user?userId=" + encodeURIComponent(cu._id), { cache:"no-store", headers:{ "Authorization":"Bearer " + (localStorage.getItem("token")||sessionStorage.getItem("token")||"") } })
-          .then(function(r){return r.json();})
+          .then(function(r){return r.json()
+      .catch(function(err){ console.error("[connections.html] fetch error:", err); });})
           .then(function(d){
             if (d && d.success && d.photo && d.photo.trim()) {
               var i = new Image();
