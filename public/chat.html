@@ -1239,7 +1239,7 @@
       <div class="sb-label">More</div>
       <button class="sb-item" data-nav="help.html" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Help</button>
       <button class="sb-item" onclick="document.getElementById('deleteModal').style.display='flex';document.getElementById('deleteConfirmInput').value='';document.getElementById('modalConfirmBtn').disabled=true;" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Delete</button>
-      <button class="sb-item" onclick="try{localStorage.setItem('_ss_loggingOut','1');sessionStorage.setItem('_ss_loggingOut','1');}catch(e){}fetch('/logout',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('token')||sessionStorage.getItem('token')||'')}}).catch(()=>{});setTimeout(function(){localStorage.clear();sessionStorage.clear();window.location.replace('index.html');},150);" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
+      <button class="sb-item" onclick="try{localStorage.setItem('_ss_loggingOut','1');sessionStorage.setItem('_ss_loggingOut','1');}catch(e){}fetch('/logout',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('token')||sessionStorage.getItem('token')||'')}}).catch(()=>{});setTimeout(function(){try{const _dk=Object.keys(localStorage).filter(k=>k.startsWith('ss_deleted_users_'));const _dd={};_dk.forEach(k=>{_dd[k]=localStorage.getItem(k);});localStorage.clear();sessionStorage.clear();Object.keys(_dd).forEach(k=>{localStorage.setItem(k,_dd[k]);});}catch(e){localStorage.clear();sessionStorage.clear();}window.location.replace('index.html');},150);" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
     </nav>
 
     <aside class="sidebar" id="sidebar">
@@ -1424,7 +1424,7 @@
           messages=messages.filter(m=>!(String(m._id).startsWith('temp_')&&String(m.fromUserId)===from&&m.text===payload.text&&!payload.file));
           if(messages.some(m=>String(m._id)===String(payload._id))) return;
           const _pText=(payload.text===null||payload.text===undefined)?'':(typeof payload.text==='string'?payload.text:(typeof payload.text==='object'?'':String(payload.text)));
-          messages.push({_id:payload._id,fromUserId:payload.fromUserId,toUserId:payload.toUserId,text:_pText,file:payload.file||'',createdAt:payload.createdAt,seen:!!payload.seen,edited:!!payload.edited});
+          messages.push({_id:payload._id,fromUserId:payload.fromUserId,toUserId:payload.toUserId,text:_pText,file:payload.file||'',fileName:payload.fileName||'',createdAt:payload.createdAt,seen:!!payload.seen,edited:!!payload.edited});
           renderMessages(); scrollBottom();
           if(to===mine) socket?.emit('chat:seen',{otherId:selectedPeer._id});
         });
@@ -2369,7 +2369,6 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
 }
 })();
 </script>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/suspension-screen.js"></script>
 <script src="/session-guard.js"></script>
 <script src="/custom-ui.js"></script>
@@ -2590,7 +2589,10 @@ else{var _w=setInterval(function(){if(typeof window.io!=="undefined"){clearInter
         var k = localStorage.key(i);
         if (k && (k.indexOf("ss_activetab_")===0 || k.indexOf("ss_tab_")===0)) keys.push(k);
       }
-      keys.forEach(function(k){ localStorage.removeItem(k); });
+      keys.forEach(function(k){ 
+        // Preserve deleted user records across logout
+        if(!k.startsWith('ss_deleted_users_')) localStorage.removeItem(k); 
+      });
       setTimeout(function() {
         try { localStorage.removeItem('_ss_loggingOut'); } catch(e) {}
         try { sessionStorage.removeItem('_ss_loggingOut'); } catch(e) {}
