@@ -587,48 +587,6 @@
       });
 
 
-      // ✅ FIX: When sender deletes an unread message, decrement badge
-      _sk.on("chat:messageDeleted", function (payload) {
-        if (!payload) return;
-        // Re-fetch unread counts from server to get accurate number
-        if (_cu && _cu._id) {
-          fetch("/chat/unread-counts?userId=" + encodeURIComponent(_cu._id), {
-            cache: "no-store",
-            headers: { "Authorization": "Bearer " + _tok() }
-          }).then(function(r){ return r.json(); })
-            .then(function(d){
-              if (!d || !d.success) return;
-              var total = Object.values(d.counts || {}).reduce(function(s,c){ return s+c; }, 0);
-              ["navChatBadge","mobNavChatBadge","mobChatBadge"].forEach(function(id){
-                var b = document.getElementById(id);
-                if (!b) return;
-                if (total > 0) { b.textContent = total > 99 ? "99+" : String(total); b.style.display = "flex"; }
-                else { b.textContent = ""; b.style.display = "none"; }
-              });
-            }).catch(function(){});
-        }
-      });
-
-      // ✅ FIX: Also handle chat:unreadUpdate event
-      _sk.on("chat:unreadUpdate", function () {
-        if (_cu && _cu._id) {
-          fetch("/chat/unread-counts?userId=" + encodeURIComponent(_cu._id), {
-            cache: "no-store",
-            headers: { "Authorization": "Bearer " + _tok() }
-          }).then(function(r){ return r.json(); })
-            .then(function(d){
-              if (!d || !d.success) return;
-              var total = Object.values(d.counts || {}).reduce(function(s,c){ return s+c; }, 0);
-              ["navChatBadge","mobNavChatBadge","mobChatBadge"].forEach(function(id){
-                var b = document.getElementById(id);
-                if (!b) return;
-                if (total > 0) { b.textContent = total > 99 ? "99+" : String(total); b.style.display = "flex"; }
-                else { b.textContent = ""; b.style.display = "none"; }
-              });
-            }).catch(function(){});
-        }
-      });
-
       _sk.on("connect_error", function (err) {
         console.warn("[custom-ui] Socket connect_error:", err && err.message);
       });
