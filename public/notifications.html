@@ -252,7 +252,7 @@
     .noti-item { background:#fff !important; border:2px solid #111118 !important; border-radius:12px !important; padding:.85rem 1rem !important; display:flex; gap:12px; align-items:flex-start; box-shadow:3px 3px 0 #111118 !important; transition:transform .18s, box-shadow .18s !important; position:relative !important; border-left:2px solid #111118 !important; }
     .noti-item:hover { transform:translateY(-3px) !important; box-shadow:5px 6px 0 #111118 !important; }
     .noti-item.unread { background:#FAFAFA !important; }
-    .noti-item.type-request_sent, .noti-item.type-request_received, .noti-item.type-auto_connected, .noti-item.type-connected, .noti-item.type-declined, .noti-item.type-skip, .noti-item.type-unskip { border-left:2px solid #111118 !important; }
+    .noti-item.type-request_sent, .noti-item.type-request_received, .noti-item.type-auto_connected, .noti-item.type-connected, .noti-item.type-declined, .noti-item.type-skip, .noti-item.type-unskip, .noti-item.type-block { border-left:2px solid #111118 !important; }
     .noti-icon { width:38px !important; height:38px !important; border-radius:50% !important; background:#111118 !important; color:#fff !important; display:flex !important; align-items:center !important; justify-content:center !important; flex-shrink:0; font-size:16px !important; border:2px solid #111118 !important; box-shadow:0 0 0 2px #fff, 0 0 0 3.2px #111118 !important; margin-top:0 !important; }
     .noti-item.type-declined .noti-icon, .noti-item.type-skip .noti-icon { background:#fff !important; color:#111118 !important; }
     .noti-body { flex:1; min-width:0; }
@@ -853,7 +853,7 @@ a, button, [role="button"] {
     <div class="sb-label">More</div>
     <button class="sb-item" data-nav="help.html" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Help</button>
     <button class="sb-item" onclick="document.getElementById('deleteModal').style.display='flex';document.getElementById('deleteConfirmInput').value='';document.getElementById('modalConfirmBtn').disabled=true;" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Delete</button>
-    <button class="sb-item" onclick="try{var _nat=localStorage.getItem('notiAllReadAt');var _nst=localStorage.getItem('notiSeenNow');}catch(_e){}try{localStorage.setItem('_ss_loggingOut','1');sessionStorage.setItem('_ss_loggingOut','1');}catch(_e2){}fetch('/logout',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('token')||sessionStorage.getItem('token')||'')}}).catch(()=>{});setTimeout(function(){localStorage.clear();sessionStorage.clear();try{if(_nat)localStorage.setItem('notiAllReadAt',_nat);if(_nst)localStorage.setItem('notiSeenNow',_nst);}catch(_e3){}window.location.replace('index.html');},150);" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
+    <button class="sb-item" onclick="try{var _nat=localStorage.getItem('notiAllReadAt');var _nst=localStorage.getItem('notiSeenNow');}catch(_e){}localStorage.removeItem('currentUser');localStorage.removeItem('token');sessionStorage.removeItem('currentUser');sessionStorage.removeItem('token');try{if(_nat)localStorage.setItem('notiAllReadAt',_nat);if(_nst)localStorage.setItem('notiSeenNow',_nst);}catch(_e){}window.location.href='index.html'" type="button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Logout</button>
   </nav>
   <div class="page-content">
     <main class="main-content">
@@ -887,14 +887,14 @@ a, button, [role="button"] {
   document.getElementById("nav-connected")?.addEventListener("click",()=>window.location.href="connected.html");
   document.getElementById("nav-delete")?.addEventListener("click",openDeleteModal);
   document.getElementById("nav-help")?.addEventListener("click",()=>window.location.href="help.html");
-  document.getElementById("nav-logout")?.addEventListener("click",()=>{ try{localStorage.setItem('_ss_loggingOut','1');sessionStorage.setItem('_ss_loggingOut','1');}catch(e){} fetch('/logout',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('token')||sessionStorage.getItem('token')||'')}}).catch(()=>{}); setTimeout(function(){localStorage.clear();sessionStorage.clear();window.location.replace('index.html');},150); });
+  document.getElementById("nav-logout")?.addEventListener("click",()=>{ localStorage.removeItem("currentUser"); localStorage.removeItem("token"); sessionStorage.removeItem("currentUser"); sessionStorage.removeItem("token"); window.location.href="index.html"; });
   document.getElementById("modalCancelBtn")?.addEventListener("click",()=>{ document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteModal")?.addEventListener("click",e=>{ if(e.target===document.getElementById("deleteModal")) document.getElementById("deleteModal").style.display="none"; });
   document.getElementById("deleteConfirmInput")?.addEventListener("input",()=>{ document.getElementById("modalConfirmBtn").disabled=document.getElementById("deleteConfirmInput").value.trim()!=="delete your account"; });
   document.getElementById("modalConfirmBtn")?.addEventListener("click",async()=>{ document.getElementById("modalConfirmBtn").disabled=true; document.getElementById("modalConfirmBtn").textContent="Deleting..."; try{ const resp=await fetch("/account/delete",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id})}).then(r=>r.json()); if(resp && resp.success){ localStorage.clear(); sessionStorage.clear(); window.location.replace("index.html"); }else{ _ssAlert("❌ "+(resp && resp.message||"Try again.")); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } }catch(e){ _ssAlert("❌ Server error."); document.getElementById("modalConfirmBtn").disabled=false; document.getElementById("modalConfirmBtn").textContent="Delete Forever"; } });
   function formatTime(d){ const diff=Date.now()-new Date(d).getTime(); if(diff<60000) return "Just now"; if(diff<3600000) return Math.floor(diff/60000)+"m ago"; if(diff<86400000) return Math.floor(diff/3600000)+"h ago"; if(diff<604800000) return Math.floor(diff/86400000)+"d ago"; return new Date(d).toLocaleDateString(); }
-  function iconFor(t){ return {skip:"⏭️",unskip:"↩️",request_sent:"📤",request_received:"📥",auto_connected:"🤝",connected:"✅",declined:"❌"}[t]||"🔔"; }
-  function titleFor(t){ return {skip:"You skipped someone",unskip:"You unskipped someone",request_sent:"Request Sent",request_received:"New Connection Request",auto_connected:"Auto-Connected!",connected:"Connected!",declined:"Request Declined"}[t]||"Notification"; }
+  function iconFor(t){ return {skip:"⏭️",unskip:"↩️",request_sent:"📤",request_received:"📥",auto_connected:"🤝",connected:"✅",declined:"❌",block:"🚫"}[t]||"🔔"; }
+  function titleFor(t){ return {skip:"You skipped someone",unskip:"You unskipped someone",request_sent:"Request Sent",request_received:"New Connection Request",auto_connected:"Auto-Connected!",connected:"Connected!",declined:"Request Declined",block:"Blocked"}[t]||"Notification"; }
   function safe(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
   function renderItem(n){
     var ph=n.senderPhoto||n.fromPhoto||n.photo||"";
@@ -938,7 +938,7 @@ a, button, [role="button"] {
   async function loadNotifications(){ const list=document.getElementById("notiList"); try{
     // Add timestamp to bust server-side 10s cache after mark all read
     const _ts=localStorage.getItem("notiSeenNow")?("&_t="+localStorage.getItem("notiSeenNow")):"";
-    const res=await fetch(`/notifications?userId=${encodeURIComponent(currentUser._id)}${_ts}`,{cache:"no-store",headers:{"Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`}}); const data=await res.json(); if(!data.success||!Array.isArray(data.notifications)||!data.notifications.length){ list.innerHTML=`<div class="empty-state"><h3>No notifications yet</h3><p>You're all caught up 🎉</p></div>`; document.getElementById("markAllBtn").disabled=true; updateNotiBadge(0); return; } const valid=["skip","unskip","request_sent","request_received","auto_connected","connected","declined"]; 
+    const res=await fetch(`/notifications?userId=${encodeURIComponent(currentUser._id)}${_ts}`,{cache:"no-store",headers:{"Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`}}); const data=await res.json(); if(!data.success||!Array.isArray(data.notifications)||!data.notifications.length){ list.innerHTML=`<div class="empty-state"><h3>No notifications yet</h3><p>You're all caught up 🎉</p></div>`; document.getElementById("markAllBtn").disabled=true; updateNotiBadge(0); return; } const valid=["skip","unskip","request_sent","request_received","auto_connected","connected","declined","block"]; 
       // FIX: Deduplicate — same type + same refUserId = same event
       const seen_keys=new Set();
       const filtered=data.notifications.filter(function(n){
@@ -979,7 +979,7 @@ a, button, [role="button"] {
           _s.on("notification:new",function(notif){
             var list=document.getElementById("notiList");
             if(!list) return;
-            var valid=["skip","unskip","request_sent","request_received","auto_connected","connected","declined"];
+            var valid=["skip","unskip","request_sent","request_received","auto_connected","connected","declined","block"];
             if(!valid.includes(notif.type)) return;
             var empty=list.querySelector(".empty-state");
             if(empty) list.innerHTML="";

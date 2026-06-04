@@ -1350,6 +1350,8 @@ app.post("/connected/remove", authMiddleware, async (req, res) => {
 
     io.to(`user:${tId.toString()}`).emit("user:blocked",     { byUserId: uId.toString(), byUserName: reporterName });
     io.to(`user:${tId.toString()}`).emit("connection:removed", { removedBy: uId.toString(), removedByName: reporterName });
+    // ✅ FIX: persist block notification to DB so it shows in notifications page
+    await pushNotification(tId.toString(), "block", `🚫 ${reporterName} has removed and blocked you.`, uId.toString());
 
     return res.json({ success: true });
   } catch (e) {
@@ -1397,14 +1399,13 @@ app.get("/connections/feed", authMiddleware, async (req, res) => {
       ],
     };
 
-    const [total, users] = await Promise.all([
-      User.countDocuments(query),
-      User.find(query)
-        .select("fullName role founderProfile investorProfile")
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-    ]);
+    // ✅ FIX: removed countDocuments — was doubling DB load for unused data
+    const users = await User.find(query)
+      .select("fullName role founderProfile investorProfile")
+      .sort({ _id: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     const enriched = users.map(u => {
       const id = String(u._id);
@@ -1420,9 +1421,8 @@ app.get("/connections/feed", authMiddleware, async (req, res) => {
       success: true,
       users: enriched,
       pagination: {
-        page, limit, total,
-        totalPages: Math.ceil(total / limit),
-        hasMore: skip + users.length < total,
+        page, limit,
+        hasMore: users.length === limit,
       },
     });
   } catch (e) {
