@@ -77,8 +77,8 @@ const io = new Server(server, {
 });
 
 // 🔒 SECURITY: Helmet sets ~15 HTTP security headers automatically
-// Protects against XSS, clickjacking, MIME sniffing, and more
-app.use(helmet());
+// CSP disabled — all pages use inline scripts (no nonce system)
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // 🔒 SECURITY: CORS locked to your domain only (was wide open)
 app.use(cors({ 
