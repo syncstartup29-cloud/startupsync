@@ -1319,7 +1319,9 @@
       .replace(/'/g,'&#x27;');
     let currentUser=null,selectedPeer=null,messages=[];
     window.connections=[]; let connections=window.connections;
-    let typingTimer=null,socket=null,unreadCounts={},_typingDebounce=null,_msgFetching=false;
+    let typingTimer=null,socket=null,_typingDebounce=null,_msgFetching=false;
+    window._chatUnreadCounts = {};
+    let unreadCounts = window._chatUnreadCounts;
     let onlineUsers=new Set(),blockedUsers=new Set();
 
     function getUser(){ try{ return JSON.parse(localStorage.getItem('currentUser')||'null'); }catch{ return null; } }
@@ -2291,8 +2293,11 @@ function markAll(){
 // Clear chat unread badges when opening chat with a user
 function clearChatBadge(peerId){
   if(!peerId) return;
-  // Zero out unreadCounts for this peer
+  // Zero out unreadCounts for this peer — now points to same object as chat.html's unreadCounts
   if(window._chatUnreadCounts) window._chatUnreadCounts[String(peerId)]=0;
+  // ✅ FIX: trigger visual badge update after clearing
+  var total=Object.values(window._chatUnreadCounts||{}).reduce(function(s,c){return s+c;},0);
+  setBadge(["navChatBadge","mobNavChatBadge","mobChatBadge"],total);
 }
 
 function chatToast(name,msg,photo,href){

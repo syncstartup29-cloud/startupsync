@@ -1703,6 +1703,7 @@
     if(!animate){ render(); grid.style.opacity="1"; grid.style.transform=""; return; }
     if(isFading) return;
     isFading=true;
+    window._isReplacing=true; // ✅ FIX: block MutationObserver ghost during carousel fade
     // Smooth crossfade: fade out current cards, swap content, fade in
     grid.style.transition=`opacity ${FADE_MS}ms ease`;
     grid.style.opacity="0";
@@ -1719,7 +1720,7 @@
       // Force a reflow so the browser registers the new content before fading in
       void grid.offsetHeight;
       grid.style.opacity="1";
-      setTimeout(()=>{ grid.style.transition=""; isFading=false; }, FADE_MS+30);
+      setTimeout(()=>{ grid.style.transition=""; isFading=false; window._isReplacing=false; }, FADE_MS+30);
     }, FADE_MS);
   }
 
