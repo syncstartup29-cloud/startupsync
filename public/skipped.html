@@ -933,7 +933,7 @@ a, button, [role="button"] {
     try{
       const res=await fetch("/skipped/remove",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id,targetId})});
       const data=await res.json();
-      if(!data && data.success) _ssAlert(data?.message||"Could not unskip");
+      if(!data || !data.success) _ssAlert(data?.message||"Could not unskip");
     }catch(e){ _ssAlert("Server error while unskipping"); }
     setTimeout(()=>{ if(card) card.remove(); checkEmpty(); },230);
   };

@@ -1007,7 +1007,7 @@ a, button, [role="button"] {
   document.getElementById("nav-skipped")?.addEventListener("click",()=>window.location.href="skipped.html");
   document.getElementById("nav-delete")?.addEventListener("click", openDeleteModal);
   document.getElementById("nav-help")?.addEventListener("click",()=>window.location.href="help.html");
-  document.getElementById("nav-logout")?.addEventListener("click",()=>{ localStorage.removeItem("currentUser"); localStorage.removeItem("token"); sessionStorage.removeItem("currentUser"); sessionStorage.removeItem("token"); window.location.href="index.html"; });
+  document.getElementById("nav-logout")?.addEventListener("click",()=>{ try{localStorage.setItem('_ss_loggingOut','1');sessionStorage.setItem('_ss_loggingOut','1');}catch(e){} fetch('/logout',{method:'POST',headers:{'Authorization':'Bearer '+(localStorage.getItem('token')||sessionStorage.getItem('token')||'')}}).catch(()=>{}); setTimeout(function(){localStorage.clear();sessionStorage.clear();window.location.replace('index.html');},150); });
   document.getElementById("discoverBtn")?.addEventListener("click",()=>window.location.href="connections.html");
 
   document.getElementById("modalCancelBtn")?.addEventListener("click",()=>{ document.getElementById("deleteModal").style.display="none"; });

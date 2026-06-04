@@ -4,7 +4,7 @@
 //  critical env variable is missing — prevents silent failures
 // ══════════════════════════════════════════════════════════
 require("dotenv").config();
-const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "EMAIL_USER", "EMAIL_PASS", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
+const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "EMAIL_USER", "EMAIL_PASS", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
 
 if (process.env.JWT_SECRET.length < 32) {
   console.error("❌ JWT_SECRET must be at least 32 characters");
@@ -21,7 +21,6 @@ const express    = require("express");
 const mongoose   = require("mongoose");
 const bcrypt     = require("bcrypt");
 const jwt        = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const cors       = require("cors");
 const path       = require("path");
 const fs         = require("fs");
@@ -79,13 +78,13 @@ const io = new Server(server, {
 
 // 🔒 SECURITY: Helmet sets ~15 HTTP security headers automatically
 // Protects against XSS, clickjacking, MIME sniffing, and more
-// helmet disabled — re-enable on production
+app.use(helmet());
 
 // 🔒 SECURITY: CORS locked to your domain only (was wide open)
 app.use(cors({ 
   origin: function(origin, callback) {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    return callback(null, true); // allow all for Railway compatibility
+    return callback(new Error("Not allowed by CORS"));
   },
   credentials: true 
 }));
@@ -217,7 +216,7 @@ const loginLimiter = rateLimit({
 });
 
 // 🔒 SECURITY: General API limiter — protects all other routes
-// Max 100 requests per 15 minutes per IP
+// Max 2000 requests per 15 minutes per IP (polling routes fire every 10s per page)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 2000, // increased — polling routes fire every 10s per page
@@ -419,7 +418,7 @@ io.use((socket, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
     } catch {
-      // Token invalid but still allow — userId is the main identifier
+      return next(new Error("Invalid token"));
     }
   }
   socket.userId = userId;
@@ -878,14 +877,17 @@ app.post("/login/takeover", loginLimiter, async (req, res) => {
       return res.json({ success: false, message: "Invalid credentials" });
 
     const token = generateUserToken(user._id);
-    await User.findByIdAndUpdate(user._id, { $set: { activeSessionToken: token } });
 
+    // Kick old device BEFORE saving new token — prevents race where old device
+    // calls /session/check in the gap and gets active:true
     if (user.activeSessionToken) {
       io.to(`user:${userId}`).emit("auth:forceLogout", {
         reason: "Another device logged in to your account.",
         newToken: token,
       });
     }
+
+    await User.findByIdAndUpdate(user._id, { $set: { activeSessionToken: token } });
 
     const safeUser = user.toObject();
     delete safeUser.password;
