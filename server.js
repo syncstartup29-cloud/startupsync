@@ -196,10 +196,10 @@ const sendEmail = async (to, subject, html) => {
   return response.json();
 };
 // ── Rate Limiters ─────────────────────────────────────────
-// OTP limiter — max 5 OTP requests per IP per 10 minutes
+// OTP limiter — max 10 OTP requests per IP per 10 minutes
 const otpLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 5,
+  max: 10,
   message: { success: false, message: "Too many OTP requests. Please wait 10 minutes." },
   standardHeaders: true,
   legacyHeaders: false,
