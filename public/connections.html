@@ -77,6 +77,8 @@
     }
     .page-header p  { font-size:0.78rem; color:#374151; margin-top:0.4rem; }
     .page-header .refresh-note { display:none; }
+    /* ✅ FIX: hide header by default — JS shows it only when empty state is needed */
+    #pageHeader { display:none; visibility:hidden; }
     .content-center { flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
     .profile-grid { display:grid; grid-template-columns:1fr; gap:1.25rem; align-items:start; }
     @media(min-width:600px)  { .profile-grid { grid-template-columns:repeat(2,1fr); } }
