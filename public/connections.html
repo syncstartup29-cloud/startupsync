@@ -1700,32 +1700,31 @@
     if(header) { header.style.display="none"; header.style.visibility="hidden"; }
     const slice=getSlice(carouselIndex, cpp());
     const render=()=>{ grid.innerHTML=slice.map(createProfileCard).join(""); };
-    if(!animate){ render(); grid.style.opacity="1"; grid.style.transform=""; return; }
-    if(isFading) return;
-    isFading=true;
-    window._isReplacing=true; // ✅ FIX: block MutationObserver ghost during carousel fade
-    // Smooth crossfade: fade out current cards, swap content, fade in
-    grid.style.transition=`opacity ${FADE_MS}ms ease`;
-    grid.style.opacity="0";
-    setTimeout(()=>{
-      render();
-      // FIX: reset animation on each card so nth-child delays don't re-ghost on re-render
-      var cards = grid.querySelectorAll('.profile-card');
-      cards.forEach(function(card, i) {
-        card.style.animationDelay = (i * 60) + 'ms';
-        card.style.animationName = 'none';
-        void card.offsetHeight; // force reflow per card
-        card.style.animationName = '';
-      });
-      // Force a reflow so the browser registers the new content before fading in
-      void grid.offsetHeight;
-      grid.style.opacity="1";
-      setTimeout(()=>{ grid.style.transition=""; isFading=false; window._isReplacing=false; }, FADE_MS+30);
-    }, FADE_MS);
+    // ✅ FIX: replaced fade (opacity transition) with instant swap + subtle scale
+    // Fade was getting stuck when interrupted — isFading flag never reset on errors
+    window._isReplacing=true;
+    render();
+    grid.style.transition="none";
+    grid.style.opacity="1";
+    grid.style.transform="";
+    // Animate each card in with scale — no opacity transition on grid so nothing can freeze
+    var cards = grid.querySelectorAll('.profile-card');
+    cards.forEach(function(card, i) {
+      card.style.transform = 'scale(0.96)';
+      card.style.opacity = '0';
+      card.style.transition = 'none';
+      void card.offsetHeight;
+      card.style.transition = 'transform 150ms ease, opacity 150ms ease';
+      card.style.transitionDelay = (i * 40) + 'ms';
+      card.style.transform = 'scale(1)';
+      card.style.opacity = '1';
+    });
+    isFading = false; // never lock — instant swap
+    setTimeout(function(){ window._isReplacing=false; }, 300);
   }
 
   function advanceCarousel(){
-    if(!allProfiles.length||isFading) return;
+    if(!allProfiles.length) return;
     carouselIndex=(carouselIndex+1)%allProfiles.length; // Fix #3: advance 1 profile at a time (row-by-row feel)
     showProfiles(true);
   }

@@ -2067,7 +2067,7 @@
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         const r=await fetch('/chat/upload',{method:'POST',headers:{"Authorization":`Bearer ${token}`},body:fd}).then(r=>r.json());
         messages=messages.filter(m=>m._id!==tempId);
-        if(!r?.success){ showToast('Upload failed'); renderMessages(); return; }
+        if(!r?.success){ showToast(r?.message || 'Upload failed'); renderMessages(); return; }
         const msg=r.message||{};
         if(!messages.some(m=>String(m._id)===String(msg._id))){
           messages.push({_id:msg._id,fromUserId:msg.fromUserId||currentUser._id,toUserId:msg.toUserId||selectedPeer._id,text:msg.text||'',file:msg.file||'',fileName:msg.fileName||'',createdAt:msg.createdAt||new Date().toISOString(),seen:false,edited:false});

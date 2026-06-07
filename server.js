@@ -1933,10 +1933,13 @@ app.post("/chat/upload", authMiddleware, upload.single("file"), async (req, res)
     const mime = req.file.mimetype || "";
     const resourceType = mime.startsWith("video/") ? "video" : mime === "application/pdf" ? "raw" : "image";
     const folder = mime.startsWith("video/") ? "startupsync/chat/videos" : mime === "application/pdf" ? "startupsync/chat/pdfs" : "startupsync/chat/images";
+    console.log(`[chat/upload] uploading ${mime} (${req.file.size} bytes) as ${resourceType}`);
     const cloudResult = await new Promise((resolve, reject) => {
+      // ✅ FIX: added timeout so large file uploads don't hang forever
+      const timer = setTimeout(() => reject(new Error("Cloudinary upload timeout")), 60000);
       const stream = cloudinary.uploader.upload_stream(
-        { resource_type: resourceType, folder },
-        (error, result) => error ? reject(error) : resolve(result)
+        { resource_type: resourceType, folder, timeout: 60000 },
+        (error, result) => { clearTimeout(timer); error ? reject(error) : resolve(result); }
       );
       stream.end(req.file.buffer);
     });
@@ -1968,8 +1971,8 @@ app.post("/chat/upload", authMiddleware, upload.single("file"), async (req, res)
 
     return res.json({ success: true, file: filePath, message: payload });
   } catch (e) {
-    console.error("chat/upload error:", e);
-    return res.json({ success: false, error: e.message });
+    console.error("chat/upload error:", e.message || e);
+    return res.json({ success: false, error: e.message, message: "Upload failed: " + (e.message || "unknown error") });
   }
 });
 
