@@ -1686,7 +1686,7 @@
     es.classList.add("show");
     /* show class handles it */
     // Always show heading — empty state fills everything below it
-    if(header) { header.style.display=""; header.style.visibility="visible"; }
+    if(header) { header.style.display="block"; header.style.visibility="visible"; }
     if(hasEverLoadedProfiles){ if(ftEl)ftEl.style.display="none"; if(exEl)exEl.style.display="flex"; }
     else { if(ftEl)ftEl.style.display="flex"; if(exEl)exEl.style.display="none"; }
   }
@@ -2321,7 +2321,7 @@
     if (es)   es.classList.add('show');
 
     // Always keep heading visible so user sees "DISCOVER CONNECTIONS" + animation below
-    if (hdr)  { hdr.style.display = ''; hdr.style.visibility = 'visible'; }
+    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
     // Make sure ss-gi is set so emptyState is fully visible (no opacity:0)
     /* .show class handles visibility */
 
@@ -2594,7 +2594,7 @@
 
     // Show radar while queue loads initially
     es.classList.add('show');
-    if (hdr) { hdr.style.display = ''; hdr.style.visibility = 'visible'; }
+    if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
 
     if (!window.MutationObserver) return;
     var timer = null;
@@ -2614,7 +2614,7 @@
         } else if (!window._feedLoading && !window._isFetching && !window._isReplacing) {
           // Only show empty state if not currently loading or replacing
           es.classList.add('show');
-          if (hdr) { hdr.style.display = ''; hdr.style.visibility = 'visible'; }
+          if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
         }
       }, 3000);
     });
