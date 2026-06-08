@@ -28,15 +28,15 @@
     #auth-page.active { display:flex; }
 
     /* Landing Nav */
-    .lp-nav { display:grid; grid-template-columns:auto 1fr auto; align-items:center; padding:1rem 1.5rem; border-bottom:0.5px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100; background:#0a0a0f; gap:8px; }
-    .lp-nav-brand { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; letter-spacing:0.14em; color:#fff; text-align:right; white-space:nowrap; display:flex; justify-content:flex-end; align-items:center; padding-right:2rem; }
+    .lp-nav { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:1rem 1.5rem; border-bottom:0.5px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100; background:#0a0a0f; }
+    .lp-nav-brand { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; letter-spacing:0.14em; color:#fff; white-space:nowrap; text-align:center; }
     @media(min-width:768px){
       .lp-nav { padding:1.2rem 2rem; }
-      .lp-nav-brand { font-size:26px; letter-spacing:0.18em; padding-right:3rem; }
+      .lp-nav-brand { font-size:26px; letter-spacing:0.18em; }
     }
     @media(max-width:600px){
-      .lp-nav { padding:0.7rem 0.8rem; gap:4px; }
-      .lp-nav-brand { font-size:11px; letter-spacing:0.08em; padding-right:0.5rem; }
+      .lp-nav { padding:0.7rem 0.8rem; }
+      .lp-nav-brand { font-size:11px; letter-spacing:0.08em; }
     }
     @media(max-width:400px){
       .lp-nav-brand { font-size:10px; letter-spacing:0.06em; }
@@ -45,7 +45,7 @@
     .lp-logo { display:flex; align-items:center; gap:10px; }
     .lp-logo img { height:32px; width:auto; }
     .lp-logo-text { font-family:var(--font-h); font-size:12px; font-weight:700; letter-spacing:0.1em; color:#fff; }
-    .lp-nav-btns { display:flex; gap:10px; justify-content:flex-end; }
+    .lp-nav-btns { display:flex; gap:10px; justify-content:flex-end; align-items:center; }
     .lp-btn-login { padding:7px 14px; border:1.5px solid rgba(255,255,255,0.3); border-radius:7px; font-size:11px; color:#fff; background:transparent; cursor:pointer; font-family:var(--font-h); font-weight:600; letter-spacing:0.02em; width:auto; display:inline-block; transition:background 0.2s, border-color 0.2s, color 0.2s; } .lp-btn-login:hover{ background:#fff; color:#0a0a0f; border-color:#fff; }
     .lp-btn-login:hover { border-color:rgba(255,255,255,0.6); }
     .lp-btn-signup { padding:7px 14px; border:none; border-radius:7px; font-size:11px; color:#0a0a0f; background:#fff; cursor:pointer; font-family:var(--font-h); font-weight:700; letter-spacing:0.02em; width:auto; display:inline-block; transition:background 0.2s, transform 0.15s; } .lp-btn-signup:hover{ background:#e8e8e8; transform:translateY(-1px); }
@@ -655,13 +655,9 @@
     document.getElementById('landing-page').style.display = 'none';
     document.getElementById('auth-page').classList.add('active');
     window.scrollTo(0,0);
-    // Set mode and apply immediately
-    isLogin = (mode !== 'signup');
-    if (typeof saveState === 'function') saveState();
-    if (typeof applyModeUI === 'function') {
-      applyModeUI();
-    } else {
-      window._pendingAuthMode = mode;
+    // Use the global setter exposed by the auth IIFE
+    if (typeof window._setAuthMode === 'function') {
+      window._setAuthMode(mode);
     }
   }
   function showLanding() {
@@ -889,7 +885,7 @@ window._ssInitGuard = function(userId) {
     const STATE_KEY="sc_auth_state_v5", DRAFT_KEY="sc_auth_draft_v5";
     let isLogin=true, otpSent=false, otpSendingLock=false, otpBannerShownThisSession=false;
 
-    function loadState(){ try{ const s=JSON.parse(localStorage.getItem(STATE_KEY)||"{}"); isLogin=(s.mode==="signup")?false:true; otpSent=!!s.otpSent; }catch{} }
+    function loadState(){ try{ if(window._forcedAuthMode){ isLogin=(window._forcedAuthMode!=='signup'); return; } const s=JSON.parse(localStorage.getItem(STATE_KEY)||"{}"); isLogin=(s.mode==="signup")?false:true; otpSent=!!s.otpSent; }catch{} }
     function saveState(){ try{ localStorage.setItem(STATE_KEY,JSON.stringify({mode:isLogin?"login":"signup",otpSent:!!otpSent})); }catch{} }
     function loadDraft(){ try{ const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); if(fullNameInput) fullNameInput.value=d.fullName||""; if(emailInput) emailInput.value=d.email||""; if(roleSelect) roleSelect.value=d.role||"Founder"; }catch{} }
     function saveDraft(){ try{ localStorage.setItem(DRAFT_KEY,JSON.stringify({fullName:fullNameInput?fullNameInput.value:"",email:emailInput?emailInput.value:"",role:roleSelect?roleSelect.value:"Founder"})); }catch{} }
@@ -955,6 +951,14 @@ window._ssInitGuard = function(userId) {
     }
 
     loadState(); loadDraft(); applyModeUI(); saveState();
+
+    // ── Global setter so showAuth() can reach inside this IIFE scope ──
+    window._setAuthMode = function(mode) {
+      isLogin = (mode !== 'signup');
+      if (isLogin) hideOtpUI();
+      saveState();
+      applyModeUI();
+    };
     if(fullNameInput) fullNameInput.addEventListener("input",saveDraft);
     if(emailInput) emailInput.addEventListener("input",saveDraft);
     if(roleSelect) roleSelect.addEventListener("change",saveDraft);
