@@ -30,7 +30,15 @@
     /* Landing Nav */
     .lp-nav { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:0.5px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100; background:#0a0a0f; }
     .lp-nav-brand { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; letter-spacing:0.12em; color:#fff; position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; }
-    @media(max-width:600px){ .lp-nav-brand { display:none; } .lp-nav { padding:0.8rem 1rem; } }
+    @media(max-width:600px){
+      .lp-nav { padding:0.8rem 1rem; }
+      .lp-nav-brand { font-size:9px; letter-spacing:0.06em; }
+      .lp-logo svg { width:80px; }
+    }
+    @media(max-width:380px){
+      .lp-nav-brand { font-size:8px; letter-spacing:0.04em; }
+      .lp-btn-login, .lp-btn-signup { padding:6px 10px; font-size:10px; }
+    }
     .lp-logo { display:flex; align-items:center; gap:10px; }
     .lp-logo img { height:32px; width:auto; }
     .lp-logo-text { font-family:var(--font-h); font-size:12px; font-weight:700; letter-spacing:0.1em; color:#fff; }
@@ -663,6 +671,14 @@
   (function() {
     try { sessionStorage.removeItem("token"); sessionStorage.removeItem("currentUser"); } catch(e) {}
     try { localStorage.removeItem("token"); localStorage.removeItem("currentUser"); } catch(e) {}
+    // Auto show auth page if ?auth=login or ?auth=signup in URL
+    var params = new URLSearchParams(window.location.search);
+    var authParam = params.get('auth');
+    if(authParam === 'login' || authParam === 'signup') {
+      document.addEventListener('DOMContentLoaded', function() {
+        showAuth(authParam);
+      });
+    }
   })();
   </script>
 
