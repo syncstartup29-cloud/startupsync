@@ -620,18 +620,18 @@
         <div class="form-group" id="email-group">
           <label for="email">Email</label>
           <input type="email" id="email" placeholder="you@gmail.com" required />
-          <button type="button" id="sendOtpBtn" style="display:none;">Send OTP</button>
+          <button type="button" id="sendOtpBtn" style="display:none;">Send OTP — Step 2 of 2</button>
           <div class="otp-banner" id="otpSentBanner">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             OTP sent to your Gmail
           </div>
-          <p id="otpTagline" class="hint" style="display:none;">To resend OTP click <b>Send OTP</b> again</p>
+          <p id="otpTagline" class="hint" style="display:none;">OTP sent to your Gmail. To resend, click <b>Resend OTP</b></p>
         </div>
         <div class="form-group" id="otp-group" style="display:none;">
           <label for="otpInput">OTP Code</label>
           <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" inputmode="numeric" maxlength="6" autocomplete="one-time-code" />
           <div class="otp-actions">
-            <button type="button" id="confirmOtpBtn">Confirm OTP</button>
+            <button type="button" id="confirmOtpBtn">Confirm OTP &amp; Create Account</button>
           </div>
           <p class="hint" style="margin-top:10px;">Not seeing it? Check Spam / Promotions.</p>
         </div>
@@ -913,7 +913,7 @@ window._ssInitGuard = function(userId) {
       reorderGroups();
       if(isLogin){
         if(formTitle) formTitle.innerHTML='LOGIN';
-        if(submitBtn) submitBtn.textContent="Login";
+        if(submitBtn){ submitBtn.textContent="Login"; submitBtn.style.display="block"; }
         if(nameGroup) nameGroup.style.display="none"; if(roleGroup) roleGroup.style.display="none";
         if(sendOtpBtn) sendOtpBtn.style.display="none"; if(otpSentBanner) otpSentBanner.classList.remove("show");
         if(otpTagline) otpTagline.style.display="none"; if(otpGroup) otpGroup.style.display="none";
@@ -923,11 +923,17 @@ window._ssInitGuard = function(userId) {
         if(toggleText) toggleText.innerHTML=`Don't have an account? <a href="#" id="toggleLink">Sign up</a>`;
       } else {
         if(formTitle) formTitle.innerHTML='SIGN UP';
-        if(submitBtn) submitBtn.textContent="Signup";
+        // Hide the submit button in signup mode — Confirm OTP handles full signup
+        if(submitBtn) submitBtn.style.display="none";
         if(nameGroup) nameGroup.style.display="flex"; if(roleGroup) roleGroup.style.display="flex";
-        if(sendOtpBtn) sendOtpBtn.style.display="block"; if(otpTagline) otpTagline.style.display="block";
+        // Send OTP button label shows step context
+        if(sendOtpBtn){
+          sendOtpBtn.style.display="block";
+          sendOtpBtn.textContent = otpSent ? "Resend OTP" : "Send OTP — Step 2 of 2";
+        }
+        if(otpTagline) otpTagline.style.display="block";
         if(otpSentBanner&&otpSent&&otpBannerShownThisSession) otpSentBanner.classList.add("show");
-        if(emailInput) emailInput.placeholder="Enter email to receive OTP";
+        if(emailInput) emailInput.placeholder="Enter Gmail to receive OTP";
         if(otpGroup) otpGroup.style.display=otpSent?"flex":"none";
         if(forgotPasswordLink) forgotPasswordLink.style.display="none";
         if(toggleText) toggleText.innerHTML=`Already have an account? <a href="#" id="toggleLink">Login</a>`;
@@ -950,9 +956,21 @@ window._ssInitGuard = function(userId) {
       if(!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;}
       if(!/[0-9]/.test(pwd)){_ssAlert("Password must include at least one number.");return;}
       if(!/[a-zA-Z]/.test(pwd)){_ssAlert("Password must include at least one letter.");return;}
-      const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;} const ok=await sendOtp(email); if(!ok) return; otpSent=true; saveState(); if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);} if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
+      const email=safeTrim(emailInput?.value).toLowerCase(); if(!isValidGmail(email)){_ssAlert("Enter a valid Gmail address first");focusIfExists(["email"]);return;}
+      // Show loading state
+      sendOtpBtn.textContent="Sending…"; sendOtpBtn.disabled=true;
+      const ok=await sendOtp(email); if(!ok){ sendOtpBtn.textContent=otpSent?"Resend OTP":"Send OTP — Step 2 of 2"; return; }
+      otpSent=true; saveState();
+      sendOtpBtn.textContent="Resend OTP";
+      if(!otpBannerShownThisSession){otpBannerShownThisSession=true;if(otpSentBanner)otpSentBanner.classList.add("show");setTimeout(()=>{if(otpSentBanner)otpSentBanner.classList.remove("show");},6000);}
+      if(otpGroup) otpGroup.style.display="flex"; if(otpInput){otpInput.value="";otpInput.focus();} }); }
 
-    if(confirmOtpBtn){ confirmOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const fullName=safeTrim(fullNameInput?.value), password=passwordInput?.value||"", role=roleSelect?.value||"", email=safeTrim(emailInput?.value).toLowerCase(), otp=safeTrim(otpInput?.value); if(!fullName||!role||!email||!password){_ssAlert("Full name, role, email and password are required for signup.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters and include a letter, number and special character.");return;} if(!/[!@#$%^&*(),.?":{}|<>]/.test(password)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;} if(!/[0-9]/.test(password)){_ssAlert("Password must include at least one number.");return;} if(!/[a-zA-Z]/.test(password)){_ssAlert("Password must include at least one letter.");return;} if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(!otpSent){_ssAlert("Please click Send OTP first.");return;} if(!/^\d{6}$/.test(otp)){_ssAlert("Enter valid 6 digit OTP");focusIfExists(["otpInput"]);return;} const otpOk=await verifyOtp(email,otp); if(!otpOk) return; const signupResult=await signupUser({fullName,email,password,role}); if(!signupResult) return;
+    if(confirmOtpBtn){ confirmOtpBtn.addEventListener("click",async(e)=>{ e.preventDefault(); if(isLogin) return; const fullName=safeTrim(fullNameInput?.value), password=passwordInput?.value||"", role=roleSelect?.value||"", email=safeTrim(emailInput?.value).toLowerCase(), otp=safeTrim(otpInput?.value); if(!fullName||!role||!email||!password){_ssAlert("Full name, role, email and password are required for signup.");return;} if(password.length<8){_ssAlert("Password must be at least 8 characters and include a letter, number and special character.");return;} if(!/[!@#$%^&*(),.?":{}|<>]/.test(password)){_ssAlert("Password must include at least one special character (!@#$%^&*).");return;} if(!/[0-9]/.test(password)){_ssAlert("Password must include at least one number.");return;} if(!/[a-zA-Z]/.test(password)){_ssAlert("Password must include at least one letter.");return;} if(!isValidGmail(email)){_ssAlert("Only valid @gmail.com emails are allowed");focusIfExists(["email"]);return;} if(!otpSent){_ssAlert("Please click Send OTP first.");return;} if(!/^\d{6}$/.test(otp)){_ssAlert("Enter valid 6 digit OTP");focusIfExists(["otpInput"]);return;}
+      // Show loading state
+      confirmOtpBtn.textContent="Verifying…"; confirmOtpBtn.disabled=true;
+      const otpOk=await verifyOtp(email,otp); if(!otpOk){ confirmOtpBtn.textContent="Confirm OTP & Create Account"; confirmOtpBtn.disabled=false; return; }
+      confirmOtpBtn.textContent="Creating account…";
+      const signupResult=await signupUser({fullName,email,password,role}); if(!signupResult){ confirmOtpBtn.textContent="Confirm OTP & Create Account"; confirmOtpBtn.disabled=false; return; }
       // ── Multi-account guard: only show modal if another account is ACTIVELY logged in on server ──
       const _existing=(()=>{try{return JSON.parse(localStorage.getItem("currentUser")||"null");}catch{return null;}})();
       const _existingToken=localStorage.getItem("token")||sessionStorage.getItem("token")||"";
@@ -1173,7 +1191,7 @@ window._ssInitGuard = function(userId) {
         showSessionConflictModal(result.userId, result.user, email);
         return;
       }
-      if(!result?.success){showServerMessage(result);return;} finishLogin(result.token, result.user, email); }catch(err){_ssAlert("Server error. Please try again.");} return; } _ssAlert("Please use Confirm OTP to complete signup."); });
+      if(!result?.success){showServerMessage(result);return;} finishLogin(result.token, result.user, email); }catch(err){_ssAlert("Server error. Please try again.");} return; } _ssAlert("Please use 'Confirm OTP & Create Account' to complete signup."); });
   })();
   </script>
   <script>
