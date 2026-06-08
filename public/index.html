@@ -44,7 +44,7 @@
     .lp-hero p { font-size:15px; color:#777; line-height:1.8; max-width:440px; margin:0 auto 2.5rem; font-family:var(--font-b); }
     .lp-hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
     .lp-btn-founder { padding:9px 22px; background:#fff; border:none; border-radius:7px; color:#0a0a0f; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font-h); letter-spacing:0.03em; display:inline-block; width:auto; transition:background 0.2s,transform 0.15s; } .lp-btn-founder:hover{background:#e8e8e8;transform:translateY(-1px);}
-    .lp-btn-investor { padding:9px 22px; background:transparent; border:1.5px solid rgba(255,255,255,0.6); border-radius:7px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font-h); letter-spacing:0.03em; display:inline-block; width:auto; transition:border-color 0.2s,transform 0.15s; } .lp-btn-investor:hover{border-color:#fff;transform:translateY(-1px);}
+    .lp-btn-investor { padding:9px 22px; background:transparent; border:1.5px solid rgba(255,255,255,0.4); border-radius:7px; color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font-h); letter-spacing:0.03em; display:inline-block; width:auto; transition:border-color 0.2s, box-shadow 0.2s, transform 0.15s; } .lp-btn-investor:hover{ border-color:#fff; box-shadow:0 0 0 2px rgba(255,255,255,0.15); transform:translateY(-1px); background:transparent; }
 
     /* Demo Cards */
     .lp-cards { padding:0 2rem 2.5rem; }
@@ -269,7 +269,8 @@
       </div>
     </nav>
 
-    <div class="lp-hero">
+    <div class="lp-hero" style="position:relative;">
+      <div style="font-family:'Sora',sans-serif; font-size:clamp(0.65rem,1.5vw,0.75rem); font-weight:800; letter-spacing:0.25em; color:#222; text-align:center; margin-bottom:0.6rem;">STARTUPSYNC™</div>
       <div class="lp-badge">WHERE FOUNDERS MEET INVESTORS</div>
       <h1>Connect. Pitch.<br>Build the future.</h1>
       <p>The exclusive platform where early-stage founders discover the right investors — and investors find their next big bet.</p>
@@ -279,35 +280,94 @@
       </div>
     </div>
 
-    <div class="lp-cards">
-      <div class="lp-cards-label">WHO'S ON THE PLATFORM</div>
-      <div class="lp-cards-grid">
-        <div class="lp-card">
-          <div class="lp-card-top"><div class="lp-av av-a">RK</div><div><div class="lp-card-name">Rahul Kumar</div><div class="lp-card-city">Mumbai</div></div></div>
-          <span class="lp-tag tag-f">Founder</span>
-          <div class="lp-card-bio">Building AI-powered supply chain for D2C brands.</div>
-        </div>
-        <div class="lp-card">
-          <div class="lp-card-top"><div class="lp-av av-b">PS</div><div><div class="lp-card-name">Priya Shah</div><div class="lp-card-city">Bangalore</div></div></div>
-          <span class="lp-tag tag-i">Investor</span>
-          <div class="lp-card-bio">Angel investor. Focus on SaaS, Fintech, Consumer tech.</div>
-        </div>
-        <div class="lp-card">
-          <div class="lp-card-top"><div class="lp-av av-c">AM</div><div><div class="lp-card-name">Arjun Mehta</div><div class="lp-card-city">Delhi</div></div></div>
-          <span class="lp-tag tag-f">Founder</span>
-          <div class="lp-card-bio">EdTech for tier-2 cities. Looking for seed round.</div>
-        </div>
-        <div class="lp-card">
-          <div class="lp-card-top"><div class="lp-av av-d">NV</div><div><div class="lp-card-name">Neha Verma</div><div class="lp-card-city">Pune</div></div></div>
-          <span class="lp-tag tag-i">Investor</span>
-          <div class="lp-card-bio">VC partner. Interested in climate tech and health.</div>
-        </div>
+    <div style="padding:0 2rem 3rem;">
+      <div style="text-align:center; margin-bottom:2rem;">
+        <div style="font-size:11px; color:#333; letter-spacing:0.1em; margin-bottom:0.8rem; font-family:'Inter',sans-serif;">PROFILE PREVIEW</div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:clamp(1.2rem,3vw,1.6rem); font-weight:800; color:#fff;">See how profiles look</h2>
+        <p style="font-size:13px; color:#444; margin-top:8px; font-family:'Inter',sans-serif;">Clean, detailed profiles so you know exactly who you're connecting with</p>
       </div>
-      <div class="lp-conn">
-        <div class="lp-conn-bar"></div><div class="lp-conn-dot"></div>
-        <div class="lp-conn-text">connections happening now</div>
-        <div class="lp-conn-dot"></div><div class="lp-conn-bar"></div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:700px; margin:0 auto;">
+
+        <!-- Founder Profile Card -->
+        <div style="background:#0f0f18; border:0.5px solid rgba(255,255,255,0.1); border-radius:16px; overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#0a0a1f,#111128); padding:1.5rem 1.5rem 1rem;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:1rem;">
+              <div style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#2244aa,#3399ff); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:16px; font-weight:800; color:#fff; border:2px solid rgba(51,153,255,0.3); flex-shrink:0;">RK</div>
+              <div>
+                <div style="font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:#fff;">Rahul Kumar</div>
+                <div style="font-size:11px; color:#555; margin-top:2px;">Mumbai, Maharashtra</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span style="padding:3px 10px; background:#111128; border:0.5px solid #2a2a4e; border-radius:4px; font-size:10px; font-family:'Sora',sans-serif; font-weight:700; color:#8888cc;">Founder</span>
+              <span style="padding:3px 10px; background:#0a0f1f; border:0.5px solid rgba(255,255,255,0.07); border-radius:4px; font-size:10px; color:#555;">AI / SaaS</span>
+              <span style="padding:3px 10px; background:#0a0f1f; border:0.5px solid rgba(255,255,255,0.07); border-radius:4px; font-size:10px; color:#555;">Pre-seed</span>
+            </div>
+          </div>
+          <div style="padding:1rem 1.5rem 1.5rem; border-top:0.5px solid rgba(255,255,255,0.05);">
+            <div style="font-size:12px; color:#666; line-height:1.7; margin-bottom:1rem;">Building an AI-powered supply chain platform for D2C brands. Helping 50+ brands reduce logistics costs by 30%.</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">Startup</span>
+                <span style="color:#ccc; font-family:'Sora',sans-serif; font-weight:600;">SupplyAI</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">Looking for</span>
+                <span style="color:#ccc; font-family:'Sora',sans-serif; font-weight:600;">₹50L – ₹2Cr</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">LinkedIn</span>
+                <span style="color:#3399ff; font-family:'Sora',sans-serif; font-weight:600;">Connected ✓</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:1rem;">
+              <button style="padding:8px; background:#fff; border:none; border-radius:7px; font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:#0a0a0f; cursor:pointer;">Interested</button>
+              <button style="padding:8px; background:transparent; border:0.5px solid rgba(255,255,255,0.15); border-radius:7px; font-family:'Sora',sans-serif; font-size:11px; font-weight:600; color:#666; cursor:pointer;">Skip</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investor Profile Card -->
+        <div style="background:#0f0f18; border:0.5px solid rgba(255,255,255,0.1); border-radius:16px; overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#081510,#0a1a14); padding:1.5rem 1.5rem 1rem;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:1rem;">
+              <div style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#0f6e56,#1D9E75); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:16px; font-weight:800; color:#fff; border:2px solid rgba(29,158,117,0.3); flex-shrink:0;">PS</div>
+              <div>
+                <div style="font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:#fff;">Priya Shah</div>
+                <div style="font-size:11px; color:#555; margin-top:2px;">Bangalore, Karnataka</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span style="padding:3px 10px; background:#081510; border:0.5px solid #1a4030; border-radius:4px; font-size:10px; font-family:'Sora',sans-serif; font-weight:700; color:#4daa80;">Investor</span>
+              <span style="padding:3px 10px; background:#0a0f1f; border:0.5px solid rgba(255,255,255,0.07); border-radius:4px; font-size:10px; color:#555;">SaaS · Fintech</span>
+              <span style="padding:3px 10px; background:#0a0f1f; border:0.5px solid rgba(255,255,255,0.07); border-radius:4px; font-size:10px; color:#555;">Angel</span>
+            </div>
+          </div>
+          <div style="padding:1rem 1.5rem 1.5rem; border-top:0.5px solid rgba(255,255,255,0.05);">
+            <div style="font-size:12px; color:#666; line-height:1.7; margin-bottom:1rem;">Angel investor with 8+ years experience. Focus on early-stage B2B SaaS and Fintech. Hands-on with portfolio companies.</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">Ticket size</span>
+                <span style="color:#ccc; font-family:'Sora',sans-serif; font-weight:600;">₹25L – ₹1Cr</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">Stage</span>
+                <span style="color:#ccc; font-family:'Sora',sans-serif; font-weight:600;">Pre-seed · Seed</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span style="color:#444;">Portfolio</span>
+                <span style="color:#22ccaa; font-family:'Sora',sans-serif; font-weight:600;">12 startups</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:1rem;">
+              <button style="padding:8px; background:#fff; border:none; border-radius:7px; font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:#0a0a0f; cursor:pointer;">Interested</button>
+              <button style="padding:8px; background:transparent; border:0.5px solid rgba(255,255,255,0.15); border-radius:7px; font-family:'Sora',sans-serif; font-size:11px; font-weight:600; color:#666; cursor:pointer;">Skip</button>
+            </div>
+          </div>
+        </div>
+
       </div>
+      <p style="text-align:center; font-size:11px; color:#2a2a2a; margin-top:1.5rem; font-family:'Inter',sans-serif;">Sign up to see real profiles on the platform</p>
     </div>
 
     <div class="lp-how">
@@ -396,41 +456,31 @@
     </div>
 
 
-    <!-- TESTIMONIALS -->
+    <!-- PROBLEM VS SOLUTION -->
     <div style="padding:3rem 2rem; border-top:0.5px solid rgba(255,255,255,0.05);">
       <div style="text-align:center; margin-bottom:2rem;">
-        <div style="font-size:11px; color:#333; letter-spacing:0.1em; margin-bottom:0.8rem; font-family:'Inter',sans-serif;">EARLY FEEDBACK</div>
-        <h2 style="font-family:'Sora',sans-serif; font-size:clamp(1.2rem,3vw,1.6rem); font-weight:800; color:#fff;">What people are saying</h2>
+        <div style="font-size:11px; color:#333; letter-spacing:0.1em; margin-bottom:0.8rem; font-family:'Inter',sans-serif;">THE PROBLEM WE SOLVE</div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:clamp(1.2rem,3vw,1.6rem); font-weight:800; color:#fff;">Networking is broken.<br>We fixed it.</h2>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; max-width:760px; margin:0 auto;">
-        <div style="background:#0f0f18; border:0.5px solid rgba(255,255,255,0.07); border-radius:12px; padding:1.5rem;">
-          <div style="font-size:13px; color:#777; line-height:1.8; margin-bottom:1rem; font-family:'Inter',sans-serif;">"Finally a platform built for founders — not just another LinkedIn clone. The matching is spot on."</div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:32px; height:32px; border-radius:50%; background:#111128; border:1px solid #2a2a4e; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:#8888cc;">SK</div>
-            <div>
-              <div style="font-family:'Sora',sans-serif; font-size:12px; font-weight:700; color:#ccc;">Siddharth K.</div>
-              <div style="font-size:10px; color:#444;">Founder, Mumbai</div>
-            </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:700px; margin:0 auto;">
+        <div style="background:#0f0f18; border:0.5px solid rgba(220,38,38,0.2); border-radius:16px; padding:1.8rem;">
+          <div style="font-size:11px; font-family:'Sora',sans-serif; font-weight:700; letter-spacing:0.08em; color:#f87171; margin-bottom:1.2rem;">❌ BEFORE STARTUPSYNC</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#555; line-height:1.6;"><span style="color:#f87171; flex-shrink:0;">✗</span> Cold DMs on LinkedIn that get ignored</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#555; line-height:1.6;"><span style="color:#f87171; flex-shrink:0;">✗</span> Irrelevant connections from different industries</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#555; line-height:1.6;"><span style="color:#f87171; flex-shrink:0;">✗</span> No way to know if an investor is actually interested</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#555; line-height:1.6;"><span style="color:#f87171; flex-shrink:0;">✗</span> Sharing contact details with strangers publicly</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#555; line-height:1.6;"><span style="color:#f87171; flex-shrink:0;">✗</span> Months wasted on the wrong people</div>
           </div>
         </div>
-        <div style="background:#0f0f18; border:0.5px solid rgba(255,255,255,0.07); border-radius:12px; padding:1.5rem;">
-          <div style="font-size:13px; color:#777; line-height:1.8; margin-bottom:1rem; font-family:'Inter',sans-serif;">"I connected with 3 serious founders in my first week. The quality of profiles here is much better than cold outreach."</div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:32px; height:32px; border-radius:50%; background:#081510; border:1px solid #1a4030; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:#4daa80;">RP</div>
-            <div>
-              <div style="font-family:'Sora',sans-serif; font-size:12px; font-weight:700; color:#ccc;">Riya P.</div>
-              <div style="font-size:10px; color:#444;">Angel Investor, Bangalore</div>
-            </div>
-          </div>
-        </div>
-        <div style="background:#0f0f18; border:0.5px solid rgba(255,255,255,0.07); border-radius:12px; padding:1.5rem;">
-          <div style="font-size:13px; color:#777; line-height:1.8; margin-bottom:1rem; font-family:'Inter',sans-serif;">"The privacy-first approach is brilliant. My details only get shared when I want them to. That's how it should work."</div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:32px; height:32px; border-radius:50%; background:#0a0f1f; border:1px solid #1a2040; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:11px; font-weight:700; color:#5577aa;">AM</div>
-            <div>
-              <div style="font-family:'Sora',sans-serif; font-size:12px; font-weight:700; color:#ccc;">Ankur M.</div>
-              <div style="font-size:10px; color:#444;">Founder, Delhi</div>
-            </div>
+        <div style="background:#0f0f18; border:0.5px solid rgba(34,204,170,0.2); border-radius:16px; padding:1.8rem;">
+          <div style="font-size:11px; font-family:'Sora',sans-serif; font-weight:700; letter-spacing:0.08em; color:#22ccaa; margin-bottom:1.2rem;">✅ WITH STARTUPSYNC</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Curated profiles matched to your goals</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Only connect when both sides show interest</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Real-time chat with pitch-ready tools</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Contact shared only after mutual match</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Right connections in days, not months</div>
           </div>
         </div>
       </div>
