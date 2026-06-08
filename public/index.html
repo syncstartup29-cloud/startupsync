@@ -28,21 +28,20 @@
     #auth-page.active { display:flex; }
 
     /* Landing Nav */
-    .lp-nav { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:0.5px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100; background:#0a0a0f; }
-    .lp-nav-brand { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; letter-spacing:0.12em; color:#fff; position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap; }
+    .lp-nav { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:1rem 1.5rem; border-bottom:0.5px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:100; background:#0a0a0f; gap:8px; }
+    .lp-nav-brand { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; letter-spacing:0.12em; color:#fff; text-align:center; white-space:nowrap; }
     @media(max-width:600px){
-      .lp-nav { padding:0.8rem 1rem; }
-      .lp-nav-brand { font-size:9px; letter-spacing:0.06em; }
-      .lp-logo svg { width:80px; }
+      .lp-nav { padding:0.7rem 0.9rem; gap:6px; }
+      .lp-nav-brand { font-size:9px; letter-spacing:0.05em; }
     }
-    @media(max-width:380px){
-      .lp-nav-brand { font-size:8px; letter-spacing:0.04em; }
-      .lp-btn-login, .lp-btn-signup { padding:6px 10px; font-size:10px; }
+    @media(max-width:400px){
+      .lp-nav-brand { font-size:8px; letter-spacing:0.03em; }
+      .lp-btn-login, .lp-btn-signup { padding:5px 9px; font-size:10px; }
     }
     .lp-logo { display:flex; align-items:center; gap:10px; }
     .lp-logo img { height:32px; width:auto; }
     .lp-logo-text { font-family:var(--font-h); font-size:12px; font-weight:700; letter-spacing:0.1em; color:#fff; }
-    .lp-nav-btns { display:flex; gap:10px; }
+    .lp-nav-btns { display:flex; gap:10px; justify-content:flex-end; }
     .lp-btn-login { padding:7px 14px; border:1.5px solid rgba(255,255,255,0.3); border-radius:7px; font-size:11px; color:#fff; background:transparent; cursor:pointer; font-family:var(--font-h); font-weight:600; letter-spacing:0.02em; width:auto; display:inline-block; transition:background 0.2s, border-color 0.2s, color 0.2s; } .lp-btn-login:hover{ background:#fff; color:#0a0a0f; border-color:#fff; }
     .lp-btn-login:hover { border-color:rgba(255,255,255,0.6); }
     .lp-btn-signup { padding:7px 14px; border:none; border-radius:7px; font-size:11px; color:#0a0a0f; background:#fff; cursor:pointer; font-family:var(--font-h); font-weight:700; letter-spacing:0.02em; width:auto; display:inline-block; transition:background 0.2s, transform 0.15s; } .lp-btn-signup:hover{ background:#e8e8e8; transform:translateY(-1px); }
