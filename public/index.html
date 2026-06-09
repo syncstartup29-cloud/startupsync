@@ -42,7 +42,7 @@
       .lp-nav-brand { font-size:14px; letter-spacing:0.06em; align-self:center; }
       .lp-btn-login, .lp-btn-signup { padding:6px 10px; font-size:10px; }
     }
-    .lp-logo { display:flex; align-items:center; gap:10px; align-self:flex-end; padding-bottom:2px; }
+    .lp-logo { display:flex; align-items:center; gap:10px; align-self:center; margin-top:4px; }
     .lp-logo img { height:32px; width:auto; }
     .lp-logo-text { font-family:var(--font-h); font-size:12px; font-weight:700; letter-spacing:0.1em; color:#fff; }
     .lp-nav-btns { display:flex; gap:10px; justify-content:flex-end; align-items:center; }
@@ -158,13 +158,13 @@
     select option { background:#fff; color:#fff; }
 
     button {
-      width:100%; padding:0.72rem 1rem; border:none; border-radius:8px;
-      font-family:var(--font-h); font-size:0.8rem; font-weight:700; cursor:pointer;
+      width:100%; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px;
+      font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer;
       letter-spacing:0.04em; position:relative; overflow:hidden;
-      background:#fff; color:#0a0a0f;
-      transition:background 0.2s, transform 0.15s, box-shadow 0.2s;
+      background:#111; color:#fff;
+      transition:box-shadow 0.2s, transform 0.15s;
     }
-    button:hover:not(:disabled):not(.eye-btn):not(.auth-back):not(.lp-btn-login):not(.lp-btn-signup):not(.lp-btn-founder):not(.lp-btn-investor) { background:#111; box-shadow:0 0 0 2px #111, 0 0 0 5px rgba(17,17,17,0.2); transform:translateY(-1px); }
+    button:hover:not(:disabled):not(.eye-btn):not(.auth-back):not(.lp-btn-login):not(.lp-btn-signup):not(.lp-btn-founder):not(.lp-btn-investor) { background:#111; color:#fff; box-shadow:0 0 0 2px #111, 0 0 0 5px rgba(17,17,17,0.2); transform:translateY(-1px); }
     button:active:not(:disabled):not(.eye-btn):not(.auth-back) {
       transform:translateY(0);
     }
@@ -283,7 +283,7 @@
 
       <div class="lp-badge">WHERE FOUNDERS MEET INVESTORS</div>
       <h1>Connect. Pitch.<br>Build the future.</h1>
-      <p>The exclusive platform where early-stage founders discover the right investors — and investors find their next big bet.</p>
+      <p>The exclusive platform where early-stage founders discover the right investors — and investors find their next big opportunity.</p>
       <div class="lp-hero-btns">
         <button class="lp-btn-founder" onclick="isLogin=false; showAuth('signup')">Join as Founder</button>
         <button class="lp-btn-investor" onclick="isLogin=false; showAuth('signup')">Join as Investor</button>
@@ -294,7 +294,7 @@
       <div style="text-align:center; margin-bottom:2rem;">
         <div style="font-size:11px; color:#333; letter-spacing:0.1em; margin-bottom:0.8rem; font-family:'Inter',sans-serif;">PROFILE PREVIEW</div>
         <h2 style="font-family:'Sora',sans-serif; font-size:clamp(1.2rem,3vw,1.6rem); font-weight:800; color:#111;">See how profiles look</h2>
-        <p style="font-size:13px; color:#444; margin-top:8px; font-family:'Inter',sans-serif;">Clean, detailed profiles so you know exactly who you're connecting with</p>
+        <p style="font-size:13px; color:#444; margin-top:8px; font-family:'Inter',sans-serif;">Clean, detailed profiles so you know exactly who you're connecting with.</p>
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:700px; margin:0 auto;">
 
@@ -412,7 +412,7 @@
         <div style="background:#f7f7f9; border:0.5px solid #e5e5e5; border-radius:12px; padding:1.5rem;">
           <div style="font-size:24px; margin-bottom:12px;">🇮🇳</div>
           <h3 style="font-family:'Sora',sans-serif; font-size:14px; font-weight:700; color:#111; margin-bottom:8px;">Made for India</h3>
-          <p style="font-size:12px; color:#555; line-height:1.7;">Built specifically for the Indian startup ecosystem — founders and investors across every city.</p>
+          <p style="font-size:12px; color:#555; line-height:1.7;">Built specifically for the Indian startup ecosystem. — founders and investors across every city.</p>
         </div>
       </div>
     </div>
@@ -482,11 +482,11 @@
         <div style="background:#f7f7f9; border:0.5px solid rgba(34,204,170,0.2); border-radius:16px; padding:1.8rem;">
           <div style="font-size:11px; font-family:'Sora',sans-serif; font-weight:700; letter-spacing:0.08em; color:#22ccaa; margin-bottom:1.2rem;">✅ WITH STARTUPSYNC</div>
           <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Curated profiles matched to your goals</div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Only connect when both sides show interest</div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Real-time chat with pitch-ready tools</div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Contact shared only after mutual match</div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Right connections in days, not months</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Curated profiles matched to your goals.</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Connect only when both sides show interest.</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Real-time chat with pitch-ready tools.</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Contact details shared only after a mutual match.</div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#777; line-height:1.6;"><span style="color:#22ccaa; flex-shrink:0;">✓</span> Find the right connections in days, not months.</div>
           </div>
         </div>
       </div>
@@ -526,11 +526,11 @@
         </div>
         <div style="background:#f7f7f9; border:0.5px solid #e5e5e5; border-radius:10px; padding:1.2rem 1.5rem;">
           <div style="font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:#111; margin-bottom:6px;">Who can join StartupSync?</div>
-          <div style="font-size:12px; color:#555; line-height:1.7;">Any early-stage founder or angel investor / VC looking to build meaningful connections in the Indian startup ecosystem.</div>
+          <div style="font-size:12px; color:#555; line-height:1.7;">Any early-stage founder or angel investor/VC looking to build meaningful connections in the Indian startup ecosystem.</div>
         </div>
         <div style="background:#f7f7f9; border:0.5px solid #e5e5e5; border-radius:10px; padding:1.2rem 1.5rem;">
           <div style="font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:#111; margin-bottom:6px;">How is this different from other platforms?</div>
-          <div style="font-size:12px; color:#555; line-height:1.7;">StartupSync is exclusively for founders and investors. No noise, no recruiters, no random connection requests — only curated, mutual interest-based connections.</div>
+          <div style="font-size:12px; color:#555; line-height:1.7;">StartupSync is built exclusively for founders and investors. No noise, no recruiters, no random connection requests — only curated, mutual interest-based connections.</div>
         </div>
         <div style="background:#f7f7f9; border:0.5px solid #e5e5e5; border-radius:10px; padding:1.2rem 1.5rem;">
           <div style="font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:#111; margin-bottom:6px;">Is my data safe?</div>
@@ -540,7 +540,7 @@
     </div>
     <div class="lp-cta">
       <h2>Ready to find your match?</h2>
-      <p>Join founders and investors already building on StartupSync</p>
+      <p>Join founders and investors already building on StartupSync.</p>
       <div class="lp-cta-btns">
         <button class="lp-btn-founder" onclick="isLogin=false; showAuth('signup')">Get started free</button>
         <button class="lp-btn-investor" onclick="showAuth('login')">Login</button>
