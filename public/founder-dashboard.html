@@ -109,8 +109,8 @@
     .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
     .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
-    .btn-explore { width:100%; margin-top:0.75rem; padding:0.65rem 1rem; border:1px dashed #9CA3AF; border-radius:8px; font-family:var(--font-h); font-size:0.75rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; background:transparent; color:#6B7280; transition:border-color 0.2s,color 0.2s; }
-    .btn-explore:hover { border-color:#111; color:#111; }
+    .btn-explore { width:100%; margin-top:0.75rem; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-explore:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
     .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
     .review-row:last-child { border-bottom:none; }
     .review-label { font-size:0.72rem; font-weight:600; color:#6B7280; font-family:var(--font-b); flex-shrink:0; }
@@ -219,7 +219,7 @@
     /* Black glow on ALL primary buttons */
     .btn-interested,.btn-accept,.btn-chat,.btn-go-connections,.btn-discover,.btn-unskip,
     .btn-connect,.submit-btn,.btn-interested,.send-otp-btn,
-    button[type=submit]{animation:ssBtnG 2.8s ease-in-out infinite!important;}
+    button[type=submit]:not(.btn-next){animation:ssBtnG 2.8s ease-in-out infinite!important;}
     @keyframes ssBtnG{0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.22);}50%{box-shadow:0 5px 24px rgba(0,0,0,.45),0 0 0 3px rgba(0,0,0,.07);}}
 
     /* Index/login page - keep existing blue accent but add glow */
@@ -780,7 +780,7 @@ window._showToast = function(opts) {
             <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
             <button type="button" class="btn-next" onclick="goStep(2)" style="flex:2;">Next — Startup Details →</button>
           </div>
-          <button type="button" class="btn-explore" onclick="exploreFirst()">👀 Explore profiles first (you can complete profile later)</button>
+          <button type="button" class="btn-explore" onclick="exploreFirst()">Explore Profiles First →</button>
         </div>
 
         <!-- STEP 2: Startup Details -->
@@ -839,7 +839,7 @@ window._showToast = function(opts) {
           <div id="reviewContent"></div>
           <div class="step-nav">
             <button type="button" class="btn-back" onclick="goStep(2)" style="flex:1;">← Back</button>
-            <button type="submit" class="btn-next save-button" style="flex:2;">Submit Profile ✓</button>
+            <button type="button" class="btn-next save-button" style="flex:2;" onclick="document.getElementById('profileForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))">Submit Profile ✓</button>
           </div>
         </div>
       </form>
