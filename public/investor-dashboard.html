@@ -124,6 +124,12 @@
     @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
     @media(min-width:768px){ body{padding:2.5rem 1.5rem;} .card{padding:3rem 2.75rem;} }
 
+
+    /* Custom B&W validation toast */
+    .ss-validation-toast { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%) translateY(-10px); background:#111; color:#fff; padding:0.75rem 1.25rem; border-radius:10px; font-family:var(--font-h); font-size:0.78rem; font-weight:600; z-index:99999; box-shadow:0 8px 32px rgba(0,0,0,0.25); max-width:90vw; text-align:center; opacity:0; transition:opacity 0.25s,transform 0.25s; pointer-events:none; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    .ss-validation-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .ss-validation-toast .toast-icon { font-size:1rem; flex-shrink:0; }
+
     /* ✅ CROP MODAL — smaller, compact, both sliders */
     .crop-modal { position:fixed; inset:0; background:rgba(17,17,24,0.72); display:none; align-items:center; justify-content:center; padding:1rem; z-index:9999; }
     .crop-modal.show { display:flex; }
@@ -747,7 +753,7 @@ window._showToast = function(opts) {
             <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
             <button type="button" class="btn-next" onclick="goStep(2)" style="flex:2;">Next — Investment Details →</button>
           </div>
-          <button type="button" class="btn-explore" onclick="exploreFirst()">Explore Profiles First →</button>
+          <button type="button" class="btn-explore" onclick="exploreFirst()">Just Looking Around →</button>
         </div>
 
         <!-- STEP 2: Investment Details -->
@@ -1396,6 +1402,17 @@ window._showToast = function(opts) {
 
   
 
+
+  function showValToast(msg) {
+    const t = document.getElementById('ssValToast');
+    const m = document.getElementById('ssValToastMsg');
+    if (!t || !m) { _ssAlert(msg); return; }
+    m.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
   function goBackFromStep1() {
     const isNewUser = localStorage.getItem('newUser_' + (currentUser?.email || '')) === 'true';
     if (isNewUser) {
@@ -1418,8 +1435,8 @@ window._showToast = function(opts) {
       if (currentStep === 1) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
-        if (!fn) { _ssAlert('Please enter your full name.'); return; }
-        if (!/^\d{10}$/.test(ph)) { _ssAlert('Please enter a valid 10-digit phone number.'); return; }
+        if (!fn) { showValToast('Please enter your full name.'); return; }
+        if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
       }
       if (currentStep === 2) {
         const it = document.getElementById('investorType').value;
@@ -1427,11 +1444,11 @@ window._showToast = function(opts) {
         const ps = document.getElementById('preferredStage').value;
         const ts = document.getElementById('ticketSize').value;
         const fc = document.getElementById('financialCapacity').value;
-        if (!it) { _ssAlert('Please select your investor type.'); return; }
-        if (!inf) { _ssAlert('Please enter your investment focus.'); return; }
-        if (!ps) { _ssAlert('Please select your preferred investment stage.'); return; }
-        if (!ts) { _ssAlert('Please select your ticket size.'); return; }
-        if (!fc) { _ssAlert('Please select your financial capacity.'); return; }
+        if (!it) { showValToast('Please select your investor type.'); return; }
+        if (!inf) { showValToast('Please enter your investment focus.'); return; }
+        if (!ps) { showValToast('Please select preferred stage.'); return; }
+        if (!ts) { showValToast('Please select your ticket size.'); return; }
+        if (!fc) { showValToast('Please select financial capacity.'); return; }
         buildReview();
       }
       if (currentStep === 3) {
@@ -1980,5 +1997,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+  <div class="ss-validation-toast" id="ssValToast"><span class="toast-icon">⚠️</span><span id="ssValToastMsg"></span></div>
 </body>
 </html>

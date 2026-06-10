@@ -122,6 +122,12 @@
     @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
     @media(min-width:768px){ body{padding:2.5rem 1.5rem;} .card{padding:3rem 2.75rem;} }
 
+
+    /* Custom B&W validation toast */
+    .ss-validation-toast { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%) translateY(-10px); background:#111; color:#fff; padding:0.75rem 1.25rem; border-radius:10px; font-family:var(--font-h); font-size:0.78rem; font-weight:600; z-index:99999; box-shadow:0 8px 32px rgba(0,0,0,0.25); max-width:90vw; text-align:center; opacity:0; transition:opacity 0.25s,transform 0.25s; pointer-events:none; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+    .ss-validation-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .ss-validation-toast .toast-icon { font-size:1rem; flex-shrink:0; }
+
     /* ✅ CROP MODAL — smaller, compact, both sliders */
     .crop-modal { position:fixed; inset:0; background:rgba(17,17,24,0.72); display:none; align-items:center; justify-content:center; padding:1rem; z-index:9999; }
     .crop-modal.show { display:flex; }
@@ -780,7 +786,7 @@ window._showToast = function(opts) {
             <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
             <button type="button" class="btn-next" onclick="goStep(2)" style="flex:2;">Next — Startup Details →</button>
           </div>
-          <button type="button" class="btn-explore" onclick="exploreFirst()">Explore Profiles First →</button>
+          <button type="button" class="btn-explore" onclick="exploreFirst()">Just Looking Around →</button>
         </div>
 
         <!-- STEP 2: Startup Details -->
@@ -1405,6 +1411,17 @@ window._showToast = function(opts) {
   
 
   // ── Smart back from step 1 ──
+
+  function showValToast(msg) {
+    const t = document.getElementById('ssValToast');
+    const m = document.getElementById('ssValToastMsg');
+    if (!t || !m) { _ssAlert(msg); return; }
+    m.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
   function goBackFromStep1() {
     // If new user (came from terms), go back to terms
     // If editing profile (came from connections), go to connections
@@ -1431,18 +1448,18 @@ window._showToast = function(opts) {
       if (currentStep === 1) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
-        if (!fn) { _ssAlert('Please enter your full name.'); return; }
-        if (!/^\d{10}$/.test(ph)) { _ssAlert('Please enter a valid 10-digit phone number.'); return; }
+        if (!fn) { showValToast('Please enter your full name.'); return; }
+        if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
       }
       if (currentStep === 2) {
         const sn = document.getElementById('startupName').value.trim();
         const ind = document.getElementById('industry').value;
         const fs = document.getElementById('fundingStage').value;
         const desc = document.getElementById('description').value.trim();
-        if (!sn) { _ssAlert('Please enter your startup name.'); return; }
-        if (!ind) { _ssAlert('Please select your industry.'); return; }
-        if (!fs) { _ssAlert('Please select your funding stage.'); return; }
-        if (desc.length < 100) { _ssAlert('Description must be at least 100 characters. Currently: ' + desc.length); return; }
+        if (!sn) { showValToast('Please enter your startup name.'); return; }
+        if (!ind) { showValToast('Please select your industry.'); return; }
+        if (!fs) { showValToast('Please select your funding stage.'); return; }
+        if (desc.length < 100) { showValToast('Description needs ' + (100-desc.length) + ' more characters.'); return; }
         buildReview();
       }
     }
@@ -1475,7 +1492,7 @@ window._showToast = function(opts) {
     const sn = document.getElementById('startupName').value.trim();
     const ind = document.getElementById('industry').value;
     const fs = document.getElementById('fundingStage').value;
-    const li = document.getElementById('linkedinUrl').value.trim();
+    const li = document.getElementById('linkedinUrl')?.value?.trim() || '';
     const desc = document.getElementById('description').value.trim();
 
     document.getElementById('reviewContent').innerHTML = `
@@ -1490,7 +1507,6 @@ window._showToast = function(opts) {
       <div class="review-row"><span class="review-label">Startup</span><span class="review-val">${sn}</span></div>
       <div class="review-row"><span class="review-label">Industry</span><span class="review-val">${ind}</span></div>
       <div class="review-row"><span class="review-label">Stage</span><span class="review-val">${fs}</span></div>
-      <div class="review-row"><span class="review-label">LinkedIn</span><span class="review-val">${li || 'Not added'}</span></div>
       <div class="review-row"><span class="review-label">Description</span><span class="review-val" style="font-size:0.75rem;color:#6B7280;text-align:left;">${desc.substring(0,120)}${desc.length > 120 ? '...' : ''}</span></div>
     `;
   }
@@ -2028,5 +2044,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+  <div class="ss-validation-toast" id="ssValToast"><span class="toast-icon">⚠️</span><span id="ssValToastMsg"></span></div>
 </body>
 </html>
