@@ -90,6 +90,32 @@
     ::-webkit-scrollbar-track { background:transparent; }
     ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
     ::-webkit-scrollbar-thumb:hover { background:#D1D5DB; }
+    
+    /* ── 3-STEP PROGRESS ── */
+    .step-progress { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:2rem; }
+    .step-dot { width:32px; height:32px; border-radius:50%; border:2px solid #e4e4e7; background:#fff; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; color:#9CA3AF; font-family:var(--font-h); transition:all 0.3s; flex-shrink:0; }
+    .step-dot.active { border-color:#111; background:#111; color:#fff; }
+    .step-dot.done { border-color:#111; background:#111; color:#fff; }
+    .step-line { height:2px; width:48px; background:#e4e4e7; transition:background 0.3s; flex-shrink:0; }
+    .step-line.done { background:#111; }
+    .step-labels { display:flex; justify-content:space-between; margin-bottom:1.5rem; margin-top:0.4rem; }
+    .step-label { font-size:0.65rem; font-weight:600; color:#9CA3AF; font-family:var(--font-h); letter-spacing:0.04em; text-align:center; flex:1; }
+    .step-label.active { color:#111; }
+    .step-label.done { color:#111; }
+    .step-panel { display:none; }
+    .step-panel.active { display:block; }
+    .step-nav { display:flex; gap:0.75rem; margin-top:1.5rem; }
+    .btn-back { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
+    .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
+    .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
+    .review-row:last-child { border-bottom:none; }
+    .review-label { font-size:0.72rem; font-weight:600; color:#6B7280; font-family:var(--font-b); flex-shrink:0; }
+    .review-val { font-size:0.82rem; color:#111; font-family:var(--font-b); text-align:right; word-break:break-word; }
+    .review-photo { width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #e4e4e7; }
+    .review-title { font-family:var(--font-h); font-size:0.9rem; font-weight:700; color:#111; margin-bottom:1rem; }
+
     @media(max-width:600px){ body{padding:1.25rem 1rem;} .card{padding:1.75rem 1.35rem;} .phone-row{grid-template-columns:1fr;} }
     @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
     @media(min-width:768px){ body{padding:2.5rem 1.5rem;} .card{padding:3rem 2.75rem;} }
@@ -708,50 +734,117 @@ window._showToast = function(opts) {
           <p class="photo-label-text">Profile Photo <span class="required">*</span></p>
           <p class="photo-size-text">Max file size: 20 MB • iPhone photos supported</p>
         </div>
-        <div class="form-fields">
-          <div class="form-group">
-            <label for="fullName">Full Name <span class="required">*</span></label>
-            <input type="text" id="fullName" placeholder="Enter your full name" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email <span class="required">*</span></label>
-            <input type="email" name="email" id="email" class="form-input" readonly style="cursor: not-allowed; background-color: #f3f4f6;">
-            <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Email address cannot be changed.</p>
-          </div>
-          <div class="form-group">
-            <label for="role">Role <span class="required">*</span></label>
-            <input type="text" id="role" value="Founder" readonly style="background:#F4F4F5;color:#6B7280;cursor:not-allowed;border-color:#E4E4E7;" tabindex="-1">
-          </div>
-          <div class="form-group">
-            <label>Phone Number <span class="required">*</span></label>
-            <div class="phone-row">
-              <select id="phoneCountry" onchange="onPhoneCountryChange()" disabled style="background:#F4F4F5 !important;cursor:not-allowed !important;"><option value="+91" selected>🇮🇳 +91 India</option></select>
-              <input type="tel" id="phone" placeholder="10-digit number" required oninput="validatePhone()" onchange="validatePhone()">
-            </div>
-            <div class="phone-validation" id="phoneValidation"></div>
-            <p class="warning-hint">⚠️ Enter your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
-          </div>
-          <div class="form-group">
-            <label for="linkedinUrl">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
-            <div id="linkedinUrlWrapper">
-              <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/yourname">
-              <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
-            </div>
+        <!-- STEP PROGRESS -->
+        <div class="step-progress">
+          <div class="step-dot active" id="sdot1">1</div>
+          <div class="step-line" id="sline1"></div>
+          <div class="step-dot" id="sdot2">2</div>
+          <div class="step-line" id="sline2"></div>
+          <div class="step-dot" id="sdot3">3</div>
+        </div>
+        <div class="step-labels">
+          <span class="step-label active" id="slbl1">Basic Info</span>
+          <span class="step-label" id="slbl2">Startup</span>
+          <span class="step-label" id="slbl3">Review</span>
+        </div>
 
-            <p class="warning-hint">⚠️ Paste your real LinkedIn profile link. It will be publicly clickable so others can verify you are a real person.</p>
-            <p style="font-size:0.68rem;color:#6B7280;margin-top:6px;font-family:'Inter',sans-serif;">💡 Please login to LinkedIn on web to explore other profiles and copy your profile link.</p>
+        <!-- STEP 1: Basic Info -->
+        <div class="step-panel active" id="step1">
+          <div class="form-fields">
+            <div class="form-group">
+              <label for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" name="email" id="email" class="form-input" readonly style="cursor:not-allowed;background-color:#f3f4f6;">
+              <p style="font-size:12px;color:#6b7280;margin-top:5px;">Email address cannot be changed.</p>
+            </div>
+            <div class="form-group">
+              <label for="role">Role <span class="required">*</span></label>
+              <input type="text" id="role" value="Founder" readonly style="background:#F4F4F5;color:#6B7280;cursor:not-allowed;border-color:#E4E4E7;" tabindex="-1">
+            </div>
+            <div class="form-group">
+              <label>Phone Number <span class="required">*</span></label>
+              <div class="phone-row">
+                <select id="phoneCountry" onchange="onPhoneCountryChange()" disabled style="background:#F4F4F5 !important;cursor:not-allowed !important;"><option value="+91" selected>🇮🇳 +91 India</option></select>
+                <input type="tel" id="phone" placeholder="10-digit number" required oninput="validatePhone()" onchange="validatePhone()">
+              </div>
+              <div class="phone-validation" id="phoneValidation"></div>
+              <p class="warning-hint">⚠️ Enter your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="startupName">Startup Name <span class="required">*</span></label>
-            <input type="text" id="startupName" placeholder="Your startup name" required>
-          </div>
-          <div class="form-group">
-            <label for="description">Short Description <span class="required">*</span></label>
-            <textarea id="description" rows="4" minlength="100" placeholder="Tell us about yourself and your startup — what problem you're solving, your stage, and what kind of investor you're looking for. (min 100 characters)" required></textarea>
-            <div class="char-counter" id="descCounter">0 / 100 min</div>
+          <div class="step-nav">
+            <button type="button" class="btn-next" onclick="goStep(2)">Next — Startup Details →</button>
           </div>
         </div>
-        <button type="submit" class="save-button">Save Profile</button>
+
+        <!-- STEP 2: Startup Details -->
+        <div class="step-panel" id="step2">
+          <div class="form-fields">
+            <div class="form-group">
+              <label for="startupName">Startup Name <span class="required">*</span></label>
+              <input type="text" id="startupName" placeholder="Your startup name" required>
+            </div>
+            <div class="form-group">
+              <label for="industry">Industry / Sector <span class="required">*</span></label>
+              <select id="industry" required>
+                <option value="">Select your industry</option>
+                <option value="AI / ML">AI / ML</option>
+                <option value="Fintech">Fintech</option>
+                <option value="SaaS">SaaS</option>
+                <option value="D2C / E-commerce">D2C / E-commerce</option>
+                <option value="HealthTech">HealthTech</option>
+                <option value="EdTech">EdTech</option>
+                <option value="CleanTech / Climate">CleanTech / Climate</option>
+                <option value="Logistics">Logistics</option>
+                <option value="AgriTech">AgriTech</option>
+                <option value="PropTech">PropTech</option>
+                <option value="Gaming">Gaming</option>
+                <option value="Media / Content">Media / Content</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fundingStage">Funding Stage <span class="required">*</span></label>
+              <select id="fundingStage" required>
+                <option value="">Select your current stage</option>
+                <option value="Idea">Idea Stage</option>
+                <option value="Pre-seed">Pre-seed</option>
+                <option value="Seed">Seed</option>
+                <option value="Series A">Series A</option>
+                <option value="Series B+">Series B+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="linkedinUrl">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
+              <div id="linkedinUrlWrapper">
+                <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/yourname">
+                <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
+              </div>
+              <p class="warning-hint">⚠️ Paste your real LinkedIn profile link. It will be publicly clickable so others can verify you are a real person.</p>
+            </div>
+            <div class="form-group">
+              <label for="description">Short Description <span class="required">*</span></label>
+              <textarea id="description" rows="4" minlength="100" placeholder="Tell us about yourself and your startup — what problem you're solving, your stage, and what kind of investor you're looking for. (min 100 characters)" required></textarea>
+              <div class="char-counter" id="descCounter">0 / 100 min</div>
+            </div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-back" onclick="goStep(1)">← Back</button>
+            <button type="button" class="btn-next" onclick="goStep(3)">Review & Submit →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Review + Submit -->
+        <div class="step-panel" id="step3">
+          <div class="review-title">Review your profile</div>
+          <div id="reviewContent"></div>
+          <div class="step-nav">
+            <button type="button" class="btn-back" onclick="goStep(2)">← Back</button>
+            <button type="submit" class="btn-next save-button" style="flex:2;">Submit Profile ✓</button>
+          </div>
+        </div>
       </form>
     </div>
   </div>
@@ -1312,7 +1405,82 @@ window._showToast = function(opts) {
       });
     });
 
-    profileForm.addEventListener("submit", async (e) => {
+  
+  // ── 3-STEP NAVIGATION ──
+  let currentStep = 1;
+
+  function goStep(n) {
+    // Validate before proceeding
+    if (n > currentStep) {
+      if (currentStep === 1) {
+        const fn = document.getElementById('fullName').value.trim();
+        const ph = document.getElementById('phone').value.trim();
+        if (!fn) { _ssAlert('Please enter your full name.'); return; }
+        if (!/^\d{10}$/.test(ph)) { _ssAlert('Please enter a valid 10-digit phone number.'); return; }
+      }
+      if (currentStep === 2) {
+        const sn = document.getElementById('startupName').value.trim();
+        const ind = document.getElementById('industry').value;
+        const fs = document.getElementById('fundingStage').value;
+        const desc = document.getElementById('description').value.trim();
+        if (!sn) { _ssAlert('Please enter your startup name.'); return; }
+        if (!ind) { _ssAlert('Please select your industry.'); return; }
+        if (!fs) { _ssAlert('Please select your funding stage.'); return; }
+        if (desc.length < 100) { _ssAlert('Description must be at least 100 characters.'); return; }
+        // Build review
+        buildReview();
+      }
+    }
+    // Update UI
+    document.getElementById('step' + currentStep).classList.remove('active');
+    document.getElementById('step' + n).classList.add('active');
+    // Update dots
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById('sdot' + i);
+      const lbl = document.getElementById('slbl' + i);
+      dot.classList.remove('active', 'done');
+      lbl.classList.remove('active', 'done');
+      if (i < n) { dot.classList.add('done'); lbl.classList.add('done'); }
+      else if (i === n) { dot.classList.add('active'); lbl.classList.add('active'); }
+    }
+    // Update lines
+    for (let i = 1; i <= 2; i++) {
+      const line = document.getElementById('sline' + i);
+      line.classList.toggle('done', i < n);
+    }
+    currentStep = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildReview() {
+    const photoSrc = localStorage.getItem('ss_founder_photo_' + (window._currentUserEmail || '')) || '';
+    const fn = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const sn = document.getElementById('startupName').value.trim();
+    const ind = document.getElementById('industry').value;
+    const fs = document.getElementById('fundingStage').value;
+    const li = document.getElementById('linkedinUrl').value.trim();
+    const desc = document.getElementById('description').value.trim();
+
+    document.getElementById('reviewContent').innerHTML = `
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        ${photoSrc ? `<img src="${photoSrc}" class="review-photo" alt="photo">` : '<div class="review-photo" style="background:#f4f4f5;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">👤</div>'}
+        <div>
+          <div style="font-weight:700;font-size:1rem;color:#111;">${fn}</div>
+          <div style="font-size:0.75rem;color:#6B7280;">${email}</div>
+        </div>
+      </div>
+      <div class="review-row"><span class="review-label">Phone</span><span class="review-val">+91 ${phone}</span></div>
+      <div class="review-row"><span class="review-label">Startup</span><span class="review-val">${sn}</span></div>
+      <div class="review-row"><span class="review-label">Industry</span><span class="review-val">${ind}</span></div>
+      <div class="review-row"><span class="review-label">Stage</span><span class="review-val">${fs}</span></div>
+      <div class="review-row"><span class="review-label">LinkedIn</span><span class="review-val">${li || 'Not added'}</span></div>
+      <div class="review-row"><span class="review-label">Description</span><span class="review-val" style="font-size:0.75rem;color:#6B7280;text-align:left;">${desc.substring(0,120)}${desc.length > 120 ? '...' : ''}</span></div>
+    `;
+  }
+
+  profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       // FIX 4: Strict validation before ANY server call
       if (!profilePhotoUploaded) { _showToast("Profile photo is required!"); return; }

@@ -832,12 +832,16 @@ async function openDrawer(id,role){
   let fields="";
   if(role==="founder"){
     fields=`<div class="field"><div class="field-lbl">Startup Name</div><div class="field-val" style="font-weight:600">${p.startupName||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Industry</div><div class="field-val">${p.industry||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Funding Stage</div><div class="field-val">${p.fundingStage||"—"}</div></div>
     <div class="field"><div class="field-lbl">Phone</div><div class="field-val mono">${fmtPhone(p.phone, p.phoneCountry)}</div></div>
     <div class="field"><div class="field-lbl">Description</div><div class="field-val desc">${p.description||"—"}</div></div>`;
   } else {
     const tl={angel:"Angel Investor",vc:"Venture Capitalist",pe:"Private Equity"};
     fields=`<div class="field"><div class="field-lbl">Investor Type</div><div class="field-val" style="font-weight:600">${tl[p.investorType]||p.investorType||"—"}</div></div>
     <div class="field"><div class="field-lbl">Investment Focus</div><div class="field-val" style="font-weight:600">${p.investmentFocus||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Preferred Stage</div><div class="field-val">${p.preferredStage||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Ticket Size</div><div class="field-val">${p.ticketSize||"—"}</div></div>
     <div class="field"><div class="field-lbl">Financial Capacity</div><div class="field-val mono">${p.financialCapacity||"—"}</div></div>
     <div class="field"><div class="field-lbl">Phone</div><div class="field-val mono">${fmtPhone(p.phone, p.phoneCountry)}</div></div>
     <div class="field"><div class="field-lbl">Bio</div><div class="field-val desc">${p.bio||"—"}</div></div>`;

@@ -92,6 +92,32 @@
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:transparent; }
     ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+    
+    /* ── 3-STEP PROGRESS ── */
+    .step-progress { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:2rem; }
+    .step-dot { width:32px; height:32px; border-radius:50%; border:2px solid #e4e4e7; background:#fff; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; color:#9CA3AF; font-family:var(--font-h); transition:all 0.3s; flex-shrink:0; }
+    .step-dot.active { border-color:#111; background:#111; color:#fff; }
+    .step-dot.done { border-color:#111; background:#111; color:#fff; }
+    .step-line { height:2px; width:48px; background:#e4e4e7; transition:background 0.3s; flex-shrink:0; }
+    .step-line.done { background:#111; }
+    .step-labels { display:flex; justify-content:space-between; margin-bottom:1.5rem; margin-top:0.4rem; }
+    .step-label { font-size:0.65rem; font-weight:600; color:#9CA3AF; font-family:var(--font-h); letter-spacing:0.04em; text-align:center; flex:1; }
+    .step-label.active { color:#111; }
+    .step-label.done { color:#111; }
+    .step-panel { display:none; }
+    .step-panel.active { display:block; }
+    .step-nav { display:flex; gap:0.75rem; margin-top:1.5rem; }
+    .btn-back { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
+    .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
+    .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
+    .review-row:last-child { border-bottom:none; }
+    .review-label { font-size:0.72rem; font-weight:600; color:#6B7280; font-family:var(--font-b); flex-shrink:0; }
+    .review-val { font-size:0.82rem; color:#111; font-family:var(--font-b); text-align:right; word-break:break-word; }
+    .review-photo { width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #e4e4e7; }
+    .review-title { font-family:var(--font-h); font-size:0.9rem; font-weight:700; color:#111; margin-bottom:1rem; }
+
     @media(max-width:600px){ body{padding:1.25rem 1rem;} .card{padding:1.75rem 1.35rem;} .phone-row{grid-template-columns:1fr;} }
     @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
     @media(min-width:768px){ body{padding:2.5rem 1.5rem;} .card{padding:3rem 2.75rem;} }
@@ -681,64 +707,125 @@ window._showToast = function(opts) {
           </div>
           <p class="photo-hint">Profile Photo <span class="required">*</span> &mdash; Max 20 MB • iPhone photos supported</p>
         </div>
-        <div class="form-group">
-          <label for="fullName" class="form-label">Full Name <span class="required">*</span></label>
-          <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+        <!-- STEP PROGRESS -->
+        <div class="step-progress">
+          <div class="step-dot active" id="sdot1">1</div>
+          <div class="step-line" id="sline1"></div>
+          <div class="step-dot" id="sdot2">2</div>
+          <div class="step-line" id="sline2"></div>
+          <div class="step-dot" id="sdot3">3</div>
         </div>
-        <div class="form-group">
-          <label for="email" class="form-label">Email <span class="required">*</span></label>
-          <input type="email" name="email" id="email" class="form-input" readonly style="cursor: not-allowed; background-color: #f3f4f6;">
-          <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Email address cannot be changed.</p>
+        <div class="step-labels">
+          <span class="step-label active" id="slbl1">Basic Info</span>
+          <span class="step-label" id="slbl2">Investment</span>
+          <span class="step-label" id="slbl3">Review</span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number <span class="required">*</span></label>
-          <div class="phone-row">
-            <select id="phoneCountry" class="form-select" onchange="onPhoneCountryChange()" disabled style="background:#F4F4F5 !important;cursor:not-allowed !important;"><option value="+91" selected>🇮🇳 +91 India</option></select>
-            <input type="tel" id="phone" class="form-input" placeholder="10-digit number" required oninput="validatePhone()" onchange="validatePhone()">
+
+        <!-- STEP 1: Basic Info -->
+        <div class="step-panel active" id="step1">
+          <div class="form-group">
+            <label for="fullName" class="form-label">Full Name <span class="required">*</span></label>
+            <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
           </div>
-          <div class="phone-validation" id="phoneValidation"></div>
-          <p class="warning-hint">⚠️ Use your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
-        </div>
-        <div class="form-group">
-          <label for="investorType" class="form-label">Investor Type <span class="required">*</span></label>
-          <select id="investorType" class="form-select" required>
-            <option value="">Select investor type</option>
-            <option value="angel">Angel Investor</option>
-            <option value="vc">Venture Capitalist</option>
-            <option value="pe">Private Equity</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="linkedinUrl" class="form-label">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
-          <div id="linkedinUrlWrapper">
-            <input type="url" id="linkedinUrl" class="form-input" placeholder="https://www.linkedin.com/in/yourname">
-            <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
+          <div class="form-group">
+            <label for="email" class="form-label">Email <span class="required">*</span></label>
+            <input type="email" name="email" id="email" class="form-input" readonly style="cursor:not-allowed;background-color:#f3f4f6;">
+            <p style="font-size:12px;color:#6b7280;margin-top:5px;">Email address cannot be changed.</p>
           </div>
-          <p class="warning-hint" style="background:#F4F4F5;border:1px solid #E4E4E7;color:#374151;">💡 Optional — but adding your LinkedIn helps others verify you&apos;re a real investor. You can skip this and add it later.</p>
-          <p style="font-size:0.68rem;color:#9CA3AF;margin-top:6px;font-family:'Inter',sans-serif;">If you want to add it later: login to LinkedIn and copy your profile link.</p>
+          <div class="form-group">
+            <label class="form-label">Phone Number <span class="required">*</span></label>
+            <div class="phone-row">
+              <select id="phoneCountry" class="form-select" onchange="onPhoneCountryChange()" disabled style="background:#F4F4F5 !important;cursor:not-allowed !important;"><option value="+91" selected>🇮🇳 +91 India</option></select>
+              <input type="tel" id="phone" class="form-input" placeholder="10-digit number" required oninput="validatePhone()" onchange="validatePhone()">
+            </div>
+            <div class="phone-validation" id="phoneValidation"></div>
+            <p class="warning-hint">⚠️ Use your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-next" onclick="goStep(2)">Next — Investment Details →</button>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="investmentFocus" class="form-label">Investment Focus <span class="required">*</span></label>
-          <input type="text" id="investmentFocus" class="form-input" placeholder="e.g. AI, Fintech, HealthTech, SaaS, Climate..." required>
+
+        <!-- STEP 2: Investment Details -->
+        <div class="step-panel" id="step2">
+          <div class="form-group">
+            <label for="investorType" class="form-label">Investor Type <span class="required">*</span></label>
+            <select id="investorType" class="form-select" required>
+              <option value="">Select investor type</option>
+              <option value="angel">Angel Investor</option>
+              <option value="vc">Venture Capitalist</option>
+              <option value="pe">Private Equity</option>
+              <option value="family_office">Family Office</option>
+              <option value="corporate">Corporate VC</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="investmentFocus" class="form-label">Investment Focus <span class="required">*</span></label>
+            <input type="text" id="investmentFocus" class="form-input" placeholder="e.g. AI, Fintech, HealthTech, SaaS, Climate..." required>
+          </div>
+          <div class="form-group">
+            <label for="preferredStage" class="form-label">Preferred Investment Stage <span class="required">*</span></label>
+            <select id="preferredStage" class="form-select" required>
+              <option value="">Select preferred stage</option>
+              <option value="Idea">Idea Stage</option>
+              <option value="Pre-seed">Pre-seed</option>
+              <option value="Seed">Seed</option>
+              <option value="Series A">Series A</option>
+              <option value="Series B+">Series B+</option>
+              <option value="Any">Any Stage</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ticketSize" class="form-label">Ticket Size <span class="required">*</span></label>
+            <select id="ticketSize" class="form-select" required>
+              <option value="">Select ticket size</option>
+              <option value="₹10L–₹50L">₹10L – ₹50L</option>
+              <option value="₹50L–₹2Cr">₹50L – ₹2Cr</option>
+              <option value="₹2Cr–₹10Cr">₹2Cr – ₹10Cr</option>
+              <option value="₹10Cr+">₹10Cr+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="financialCapacity" class="form-label">Financial Capacity <span class="required">*</span></label>
+            <p class="field-hint" style="margin-bottom:8px;color:var(--text-primary);font-weight:600;">Select your investment capacity level honestly.</p>
+            <select id="financialCapacity" class="form-select" required>
+              <option value="">Select financial capacity</option>
+              <option value="Good">Good</option>
+              <option value="Nice">Nice</option>
+              <option value="Very Nice">Very Nice</option>
+              <option value="Excellent">Excellent</option>
+            </select>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-back" onclick="goStep(1)">← Back</button>
+            <button type="button" class="btn-next" onclick="goStep(3)">Next — About You →</button>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="financialCapacity" class="form-label">Financial Capacity <span class="required">*</span></label>
-          <p class="field-hint" style="margin-bottom:8px;color:var(--text-primary);font-weight:600;">Select your investment capacity level honestly. Investors who misrepresent their capacity will be removed.</p>
-          <select id="financialCapacity" class="form-select" required>
-            <option value="">Select financial capacity</option>
-            <option value="Good">Good</option>
-            <option value="Nice">Nice</option>
-            <option value="Very Nice">Very Nice</option>
-            <option value="Excellent">Excellent</option>
-          </select>
-          <p class="disclaimer-hint">Note: The capacity selected here is used solely for platform visibility and matchmaking purposes.</p>
+
+        <!-- STEP 3: About You + Review + Submit -->
+        <div class="step-panel" id="step3">
+          <div class="form-group">
+            <label for="linkedinUrl" class="form-label">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
+            <div id="linkedinUrlWrapper">
+              <input type="url" id="linkedinUrl" class="form-input" placeholder="https://www.linkedin.com/in/yourname">
+              <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
+            </div>
+            <p class="warning-hint" style="background:#F4F4F5;border:1px solid #E4E4E7;color:#374151;">💡 Optional — but adding your LinkedIn helps others verify you're a real investor.</p>
+          </div>
+          <div class="form-group">
+            <label for="bio" class="form-label">Short Bio <span class="required">*</span></label>
+            <textarea id="bio" class="form-textarea" minlength="100" placeholder="Share your investment philosophy, sectors of interest, past investments, and what kind of founding teams excite you. (min 100 characters)" required></textarea>
+            <div class="char-counter" id="bioCounter">0 / 100 min</div>
+          </div>
+          <div style="margin-top:1.5rem;">
+            <div class="review-title">Review your profile</div>
+            <div id="reviewContent"></div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-back" onclick="goStep(2)">← Back</button>
+            <button type="submit" class="btn-next save-btn" style="flex:2;">Submit Profile ✓</button>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="bio" class="form-label">Short Bio <span class="required">*</span></label>
-          <textarea id="bio" class="form-textarea" minlength="100" placeholder="Share your investment philosophy, sectors of interest, past investments, and what kind of founding teams excite you. (min 100 characters)" required></textarea>
-          <div class="char-counter" id="bioCounter">0 / 100 min</div>
-        </div>
-        <button type="submit" class="save-btn">Save Profile</button>
       </form>
     </div>
   </div>
@@ -1091,6 +1178,8 @@ window._showToast = function(opts) {
         investorType: document.getElementById("investorType").value,
         investmentFocus: document.getElementById("investmentFocus").value,
         financialCapacity: document.getElementById("financialCapacity").value,
+        preferredStage: document.getElementById("preferredStage")?.value || "",
+        ticketSize: document.getElementById("ticketSize")?.value || "",
         bio: document.getElementById("bio").value,
         photo: uploadedPhoto || (localStorage.getItem(profilePhotoKey()) || "")
       };
@@ -1308,7 +1397,76 @@ window._showToast = function(opts) {
       });
     });
 
-    profileForm.addEventListener("submit", async function(e) {
+  
+  // ── 3-STEP NAVIGATION ──
+  let currentStep = 1;
+
+  function goStep(n) {
+    if (n > currentStep) {
+      if (currentStep === 1) {
+        const fn = document.getElementById('fullName').value.trim();
+        const ph = document.getElementById('phone').value.trim();
+        if (!fn) { _ssAlert('Please enter your full name.'); return; }
+        if (!/^\d{10}$/.test(ph)) { _ssAlert('Please enter a valid 10-digit phone number.'); return; }
+      }
+      if (currentStep === 2) {
+        const it = document.getElementById('investorType').value;
+        const inf = document.getElementById('investmentFocus').value.trim();
+        const ps = document.getElementById('preferredStage').value;
+        const ts = document.getElementById('ticketSize').value;
+        const fc = document.getElementById('financialCapacity').value;
+        if (!it) { _ssAlert('Please select your investor type.'); return; }
+        if (!inf) { _ssAlert('Please enter your investment focus.'); return; }
+        if (!ps) { _ssAlert('Please select your preferred investment stage.'); return; }
+        if (!ts) { _ssAlert('Please select your ticket size.'); return; }
+        if (!fc) { _ssAlert('Please select your financial capacity.'); return; }
+        buildReview();
+      }
+      if (currentStep === 3) {
+        const bio = document.getElementById('bio').value.trim();
+        if (bio.length < 100) { _ssAlert('Bio must be at least 100 characters.'); return; }
+      }
+    }
+    document.getElementById('step' + currentStep).classList.remove('active');
+    document.getElementById('step' + n).classList.add('active');
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById('sdot' + i);
+      const lbl = document.getElementById('slbl' + i);
+      dot.classList.remove('active', 'done');
+      lbl.classList.remove('active', 'done');
+      if (i < n) { dot.classList.add('done'); lbl.classList.add('done'); }
+      else if (i === n) { dot.classList.add('active'); lbl.classList.add('active'); }
+    }
+    for (let i = 1; i <= 2; i++) {
+      document.getElementById('sline' + i).classList.toggle('done', i < n);
+    }
+    currentStep = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildReview() {
+    const fn = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const it = document.getElementById('investorType');
+    const itText = it.options[it.selectedIndex]?.text || '';
+    const inf = document.getElementById('investmentFocus').value.trim();
+    const ps = document.getElementById('preferredStage').value;
+    const ts = document.getElementById('ticketSize').value;
+    const fc = document.getElementById('financialCapacity').value;
+
+    document.getElementById('reviewContent').innerHTML = `
+      <div class="review-row"><span class="review-label">Name</span><span class="review-val">${fn}</span></div>
+      <div class="review-row"><span class="review-label">Phone</span><span class="review-val">+91 ${phone}</span></div>
+      <div class="review-row"><span class="review-label">Investor Type</span><span class="review-val">${itText}</span></div>
+      <div class="review-row"><span class="review-label">Investment Focus</span><span class="review-val">${inf}</span></div>
+      <div class="review-row"><span class="review-label">Preferred Stage</span><span class="review-val">${ps}</span></div>
+      <div class="review-row"><span class="review-label">Ticket Size</span><span class="review-val">${ts}</span></div>
+      <div class="review-row"><span class="review-label">Financial Capacity</span><span class="review-val">${fc}</span></div>
+    `;
+  }
+
+  profileForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       if (!uploadedPhoto) return _showToast("Profile photo is required!");
 
@@ -1356,6 +1514,8 @@ window._showToast = function(opts) {
         investmentFocus: document.getElementById("investmentFocus").value.trim(),
         financialCapacity: financialCapacityVal,
         investmentCurrency: existingProfile.investmentCurrency || "INR",
+        preferredStage: document.getElementById("preferredStage")?.value.trim() || "",
+        ticketSize: document.getElementById("ticketSize")?.value.trim() || "",
         bio: document.getElementById("bio").value.trim(),
         photo: uploadedPhoto || existingProfile.photo || ""
       };

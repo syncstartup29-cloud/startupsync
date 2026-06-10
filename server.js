@@ -1162,6 +1162,8 @@ app.post("/profile/founder", authMiddleware, async (req, res) => {
       linkedinUrl,
       startupName,
       description,
+      industry:      (fp.industry || "").trim(),
+      fundingStage:  (fp.fundingStage || "").trim(),
       photo: fp.photo || user.founderProfile?.photo || "",
     };
 
@@ -1275,7 +1277,10 @@ app.post("/profile/investor", authMiddleware, async (req, res) => {
     user.investorProfile = {
       phone, phoneCountry: (ip.phoneCountry || "").trim(),
       linkedinUrl, investorType, investmentFocus,
-      financialCapacity, bio,
+      financialCapacity, investmentCurrency: (ip.investmentCurrency || "").trim(),
+      preferredStage: (ip.preferredStage || "").trim(),
+      ticketSize:     (ip.ticketSize || "").trim(),
+      bio,
       photo: ip.photo || user.investorProfile?.photo || "",
     };
 
