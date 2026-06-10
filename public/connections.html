@@ -1664,7 +1664,12 @@
     </div>`;
   }
 
-  function isProfileComplete(u){ return !!(u&&u._id&&u.role); }
+  function isProfileComplete(u){
+    if(!u||!u._id||!u.role) return false;
+    const p = u.role==='Founder' ? (u.founderProfile||{}) : (u.investorProfile||{});
+    if(u.role==='Founder') return !!(p.photo && p.startupName && p.description && p.phone);
+    return !!(p.photo && p.investorType && p.bio && p.phone);
+  }
 
   // ── Carousel state ──
   let allProfiles   = [];   // master list, never reordered
@@ -1804,7 +1809,20 @@
 
   let isSkipping=false;
   window.handleSkip=async function(targetId){ if(isSkipping) return; isSkipping=true; const card=document.querySelector(`[data-id="${targetId}"]`),btn=card?.querySelector(".btn-skip"); if(btn){btn.disabled=true;btn.textContent="Skipping...";} try{ const r=await(await fetch("/connections/skip",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id,targetId}),keepalive:true})).json(); if(r?.success){ allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); } else{ showPopup(r?.message||"Skip failed"); if(btn){btn.disabled=false;btn.textContent="Skip";} } }catch(e){ showPopup("Skip failed."); if(btn){btn.disabled=false;btn.textContent="Skip";} } finally{ isSkipping=false; } };
-  window.handleInterested=async function(targetId){ allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); try{ await fetch("/connections/interested",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({fromUserId:currentUser._id,toUserId:targetId})}); }catch(e){ showPopup("Server error"); } };
+  window.handleInterested=async function(targetId){
+    // Block if own profile is incomplete
+    const myProfile = currentUser?.role==='Founder' ? (currentUser?.founderProfile||{}) : (currentUser?.investorProfile||{});
+    const myComplete = currentUser?.role==='Founder'
+      ? !!(myProfile.photo && myProfile.startupName && myProfile.description && myProfile.phone)
+      : !!(myProfile.photo && myProfile.investorType && myProfile.bio && myProfile.phone);
+    if(!myComplete){
+      showPopup('⚠️ Please complete your profile before connecting with others.');
+      setTimeout(() => {
+        window.location.href = currentUser?.role==='Founder' ? 'founder-dashboard.html' : 'investor-dashboard.html';
+      }, 2000);
+      return;
+    }
+    allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); try{ await fetch("/connections/interested",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({fromUserId:currentUser._id,toUserId:targetId})}); }catch(e){ showPopup("Server error"); } };
 
   // FIX: centralize interval management — prevents stacking duplicate intervals
   // on rapid visibility changes (tab switch back and forth quickly)

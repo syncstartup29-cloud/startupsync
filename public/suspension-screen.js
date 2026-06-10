@@ -277,7 +277,14 @@
       return _origFetch.apply(window, args).then(function (response) {
         try {
           response.clone().json().then(function (data) {
-            if (data && data.suspended === true) triggerSuspension();
+            // ✅ Only trigger if BOTH suspended:true AND userId matches
+            // Prevents false positives from other API responses
+            if (data && data.suspended === true && data.success === false) {
+              var myId = getMyUserId();
+              if (!data.userId || (myId && String(data.userId) === myId)) {
+                triggerSuspension();
+              }
+            }
           }).catch(function () {});
         } catch (e) {}
         return response;
