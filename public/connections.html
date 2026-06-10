@@ -243,8 +243,8 @@
     .container::before,.card::before{background:linear-gradient(90deg,#555 0%,#111 50%,#555 100%)!important;background-size:200% 100%!important;}
 
     /* Discover cards */
-    .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:3px 3px 0 #111118,0 4px 12px rgba(0,0,0,.07)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
-    .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:5px 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
+    .profile-grid .profile-card{border:0.5px solid #e4e4e7!important;border-top:2px solid #111!important;box-shadow:0 4px 12px rgba(0,0,0,.06)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
+    .profile-grid .profile-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(0,0,0,.1)!important;}
     /* Animation handled by ss-queue-css — removed duplicate to prevent glitch */
 
     /* Connected cards */
@@ -1178,6 +1178,16 @@
       input, textarea, select { font-size: 16px !important; }
       img { max-width: 100%; height: auto; }
     }
+  
+    /* Explore mode locked overlay */
+    .explore-mode-banner { position:fixed; bottom:0; left:0; right:0; background:#111; color:#fff; padding:0.85rem 1.25rem; display:flex; align-items:center; justify-content:space-between; z-index:999; font-family:'Sora',sans-serif; font-size:0.78rem; gap:1rem; }
+    .explore-mode-banner span { flex:1; }
+    .explore-mode-banner button { padding:0.5rem 1.25rem; border:1.5px solid #fff; border-radius:7px; background:transparent; color:#fff; font-family:'Sora',sans-serif; font-size:0.75rem; font-weight:700; cursor:pointer; white-space:nowrap; transition:background 0.2s; }
+    .explore-mode-banner button:hover { background:rgba(255,255,255,0.15); }
+    .explore-locked-overlay { position:absolute; inset:0; background:rgba(255,255,255,0.85); border-radius:inherit; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; z-index:10; backdrop-filter:blur(2px); }
+    .explore-locked-overlay p { font-size:0.75rem; font-weight:600; color:#111; text-align:center; padding:0 1rem; font-family:'Sora',sans-serif; }
+    .explore-locked-overlay button { padding:0.5rem 1.25rem; border:1.5px solid #111; border-radius:7px; background:#111; color:#fff; font-family:'Sora',sans-serif; font-size:0.72rem; font-weight:700; cursor:pointer; }
+
   </style>
 <script>
 (function(){
@@ -1620,12 +1630,13 @@
 
     let chips="";
     if(isF){
+      if(p.industry) chips+=`<span class="info-chip">${safeText(p.industry)}</span>`;
+      if(p.fundingStage) chips+=`<span class="info-chip">${safeText(p.fundingStage)}</span>`;
       if(p.startupName) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${safeText(p.startupName)}</span>`;
-      if(u.role) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0113 0"/></svg>${safeText(u.role)}</span>`;
     } else {
-      if(p.investorType) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2"/></svg>${safeText(p.investorType)}</span>`;
-      const capDisplay=formatFinancialCapacity(p.financialCapacity||p.investmentAmount||"");
-      if(capDisplay) chips+=`<span class="info-chip invest-cap-chip"><span class="invest-cap-label">Financial Capacity</span><span class="invest-cap-value">${safeText(capDisplay)}</span></span>`;
+      if(p.investorType) chips+=`<span class="info-chip">${safeText(p.investorType)}</span>`;
+      if(p.ticketSize) chips+=`<span class="info-chip">${safeText(p.ticketSize)}</span>`;
+      if(p.preferredStage) chips+=`<span class="info-chip">${safeText(p.preferredStage)}</span>`;
       if(p.investmentFocus) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>${safeText(p.investmentFocus)}</span>`;
     }
     const infoRow=chips?`<div class="info-row">${chips}</div>`:"";
@@ -1864,7 +1875,40 @@
       _startPolling();
       _startAutoFetch();
     }
-  });
+  
+  // ── Explore mode ──
+  (function(){
+    const cu = JSON.parse(localStorage.getItem('currentUser')||sessionStorage.getItem('currentUser')||'null');
+    const email = cu?.email||'';
+    const isExplore = localStorage.getItem('ss_explore_mode_'+email) === 'true';
+    if(!isExplore) return;
+
+    // Show sticky banner
+    const banner = document.createElement('div');
+    banner.className = 'explore-mode-banner';
+    banner.innerHTML = `<span>👀 You're exploring in preview mode — complete your profile to connect with founders & investors</span><button onclick="window.location.href='${cu?.role==='Founder'?'founder-dashboard.html':'investor-dashboard.html'}'">Complete Profile →</button>`;
+    document.body.appendChild(banner);
+
+    // Lock connect/interested buttons on cards
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.btn-interested,.btn-connect,.btn-chat');
+      if(btn) {
+        e.preventDefault(); e.stopPropagation();
+        // Show inline locked message
+        const card = btn.closest('.profile-card');
+        if(card && !card.querySelector('.explore-locked-overlay')) {
+          const ov = document.createElement('div');
+          ov.className = 'explore-locked-overlay';
+          ov.innerHTML = `<p>🔒 Complete your profile to connect</p><button onclick="window.location.href='${cu?.role==='Founder'?'founder-dashboard.html':'investor-dashboard.html'}'">Complete Profile</button>`;
+          card.style.position = 'relative';
+          card.appendChild(ov);
+          setTimeout(() => { if(ov.parentNode) ov.parentNode.removeChild(ov); }, 3000);
+        }
+      }
+    }, true);
+  })();
+
+});
 </script>
 <script>
   // ── Stats Strip ──────────────────────────────────────────────────────────

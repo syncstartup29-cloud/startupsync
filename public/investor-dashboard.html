@@ -111,6 +111,8 @@
     .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
     .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
+    .btn-explore { width:100%; margin-top:0.75rem; padding:0.65rem 1rem; border:1px dashed #9CA3AF; border-radius:8px; font-family:var(--font-h); font-size:0.75rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; background:transparent; color:#6B7280; transition:border-color 0.2s,color 0.2s; }
+    .btn-explore:hover { border-color:#111; color:#111; }
     .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
     .review-row:last-child { border-bottom:none; }
     .review-label { font-size:0.72rem; font-weight:600; color:#6B7280; font-family:var(--font-b); flex-shrink:0; }
@@ -742,8 +744,10 @@ window._showToast = function(opts) {
             <p class="warning-hint">⚠️ Use your real phone number. If we detect a fake or unreachable number, your profile will be permanently deleted without notice.</p>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-next" onclick="goStep(2)">Next — Investment Details →</button>
+            <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
+            <button type="button" class="btn-next" onclick="goStep(2)" style="flex:2;">Next — Investment Details →</button>
           </div>
+          <button type="button" class="btn-explore" onclick="exploreFirst()">👀 Explore profiles first (you can complete profile later)</button>
         </div>
 
         <!-- STEP 2: Investment Details -->
@@ -804,14 +808,7 @@ window._showToast = function(opts) {
 
         <!-- STEP 3: About You + Review + Submit -->
         <div class="step-panel" id="step3">
-          <div class="form-group">
-            <label for="linkedinUrl" class="form-label">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
-            <div id="linkedinUrlWrapper">
-              <input type="url" id="linkedinUrl" class="form-input" placeholder="https://www.linkedin.com/in/yourname">
-              <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
-            </div>
-            <p class="warning-hint" style="background:#F4F4F5;border:1px solid #E4E4E7;color:#374151;">💡 Optional — but adding your LinkedIn helps others verify you're a real investor.</p>
-          </div>
+
           <div class="form-group">
             <label for="bio" class="form-label">Short Bio <span class="required">*</span></label>
             <textarea id="bio" class="form-textarea" minlength="100" placeholder="Share your investment philosophy, sectors of interest, past investments, and what kind of founding teams excite you. (min 100 characters)" required></textarea>
@@ -822,7 +819,7 @@ window._showToast = function(opts) {
             <div id="reviewContent"></div>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goStep(2)">← Back</button>
+            <button type="button" class="btn-back" onclick="goStep(2)" style="flex:1;">← Back</button>
             <button type="submit" class="btn-next save-btn" style="flex:2;">Submit Profile ✓</button>
           </div>
         </div>
@@ -1398,6 +1395,21 @@ window._showToast = function(opts) {
     });
 
   
+
+  function goBackFromStep1() {
+    const isNewUser = localStorage.getItem('newUser_' + (currentUser?.email || '')) === 'true';
+    if (isNewUser) {
+      window.location.href = 'terms.html';
+    } else {
+      window.location.href = 'connections.html';
+    }
+  }
+
+  function exploreFirst() {
+    localStorage.setItem('ss_explore_mode_' + (currentUser?.email || ''), 'true');
+    window.location.href = 'connections.html';
+  }
+
   // ── 3-STEP NAVIGATION ──
   let currentStep = 1;
 

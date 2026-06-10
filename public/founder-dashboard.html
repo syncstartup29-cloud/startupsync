@@ -109,6 +109,8 @@
     .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
     .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
+    .btn-explore { width:100%; margin-top:0.75rem; padding:0.65rem 1rem; border:1px dashed #9CA3AF; border-radius:8px; font-family:var(--font-h); font-size:0.75rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; background:transparent; color:#6B7280; transition:border-color 0.2s,color 0.2s; }
+    .btn-explore:hover { border-color:#111; color:#111; }
     .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
     .review-row:last-child { border-bottom:none; }
     .review-label { font-size:0.72rem; font-weight:600; color:#6B7280; font-family:var(--font-b); flex-shrink:0; }
@@ -775,8 +777,10 @@ window._showToast = function(opts) {
             </div>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-next" onclick="goStep(2)">Next — Startup Details →</button>
+            <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
+            <button type="button" class="btn-next" onclick="goStep(2)" style="flex:2;">Next — Startup Details →</button>
           </div>
+          <button type="button" class="btn-explore" onclick="exploreFirst()">👀 Explore profiles first (you can complete profile later)</button>
         </div>
 
         <!-- STEP 2: Startup Details -->
@@ -816,14 +820,7 @@ window._showToast = function(opts) {
                 <option value="Series B+">Series B+</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="linkedinUrl">LinkedIn Profile URL <span style="font-size:.65rem;color:#9CA3AF;">(optional)</span></label>
-              <div id="linkedinUrlWrapper">
-                <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/yourname">
-                <p id="linkedinLockedMsg" style="display:none;font-size:0.7rem;color:#6B7280;margin-top:4px;">🔒 LinkedIn URL is locked after first save and cannot be changed.</p>
-              </div>
-              <p class="warning-hint">⚠️ Paste your real LinkedIn profile link. It will be publicly clickable so others can verify you are a real person.</p>
-            </div>
+
             <div class="form-group">
               <label for="description">Short Description <span class="required">*</span></label>
               <textarea id="description" rows="4" minlength="100" placeholder="Tell us about yourself and your startup — what problem you're solving, your stage, and what kind of investor you're looking for. (min 100 characters)" required></textarea>
@@ -841,7 +838,7 @@ window._showToast = function(opts) {
           <div class="review-title">Review your profile</div>
           <div id="reviewContent"></div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goStep(2)">← Back</button>
+            <button type="button" class="btn-back" onclick="goStep(2)" style="flex:1;">← Back</button>
             <button type="submit" class="btn-next save-button" style="flex:2;">Submit Profile ✓</button>
           </div>
         </div>
@@ -1406,6 +1403,25 @@ window._showToast = function(opts) {
     });
 
   
+
+  // ── Smart back from step 1 ──
+  function goBackFromStep1() {
+    // If new user (came from terms), go back to terms
+    // If editing profile (came from connections), go to connections
+    const isNewUser = localStorage.getItem('newUser_' + (currentUser?.email || '')) === 'true';
+    if (isNewUser) {
+      window.location.href = 'terms.html';
+    } else {
+      window.location.href = 'connections.html';
+    }
+  }
+
+  // ── Explore first — let them browse but lock connect/chat ──
+  function exploreFirst() {
+    localStorage.setItem('ss_explore_mode_' + (currentUser?.email || ''), 'true');
+    window.location.href = 'connections.html';
+  }
+
   // ── 3-STEP NAVIGATION ──
   let currentStep = 1;
 
@@ -1426,8 +1442,7 @@ window._showToast = function(opts) {
         if (!sn) { _ssAlert('Please enter your startup name.'); return; }
         if (!ind) { _ssAlert('Please select your industry.'); return; }
         if (!fs) { _ssAlert('Please select your funding stage.'); return; }
-        if (desc.length < 100) { _ssAlert('Description must be at least 100 characters.'); return; }
-        // Build review
+        if (desc.length < 100) { _ssAlert('Description must be at least 100 characters. Currently: ' + desc.length); return; }
         buildReview();
       }
     }
