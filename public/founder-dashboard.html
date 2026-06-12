@@ -120,12 +120,14 @@
 
 
     @media(max-width:600px){
-      .step-nav { gap:0.5rem; }
-      .btn-back { padding:0.6rem 0.75rem; font-size:0.75rem; }
-      .btn-next { padding:0.6rem 0.75rem; font-size:0.75rem; }
-      .btn-explore { padding:0.6rem 0.75rem; font-size:0.72rem; margin-top:0.5rem; }
-      .step-dot { width:28px; height:28px; font-size:0.65rem; }
-      .step-line { width:36px; }
+      .step-nav { gap:0.4rem; }
+      .btn-back { padding:0.55rem 0.6rem; font-size:0.72rem; letter-spacing:0.02em; }
+      .btn-next { padding:0.55rem 0.6rem; font-size:0.72rem; letter-spacing:0.02em; }
+      .btn-explore { padding:0.55rem 0.6rem; font-size:0.7rem; margin-top:0.4rem; letter-spacing:0.02em; }
+      .step-dot { width:26px; height:26px; font-size:0.62rem; }
+      .step-line { width:30px; }
+      .step-labels { margin-bottom:1rem; }
+      .step-label { font-size:0.6rem; }
     }
     @media(max-width:600px){ body{padding:1.25rem 1rem;} .card{padding:1.75rem 1.35rem;} .phone-row{grid-template-columns:1fr;} }
     @media(max-width:400px){ body{padding:1rem 0.75rem;} .card{padding:1.4rem 1.1rem;} }
@@ -843,8 +845,8 @@ window._showToast = function(opts) {
             </div>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goStep(1)">← Back</button>
-            <button type="button" class="btn-next" onclick="goStep(3)">Review & Submit →</button>
+            <button type="button" class="btn-back" onclick="goStep(1)" style="flex:1;">← Back</button>
+            <button type="button" class="btn-next" onclick="goStep(3)" style="flex:2;">Review & Submit →</button>
           </div>
         </div>
 
@@ -1432,10 +1434,12 @@ window._showToast = function(opts) {
   }
 
   function goBackFromStep1() {
-    // If new user (came from terms), go back to terms
-    // If editing profile (came from connections), go to connections
-    const isNewUser = localStorage.getItem('newUser_' + (currentUser?.email || '')) === 'true';
-    if (isNewUser) {
+    // Check multiple signals to determine where to go back
+    const email = currentUser?.email || '';
+    const isNewUser = localStorage.getItem('newUser_' + email) === 'true';
+    const referrer = document.referrer || '';
+    const fromTerms = referrer.includes('terms.html') || isNewUser;
+    if (fromTerms) {
       window.location.href = 'terms.html';
     } else {
       window.location.href = 'connections.html';
@@ -1597,6 +1601,8 @@ window._showToast = function(opts) {
           try { sessionStorage.setItem("currentUser", JSON.stringify(savedUser)); } catch(e) {}
         } else {
           currentUser.founderProfile = founderProfile;
+          localStorage.removeItem('ss_explore_mode_' + (currentUser.email||''));
+          localStorage.removeItem('newUser_' + (currentUser.email||''));
           currentUser.fullName = fullNameVal;
           currentUser.email = emailVal;
           localStorage.setItem("currentUser", JSON.stringify(currentUser));

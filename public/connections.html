@@ -1810,6 +1810,16 @@
   let isSkipping=false;
   window.handleSkip=async function(targetId){ if(isSkipping) return; isSkipping=true; const card=document.querySelector(`[data-id="${targetId}"]`),btn=card?.querySelector(".btn-skip"); if(btn){btn.disabled=true;btn.textContent="Skipping...";} try{ const r=await(await fetch("/connections/skip",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id,targetId}),keepalive:true})).json(); if(r?.success){ allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); } else{ showPopup(r?.message||"Skip failed"); if(btn){btn.disabled=false;btn.textContent="Skip";} } }catch(e){ showPopup("Skip failed."); if(btn){btn.disabled=false;btn.textContent="Skip";} } finally{ isSkipping=false; } };
   window.handleInterested=async function(targetId){
+    // Block if in explore/tour mode
+    const _email = currentUser?.email||'';
+    const _isExplore = localStorage.getItem('ss_explore_mode_'+_email) === 'true';
+    if(_isExplore){
+      showPopup('🔒 Complete your profile first to connect with others!');
+      setTimeout(() => {
+        window.location.href = currentUser?.role==='Founder' ? 'founder-dashboard.html' : 'investor-dashboard.html';
+      }, 2000);
+      return;
+    }
     // Block if own profile is incomplete
     const myProfile = currentUser?.role==='Founder' ? (currentUser?.founderProfile||{}) : (currentUser?.investorProfile||{});
     const myComplete = currentUser?.role==='Founder'
@@ -1900,6 +1910,16 @@
     const email = cu?.email||'';
     const isExplore = localStorage.getItem('ss_explore_mode_'+email) === 'true';
     if(!isExplore) return;
+
+    // ✅ If profile is now complete, clear explore mode and don't show banner
+    const myP = cu?.role==='Founder' ? (cu?.founderProfile||{}) : (cu?.investorProfile||{});
+    const isComplete = cu?.role==='Founder'
+      ? !!(myP.photo && myP.startupName && myP.description && myP.phone)
+      : !!(myP.photo && myP.investorType && myP.bio && myP.phone);
+    if(isComplete) {
+      localStorage.removeItem('ss_explore_mode_'+email);
+      return;
+    }
 
     // Show sticky banner
     const banner = document.createElement('div');
