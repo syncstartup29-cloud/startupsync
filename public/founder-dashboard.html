@@ -1461,8 +1461,9 @@ window._showToast = function(opts) {
       if (currentStep === 1) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
-        // Check photo first
-        const photoUploaded = !!(window.uploadedPhoto || localStorage.getItem('ss_founder_photo_' + (currentUser?.email||'')) || localStorage.getItem('ss_investor_photo_' + (currentUser?.email||'')));
+        // Check photo first using correct key
+        const _photoKey = 'profilePhoto_founder_' + (currentUser?.email||'guest');
+        const photoUploaded = !!(uploadedPhoto || localStorage.getItem(_photoKey));
         if (!photoUploaded) { showValToast('Please upload a profile photo first.'); return; }
         if (!fn) { showValToast('Please enter your full name.'); return; }
         if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
