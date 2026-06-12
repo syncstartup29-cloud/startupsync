@@ -105,11 +105,11 @@
     .step-panel { display:none; }
     .step-panel.active { display:block; }
     .step-nav { display:flex; gap:0.75rem; margin-top:1.5rem; }
-    .btn-back { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-back { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; border-radius:50px; }
     .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
-    .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-next { flex:2; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:50px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
-    .btn-explore { width:100%; margin-top:0.75rem; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-explore { width:100%; margin-top:0.75rem; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:50px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-explore:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
     .review-row { display:flex; justify-content:space-between; align-items:flex-start; padding:0.6rem 0; border-bottom:1px solid #f0f0f0; gap:1rem; }
     .review-row:last-child { border-bottom:none; }
@@ -1461,6 +1461,9 @@ window._showToast = function(opts) {
       if (currentStep === 1) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
+        // Check photo first
+        const photoUploaded = !!(window.uploadedPhoto || localStorage.getItem('ss_founder_photo_' + (currentUser?.email||'')) || localStorage.getItem('ss_investor_photo_' + (currentUser?.email||'')));
+        if (!photoUploaded) { showValToast('Please upload a profile photo first.'); return; }
         if (!fn) { showValToast('Please enter your full name.'); return; }
         if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
       }
