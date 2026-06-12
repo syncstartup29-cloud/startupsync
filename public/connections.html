@@ -2540,6 +2540,31 @@
 
   // ── Override handleInterested ──────────────────────────────────────────
   window.handleInterested = async function(targetId) {
+    // ── Block if explore/tour mode ──
+    var _cu = cu();
+    var _email = _cu?.email || '';
+    var _role = _cu?.role || '';
+    var _dashUrl = _role === 'Founder' ? 'founder-dashboard.html' : 'investor-dashboard.html';
+
+    var _isExplore = localStorage.getItem('ss_explore_mode_' + _email) === 'true';
+    if (_isExplore) {
+      showPopup('🔒 Complete your profile first to connect with others!');
+      setTimeout(function() { window.location.href = _dashUrl; }, 2000);
+      return;
+    }
+
+    // ── Block if profile incomplete ──
+    var myProfile = _role === 'Founder' ? (_cu?.founderProfile || {}) : (_cu?.investorProfile || {});
+    var myComplete = _role === 'Founder'
+      ? !!(myProfile.photo && myProfile.startupName && myProfile.description && myProfile.phone)
+      : !!(myProfile.photo && myProfile.investorType && myProfile.bio && myProfile.phone);
+
+    if (!myComplete) {
+      showPopup('⚠️ Please complete your profile before connecting with others.');
+      setTimeout(function() { window.location.href = _dashUrl; }, 2000);
+      return;
+    }
+
     var card = document.querySelector('[data-id="' + targetId + '"]');
     if (!card || card.classList.contains('ss-exiting')) return;
     var btn = card.querySelector('.btn-interested');
