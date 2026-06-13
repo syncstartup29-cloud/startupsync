@@ -1447,9 +1447,7 @@ window._showToast = function(opts) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
         // Check photo using email input value
-        const _email = document.getElementById('email')?.value || 'guest';
-        const _photoKey = 'profilePhoto_investor_' + _email;
-        const photoUploaded = !!(localStorage.getItem(_photoKey));
+        const photoUploaded = !!uploadedPhoto || !!(localStorage.getItem(profilePhotoKey()));
         if (!photoUploaded) { showValToast('Please upload a profile photo first.'); return; }
         if (!fn) { showValToast('Please enter your full name.'); return; }
         if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
