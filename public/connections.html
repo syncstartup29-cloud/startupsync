@@ -1214,8 +1214,7 @@
     .modal-btn-skip:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
     .modal-btn-interested { flex:2; padding:0.75rem; border:1.5px solid #111; border-radius:50px; font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .modal-btn-interested:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
-    .btn-view { background:#fff; border:1.5px solid #111; border-radius:50px; font-family:'Sora',sans-serif; font-size:0.75rem; font-weight:700; cursor:pointer; padding:6px 14px; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
-    .btn-view:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
+    /* .btn-view now handled by .btn base style */
 
   </style>
 <script>
@@ -1820,6 +1819,7 @@
       const added=clean.filter(u=>!existingIds.has(u._id));
       allProfiles=allProfiles.filter(u=>freshIds.has(u._id));
       allProfiles=[...allProfiles,...added];
+      window.allProfiles=allProfiles; // expose for modal
       if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length;
       else carouselIndex=0;
       hasEverLoadedProfiles=true;
@@ -2812,10 +2812,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-  // ✅ FIX: openProfileModal & closeProfileModal functions
+  // ✅ FIX: openProfileModal & closeProfileModal
   window.openProfileModal = function(userId) {
-    const u = (window.allProfiles || []).find(x => x._id === userId);
-    if (!u) return;
+    const profiles = window.allProfiles || [];
+    const u = profiles.find(x => x._id === userId);
+    if (!u) { console.warn('Profile not found for id:', userId); return; }
     const isF = u.role === 'Founder';
     const p = isF ? (u.founderProfile || {}) : (u.investorProfile || {});
     const img = (typeof getPhoto === 'function') ? getPhoto(p) : (p.photo || '');
@@ -2823,24 +2824,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkedin = (typeof getLinkedIn === 'function') ? getLinkedIn(p) : '';
     const name = u.fullName || '';
     const initial = (name[0] || 'U').toUpperCase();
+    const roleBadgeClass = isF ? 'role-founder' : 'role-investor';
 
     const avatarHtml = img
-      ? `<img src="${img}" class="modal-avatar" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="modal-avatar" style="display:none;background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;">${initial}</div>`
-      : `<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;">${initial}</div>`;
-
-    const roleBadgeClass = isF ? 'role-founder' : 'role-investor';
-    const roleLabel = u.role || '';
+      ? `<img src="${img}" class="modal-avatar" alt="${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="modal-avatar" style="display:none;background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:'Sora',sans-serif;">${initial}</div>`
+      : `<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:'Sora',sans-serif;">${initial}</div>`;
 
     let detailsHtml = '';
     if (isF) {
-      if (p.startupName) detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Startup</span><span class="modal-detail-val">${p.startupName}</span></div>`;
-      if (p.industry)    detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Industry</span><span class="modal-detail-val">${p.industry}</span></div>`;
+      if (p.startupName)  detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Startup</span><span class="modal-detail-val">${p.startupName}</span></div>`;
+      if (p.industry)     detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Industry</span><span class="modal-detail-val">${p.industry}</span></div>`;
       if (p.fundingStage) detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Stage</span><span class="modal-detail-val">${p.fundingStage}</span></div>`;
-      if (p.phone)       detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Phone</span><span class="modal-detail-val">+91 ${p.phone}</span></div>`;
+      if (p.phone)        detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Phone</span><span class="modal-detail-val">+91 ${p.phone}</span></div>`;
     } else {
       if (p.investorType)    detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Type</span><span class="modal-detail-val">${p.investorType}</span></div>`;
       if (p.investmentFocus) detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Focus</span><span class="modal-detail-val">${p.investmentFocus}</span></div>`;
-      if (p.preferredStage)  detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Preferred Stage</span><span class="modal-detail-val">${p.preferredStage}</span></div>`;
+      if (p.preferredStage)  detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Stage</span><span class="modal-detail-val">${p.preferredStage}</span></div>`;
       if (p.ticketSize)      detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Ticket Size</span><span class="modal-detail-val">${p.ticketSize}</span></div>`;
       if (p.phone)           detailsHtml += `<div class="modal-detail-row"><span class="modal-detail-label">Phone</span><span class="modal-detail-val">+91 ${p.phone}</span></div>`;
     }
@@ -2848,26 +2847,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkedinHtml = linkedin
       ? `<a href="${linkedin}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:#111;font-family:'Sora',sans-serif;margin-top:1rem;text-decoration:none;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          View on LinkedIn
-        </a>`
-      : '';
+          LinkedIn Profile
+        </a>` : '';
 
     document.getElementById('profileModalBody').innerHTML = `
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">
         ${avatarHtml}
         <div>
           <div class="modal-name">${name}</div>
-          <span class="modal-role-badge ${roleBadgeClass}">${roleLabel}</span>
+          <span class="modal-role-badge ${roleBadgeClass}">${u.role || ''}</span>
         </div>
       </div>
       ${detailsHtml ? `<div class="modal-section-title">Details</div>${detailsHtml}` : ''}
       ${desc ? `<div class="modal-section-title">About</div><div class="modal-bio">${desc}</div>` : ''}
       ${linkedinHtml}
       <div class="modal-actions">
-        <button class="modal-btn-skip" onclick="closeProfileModal();handleSkip('${userId}')">Skip</button>
-        <button class="modal-btn-interested" onclick="closeProfileModal();handleInterested('${userId}')">Interested ✓</button>
-      </div>
-    `;
+        <button class="modal-btn-skip" onclick="closeProfileModal();setTimeout(()=>handleSkip('${userId}'),50)">Skip</button>
+        <button class="modal-btn-interested" onclick="closeProfileModal();setTimeout(()=>handleInterested('${userId}'),50)">Interested ✓</button>
+      </div>`;
 
     const overlay = document.getElementById('profileModalOverlay');
     overlay.classList.add('show');
@@ -2880,7 +2877,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow = '';
   };
 
-  // Close on Escape key
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       document.getElementById('profileModalOverlay').classList.remove('show');
