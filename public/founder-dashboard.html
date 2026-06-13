@@ -1589,7 +1589,16 @@ window._showToast = function(opts) {
         if (!result.success) {
           if (result.field === "linkedinUrl") { showLinkedinError(result.message || "LinkedIn URL already registered."); document.getElementById("linkedinUrl").focus(); }
           else if (result.field === "phone") {
-            showPremiumToast({ title: "Number Already in Use", msg: "This number is already in use", icon: "📵", dur: 5000 });
+            // Show clear duplicate phone popup
+            const _dupDiv = document.createElement('div');
+            _dupDiv.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+            _dupDiv.innerHTML = `<div style="background:#fff;border-radius:16px;padding:2rem;max-width:360px;width:100%;text-align:center;border-top:3px solid #111;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+              <div style="width:56px;height:56px;background:#111;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;">📵</div>
+              <div style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111;margin-bottom:0.5rem;">Number Already in Use</div>
+              <div style="font-size:0.82rem;color:#666;font-family:'Inter',sans-serif;margin-bottom:1.5rem;">This phone number is already registered with another account. Please use a different number.</div>
+              <button onclick="this.closest('[style*=fixed]').remove()" style="width:100%;padding:0.75rem;background:#111;color:#fff;border:none;border-radius:50px;font-family:'Sora',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">Got it</button>
+            </div>`;
+            document.body.appendChild(_dupDiv);
             var ph = document.getElementById("phone");
             if (ph) { ph.style.borderColor = "#DC2626"; ph.style.boxShadow = "0 0 0 3px rgba(220,38,38,0.15)"; ph.focus(); setTimeout(function(){ ph.style.borderColor = ""; ph.style.boxShadow = ""; }, 3000); }
           }
