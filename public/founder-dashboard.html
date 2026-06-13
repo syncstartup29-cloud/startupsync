@@ -64,7 +64,7 @@
     .photo-size-text { font-size:0.65rem; color:var(--text-muted); margin-top:0.2rem; font-family:var(--font-b); }
     .required { color:var(--error); }
     .form-fields { display:flex; flex-direction:column; gap:1.25rem; }
-    .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.2rem; }
     .form-group label { font-size:0.72rem; font-weight:600; color:var(--text-primary); font-family:var(--font-b); }
     .form-group input, .form-group textarea { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; outline:none; -webkit-tap-highlight-color:transparent; }
     .form-group input::placeholder, .form-group textarea::placeholder { color:var(--text-muted); }
@@ -1203,7 +1203,32 @@ window._showToast = function(opts) {
       if (!digits) { msgEl.textContent = ""; msgEl.className = "phone-validation"; return false; }
       const result = isValidPhoneForCountry(digits, country);
       if (!result.valid) { msgEl.textContent = `⚠️ ${result.msg}`; msgEl.className = "phone-validation error"; return false; }
-      msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok"; return true;
+      msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok";
+      // Real-time duplicate check
+      checkPhoneDuplicate(digits);
+      return true;
+    }
+
+    let _phoneCheckTimer = null;
+    function checkPhoneDuplicate(digits) {
+      clearTimeout(_phoneCheckTimer);
+      _phoneCheckTimer = setTimeout(async () => {
+        const msgEl = document.getElementById("phoneValidation");
+        if (!digits || digits.length < 10) return;
+        try {
+          const token = localStorage.getItem("token") || sessionStorage.getItem("token") || "";
+          const r = await fetch("/profile/check-phone", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            body: JSON.stringify({ phone: digits, userId: currentUser?._id })
+          });
+          const data = await r.json();
+          if (data.taken) {
+            msgEl.textContent = "❌ This number is already registered. Use a different number.";
+            msgEl.className = "phone-validation error";
+          }
+        } catch(e) {}
+      }, 600);
     }
 
     function draftKey() { return "draft_founder_" + (currentUser?.email || "guest"); }

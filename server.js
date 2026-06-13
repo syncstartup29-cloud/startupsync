@@ -1087,6 +1087,25 @@ app.post("/profile/check-linkedin", authMiddleware, async (req, res) => {
   }
 });
 
+app.post("/profile/check-phone", authMiddleware, async (req, res) => {
+  try {
+    const { phone, userId } = req.body || {};
+    const cleaned = (phone || "").replace(/\D/g, "").slice(-10);
+    if (!cleaned || cleaned.length !== 10) return res.json({ taken: false });
+    const existing = await User.findOne({
+      _id: { $ne: userId },
+      $or: [
+        { "founderProfile.phone": cleaned },
+        { "investorProfile.phone": cleaned },
+      ],
+    }).select("_id role fullName").lean();
+    return res.json({ taken: !!existing, byRole: existing ? existing.role : null });
+  } catch (e) {
+    console.error("check-phone error:", e);
+    return res.json({ taken: false });
+  }
+});
+
 app.post("/profile/founder", authMiddleware, async (req, res) => {
   try {
     const fp       = req.body.founderProfile || null;

@@ -65,7 +65,7 @@
     .photo-hint { font-size:0.72rem; color:var(--text-secondary); font-family:var(--font-b); font-weight:500; }
     .required { color:var(--error); }
     form { display:flex; flex-direction:column; gap:1.25rem; }
-    .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1.2rem; }
     .form-label { font-size:0.72rem; font-weight:600; color:var(--text-primary); font-family:var(--font-b); }
     .form-input, .form-textarea { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:8px; font-size:0.9rem; font-family:var(--font-b); color:var(--text-primary); transition:border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; outline:none; -webkit-tap-highlight-color:transparent; }
     .form-input::placeholder, .form-textarea::placeholder { color:var(--text-muted); }
@@ -709,21 +709,23 @@ window._showToast = function(opts) {
     <div class="card">
       <form id="profileForm" novalidate>
         <div class="profile-photo-section">
-          <div class="photo-wrapper">
-            <div class="photo-circle" id="photoCircle">
-              <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
+          <label for="photo-upload" style="cursor:pointer;display:block;">
+            <div class="photo-wrapper">
+              <div class="photo-circle" id="photoCircle">
+                <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div class="upload-btn">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
             </div>
-            <label for="photo-upload" class="upload-btn">
-              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-            </label>
-            <input type="file" id="photo-upload" accept="image/*">
-          </div>
+          </label>
+          <input type="file" id="photo-upload" accept="image/*" style="display:none;">
           <p class="photo-hint">Profile Photo <span class="required">*</span> &mdash; Max 20 MB • iPhone photos supported</p>
         </div>
         <!-- STEP PROGRESS -->
@@ -1180,7 +1182,31 @@ window._showToast = function(opts) {
       if (!digits) { msgEl.textContent = ""; msgEl.className = "phone-validation"; return false; }
       const result = isValidPhoneForCountry(digits, country);
       if (!result.valid) { msgEl.textContent = `⚠️ ${result.msg}`; msgEl.className = "phone-validation error"; return false; }
-      msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok"; return true;
+      msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok";
+      checkPhoneDuplicate(digits);
+      return true;
+    }
+
+    let _phoneCheckTimer = null;
+    function checkPhoneDuplicate(digits) {
+      clearTimeout(_phoneCheckTimer);
+      _phoneCheckTimer = setTimeout(async () => {
+        const msgEl = document.getElementById("phoneValidation");
+        if (!digits || digits.length < 10) return;
+        try {
+          const token = localStorage.getItem("token") || sessionStorage.getItem("token") || "";
+          const r = await fetch("/profile/check-phone", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            body: JSON.stringify({ phone: digits, userId: currentUser?._id })
+          });
+          const data = await r.json();
+          if (data.taken) {
+            msgEl.textContent = "❌ This number is already registered. Use a different number.";
+            msgEl.className = "phone-validation error";
+          }
+        } catch(e) {}
+      }, 600);
     }
 
     function draftKey() { return "draft_investor_" + (currentUser?.email || "guest"); }
