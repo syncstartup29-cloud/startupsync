@@ -2815,7 +2815,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-  // openProfileModal — full details, NO phone/email, back btn only
+  // openProfileModal - full details, no phone/email
   window.openProfileModal = function(userId) {
     var profiles = window.allProfiles || [];
     var u = profiles.find(function(x){ return x._id === userId; });
@@ -2830,9 +2830,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var roleBadgeClass = isF ? 'role-founder' : 'role-investor';
 
     var avatarHtml = img
-      ? '<img src="' + img + '" class="modal-avatar" alt="' + name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
-        '<div class="modal-avatar" style="display:none;background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:Sora,sans-serif;">' + initial + '</div>'
-      : '<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:Sora,sans-serif;">' + initial + '</div>';
+      ? '<img src="' + img + '" class="modal-avatar" style="border-radius:50%;width:72px;height:72px;object-fit:cover;" alt="' + name + '">'
+      : '<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:Sora,sans-serif;display:flex;align-items:center;justify-content:center;border-radius:50%;width:72px;height:72px;">' + initial + '</div>';
 
     var detailsHtml = '';
     if (isF) {
@@ -2847,11 +2846,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (p.financialCapacity) detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Financial Capacity</span><span class="modal-detail-val">' + p.financialCapacity + '</span></div>';
     }
 
-    var linkedinHtml = linkedin
-      ? '<a href="' + linkedin + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:#111;font-family:Sora,sans-serif;margin-top:1rem;text-decoration:none;">' +
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>' +
-        'View LinkedIn</a>'
-      : '';
+    var linkedinHtml = '';
+    if (linkedin) {
+      linkedinHtml = '<a href="' + linkedin + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:#111;text-decoration:none;margin-top:1rem;">View LinkedIn</a>';
+    }
 
     var html = '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">' + avatarHtml +
       '<div><div class="modal-name">' + name + '</div>' +
@@ -2879,5 +2877,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 </script>
+
 </body>
 </html>
