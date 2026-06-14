@@ -78,7 +78,7 @@
     .page-header p  { font-size:0.78rem; color:#374151; margin-top:0.4rem; }
     .page-header .refresh-note { display:none; }
     /* ✅ FIX: hide header by default — JS shows it only when empty state is needed */
-    #pageHeader { display:none; visibility:hidden; opacity:0; transition:opacity 0.3s ease; }
+    #pageHeader { display:none; visibility:hidden; opacity:0; }
     .content-center { flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
     .profile-grid { display:grid; grid-template-columns:1fr; gap:1.25rem; align-items:start; }
     @media(min-width:600px)  { .profile-grid { grid-template-columns:repeat(2,1fr); } }
@@ -1745,7 +1745,7 @@
     es.classList.add("show");
     /* show class handles it */
     // Always show heading — empty state fills everything below it
-    if(header) { header.style.display="block"; header.style.visibility="visible"; setTimeout(function(){ header.style.opacity="1"; }, 10); }
+    if(header) { header.style.display="block"; header.style.visibility="visible"; header.style.opacity="1"; }
     if(hasEverLoadedProfiles){ if(ftEl)ftEl.style.display="none"; if(exEl)exEl.style.display="flex"; }
     else { if(ftEl)ftEl.style.display="flex"; if(exEl)exEl.style.display="none"; }
   }
@@ -2464,7 +2464,7 @@
     if (es)   es.classList.add('show');
 
     // Always keep heading visible so user sees "DISCOVER CONNECTIONS" + animation below
-    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; setTimeout(function(){ hdr.style.opacity = "1"; }, 10); }
+    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; hdr.style.opacity = '1'; }
     // Make sure ss-gi is set so emptyState is fully visible (no opacity:0)
     /* .show class handles visibility */
 
@@ -2495,7 +2495,7 @@
     _initDone = true;
     // Hide empty state ONLY when we have actual cards to show
     if (es) { es.classList.remove('show'); }
-    if (hdr) { hdr.style.opacity = '0'; setTimeout(function(){ hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }, 300); }
+    if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; hdr.style.opacity = '0'; }
     grid.style.display = 'grid';
     grid.innerHTML = '';
 
@@ -2778,7 +2778,7 @@
         // (not just temporarily during animation or refetch)
         if (activeCards.length > 0 || allCards.length > 0) {
           es.classList.remove('show');
-          if (hdr) { hdr.style.opacity = '0'; setTimeout(function(){ hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }, 300); }
+          if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; hdr.style.opacity = '0'; }
         } else if (!window._feedLoading && !window._isFetching && !window._isReplacing) {
           // Only show empty state if not currently loading or replacing
           es.classList.add('show');
