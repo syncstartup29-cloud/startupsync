@@ -105,7 +105,7 @@
     .step-panel { display:none; }
     .step-panel.active { display:block; }
     .step-nav { display:flex; gap:0.75rem; margin-top:1.5rem; }
-    .btn-back { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:50px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
+    .btn-back { flex:0 0 auto; padding:0.75rem 1.5rem; border:1.5px solid #111; border-radius:50px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#fff; color:#111; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-back:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.2); transform:translateY(-1px); }
     .btn-next { flex:1; padding:0.75rem 1rem; border:1.5px solid #111; border-radius:50px; font-family:var(--font-h); font-size:0.82rem; font-weight:700; cursor:pointer; letter-spacing:0.04em; background:#111; color:#fff; transition:box-shadow 0.2s,transform 0.15s; }
     .btn-next:hover { box-shadow:0 0 0 3px rgba(17,17,17,0.25); transform:translateY(-1px); }
@@ -857,7 +857,7 @@ window._showToast = function(opts) {
             </div>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goBackFromStep1()" style="flex:1;">← Back</button>
+            <button type="button" class="btn-back" onclick="goBackFromStep1()">← Back</button>
             <button type="button" class="btn-next" onclick="goStep(2)" style="flex:1;">Next — Startup Details →</button>
           </div>
           <button type="button" class="btn-explore" onclick="exploreFirst()">Just Looking Around →</button>
@@ -908,7 +908,7 @@ window._showToast = function(opts) {
             </div>
           </div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goStep(1)" style="flex:1;">← Back</button>
+            <button type="button" class="btn-back" onclick="goStep(1)">← Back</button>
             <button type="button" class="btn-next" onclick="goStep(3)" style="flex:1;">Review & Submit →</button>
           </div>
         </div>
@@ -918,7 +918,7 @@ window._showToast = function(opts) {
           <div class="review-title">Review your profile</div>
           <div id="reviewContent"></div>
           <div class="step-nav">
-            <button type="button" class="btn-back" onclick="goStep(2)" style="flex:1;">← Back</button>
+            <button type="button" class="btn-back" onclick="goStep(2)">← Back</button>
             <button type="button" class="btn-next save-button" style="flex:1;" onclick="document.getElementById('profileForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))">Submit Profile ✓</button>
           </div>
         </div>

@@ -1260,8 +1260,7 @@
 
 /* All profile cards enter with smooth animation */
 .profile-grid .profile-card {
-  animation: ssCardIn 0.2s ease-out forwards;
-  will-change: opacity, transform;
+  animation: ssCardIn 0.18s ease-out forwards;
 }
 .profile-grid .profile-card:nth-child(1)  { animation-delay:0ms;   }
 .profile-grid .profile-card:nth-child(2)  { animation-delay:60ms;  }
@@ -1679,7 +1678,6 @@
     } else {
       if(p.investorType) chips+=`<span class="info-chip">${safeText(p.investorType)}</span>`;
       if(p.investmentFocus) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>${safeText(p.investmentFocus)}</span>`;
-      if(p.ticketSize) chips+=`<span class="info-chip">${safeText(p.ticketSize)}</span>`;
       if(p.preferredStage) chips+=`<span class="info-chip">${safeText(p.preferredStage)}</span>`;
       if(p.financialCapacity) chips+=`<span class="info-chip">${safeText(p.financialCapacity)}</span>`;
     }
