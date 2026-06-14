@@ -334,8 +334,8 @@
     .profile-card:nth-child(2) { animation-delay: .07s; }
     .profile-card:nth-child(3) { animation-delay: .14s; }
     @keyframes cardSlideIn {
-      from { opacity:0; transform:translateY(10px) scale(0.98); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
     }
     .profile-card::before { display: none !important; }
     .profile-card:hover {
@@ -2815,7 +2815,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-  // openProfileModal - full details, no phone/email
+  // openProfileModal - minimal clean view
   window.openProfileModal = function(userId) {
     var profiles = window.allProfiles || [];
     var u = profiles.find(function(x){ return x._id === userId; });
@@ -2824,31 +2824,24 @@ document.addEventListener('DOMContentLoaded', function() {
     var p = isF ? (u.founderProfile || {}) : (u.investorProfile || {});
     var img = (typeof getPhoto === 'function') ? getPhoto(p) : (p.photo || '');
     var desc = (p.description || p.bio || '').trim();
-    var linkedin = (typeof getLinkedIn === 'function') ? getLinkedIn(p) : '';
     var name = u.fullName || '';
     var initial = (name[0] || 'U').toUpperCase();
     var roleBadgeClass = isF ? 'role-founder' : 'role-investor';
 
     var avatarHtml = img
       ? '<img src="' + img + '" class="modal-avatar" style="border-radius:50%;width:72px;height:72px;object-fit:cover;" alt="' + name + '">'
-      : '<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;font-family:Sora,sans-serif;display:flex;align-items:center;justify-content:center;border-radius:50%;width:72px;height:72px;">' + initial + '</div>';
+      : '<div class="modal-avatar" style="background:#f4f4f5;font-size:1.5rem;font-weight:700;color:#111;display:flex;align-items:center;justify-content:center;border-radius:50%;width:72px;height:72px;">' + initial + '</div>';
 
     var detailsHtml = '';
     if (isF) {
       if (p.startupName)  detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Startup</span><span class="modal-detail-val">' + p.startupName + '</span></div>';
       if (p.industry)     detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Industry</span><span class="modal-detail-val">' + p.industry + '</span></div>';
-      if (p.fundingStage) detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Funding Stage</span><span class="modal-detail-val">' + p.fundingStage + '</span></div>';
+      if (p.fundingStage) detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Stage</span><span class="modal-detail-val">' + p.fundingStage + '</span></div>';
     } else {
-      if (p.investorType)      detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Investor Type</span><span class="modal-detail-val">' + p.investorType + '</span></div>';
-      if (p.investmentFocus)   detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Focus</span><span class="modal-detail-val">' + p.investmentFocus + '</span></div>';
-      if (p.preferredStage)    detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Preferred Stage</span><span class="modal-detail-val">' + p.preferredStage + '</span></div>';
-      if (p.ticketSize)        detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Ticket Size</span><span class="modal-detail-val">' + p.ticketSize + '</span></div>';
-      if (p.financialCapacity) detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Financial Capacity</span><span class="modal-detail-val">' + p.financialCapacity + '</span></div>';
-    }
-
-    var linkedinHtml = '';
-    if (linkedin) {
-      linkedinHtml = '<a href="' + linkedin + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:#111;text-decoration:none;margin-top:1rem;">View LinkedIn</a>';
+      if (p.investorType)    detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Type</span><span class="modal-detail-val">' + p.investorType + '</span></div>';
+      if (p.investmentFocus) detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Focus</span><span class="modal-detail-val">' + p.investmentFocus + '</span></div>';
+      if (p.ticketSize)      detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Ticket</span><span class="modal-detail-val">' + p.ticketSize + '</span></div>';
+      if (p.preferredStage)  detailsHtml += '<div class="modal-detail-row"><span class="modal-detail-label">Stage</span><span class="modal-detail-val">' + p.preferredStage + '</span></div>';
     }
 
     var html = '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">' + avatarHtml +
@@ -2856,7 +2849,6 @@ document.addEventListener('DOMContentLoaded', function() {
       '<span class="modal-role-badge ' + roleBadgeClass + '">' + (u.role || '') + '</span></div></div>';
     if (detailsHtml) html += '<div class="modal-section-title">Details</div>' + detailsHtml;
     if (desc) html += '<div class="modal-section-title">About</div><div class="modal-bio">' + desc + '</div>';
-    if (linkedinHtml) html += linkedinHtml;
 
     document.getElementById('profileModalBody').innerHTML = html;
     var overlay = document.getElementById('profileModalOverlay');
@@ -2877,6 +2869,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 </script>
-
 </body>
 </html>

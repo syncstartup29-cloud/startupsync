@@ -1250,6 +1250,8 @@ window._showToast = function(opts) {
         if (d.investmentFocus) document.getElementById("investmentFocus").value = d.investmentFocus;
         if (d.linkedinUrl) document.getElementById("linkedinUrl").value = d.linkedinUrl;
         if (d.financialCapacity) document.getElementById("financialCapacity").value = d.financialCapacity;
+        if (d.preferredStage) document.getElementById("preferredStage").value = d.preferredStage;
+        if (d.ticketSize) document.getElementById("ticketSize").value = d.ticketSize;
         if (d.bio) { const ta = document.getElementById("bio"); ta.value = d.bio; autoGrow(ta); updateBioCounter(); }
         if (d.photo) { uploadedPhoto = d.photo; cropState.src = d.photo; photoCircle.innerHTML = `<img src="${uploadedPhoto}" alt="Profile Photo">`; }
       } catch(e) {}
