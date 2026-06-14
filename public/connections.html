@@ -1671,14 +1671,15 @@
 
     let chips="";
     if(isF){
+      if(p.startupName) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${safeText(p.startupName)}</span>`;
       if(p.industry) chips+=`<span class="info-chip">${safeText(p.industry)}</span>`;
       if(p.fundingStage) chips+=`<span class="info-chip">${safeText(p.fundingStage)}</span>`;
-      if(p.startupName) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${safeText(p.startupName)}</span>`;
     } else {
       if(p.investorType) chips+=`<span class="info-chip">${safeText(p.investorType)}</span>`;
+      if(p.investmentFocus) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>${safeText(p.investmentFocus)}</span>`;
       if(p.ticketSize) chips+=`<span class="info-chip">${safeText(p.ticketSize)}</span>`;
       if(p.preferredStage) chips+=`<span class="info-chip">${safeText(p.preferredStage)}</span>`;
-      if(p.investmentFocus) chips+=`<span class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>${safeText(p.investmentFocus)}</span>`;
+      if(p.financialCapacity) chips+=`<span class="info-chip">${safeText(p.financialCapacity)}</span>`;
     }
     const infoRow=chips?`<div class="info-row">${chips}</div>`:"";
 
@@ -2880,6 +2881,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 </script>
-
 </body>
 </html>

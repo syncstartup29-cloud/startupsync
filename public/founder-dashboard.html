@@ -1480,17 +1480,34 @@ window._showToast = function(opts) {
   // ── 3-STEP NAVIGATION ──
   let currentStep = 1;
 
-  function goStep(n) {
+  async function goStep(n) {
     // Validate before proceeding
     if (n > currentStep) {
       if (currentStep === 1) {
         const fn = document.getElementById('fullName').value.trim();
         const ph = document.getElementById('phone').value.trim();
-        // Check photo using email input value
         const photoUploaded = profilePhotoUploaded || !!(localStorage.getItem(profilePhotoKey()));
         if (!photoUploaded) { showValToast('Please upload a profile photo first.'); return; }
         if (!fn) { showValToast('Please enter your full name.'); return; }
         if (!/^\d{10}$/.test(ph)) { showValToast('Please enter a valid 10-digit phone number.'); return; }
+        // Block if phone duplicate error is showing (from real-time check)
+        const phoneMsg = document.getElementById('phoneValidation');
+        if (phoneMsg && phoneMsg.classList.contains('error')) { showValToast('This phone number is already registered. Use a different number.'); return; }
+        // Also do a live check on Next click to catch timing issues
+        try {
+          const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+          const r = await fetch('/profile/check-phone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ phone: ph, userId: currentUser?._id })
+          });
+          const data = await r.json();
+          if (data.taken) {
+            if (phoneMsg) { phoneMsg.textContent = '❌ This number is already registered. Use a different number.'; phoneMsg.className = 'phone-validation error'; }
+            showValToast('This phone number is already registered. Use a different number.');
+            return;
+          }
+        } catch(e) {}
       }
       if (currentStep === 2) {
         const sn = document.getElementById('startupName').value.trim();
@@ -2095,8 +2112,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }, true);
 });
 </script>
-
-
   <div class="ss-validation-toast" id="ssValToast"><span class="toast-icon">⚠️</span><span id="ssValToastMsg"></span></div>
 </body>
 </html>
