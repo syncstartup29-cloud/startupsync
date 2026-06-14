@@ -786,14 +786,14 @@
   
     /* ══ UNIFIED NAV (all 4 main pages) ══ */
     .top-nav { position:sticky !important; top:0; z-index:1000; background:#fff !important; border-bottom:1.5px solid #111118 !important; padding-top:env(safe-area-inset-top,0); }
-    .top-nav-inner { display:grid !important; grid-template-columns:auto 1fr auto !important; align-items:center !important; gap:1rem !important; padding:0 1.5rem !important; height:62px !important; max-width:100% !important; margin:0 !important; overflow:visible !important; }
+    .top-nav-inner { display:grid !important; grid-template-columns:auto 1fr auto !important; align-items:center !important; gap:0.5rem !important; padding:0 1rem !important; height:56px !important; max-width:100% !important; margin:0 !important; overflow:visible !important; }
     .nav-left { display:flex !important; align-items:flex-start !important; justify-self:start !important; flex-direction:row !important; border-right:none !important; padding-right:0 !important; margin-right:0 !important; }
     .nav-brand-name {
       font-family:'Sora',sans-serif !important;
-      font-size:1rem !important;
+      font-size:clamp(0.6rem, 1.8vw, 0.88rem) !important;
       font-weight:800 !important;
       color:#111118 !important;
-      letter-spacing:.08em !important;
+      letter-spacing:.06em !important;
       white-space:nowrap;
       line-height:1.1 !important;
     }
@@ -813,15 +813,17 @@
     .nav-center { justify-self:center !important; text-align:center; min-width:0; overflow:hidden; }
     .nav-tagline {
       font-family:'Sora',sans-serif !important;
-      font-size:1.25rem !important;
+      font-size:clamp(0.72rem, 2.5vw, 1.1rem) !important;
       font-weight:800 !important;
       color:#111118 !important;
       letter-spacing:-.01em !important;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .nav-right { justify-self:end !important; display:flex !important; align-items:center !important; }
     .nav-avatar {
-      width:40px !important; height:40px !important;
+      width:34px !important; height:34px !important;
       border-radius:50% !important;
       background:#111118 !important;
       color:#fff !important;
