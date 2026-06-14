@@ -1620,7 +1620,7 @@ window._showToast = function(opts) {
   profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       // FIX 4: Strict validation before ANY server call
-      if (!profilePhotoUploaded) { _showToast("Profile photo is required!"); return; }
+      if (!profilePhotoUploaded && !localStorage.getItem(profilePhotoKey())) { _showToast("Profile photo is required! Please upload a profile photo to continue."); return; }
       if (!currentUser?.email)   { _showToast("No logged-in user found!");   return; }
       var _fn = (document.getElementById("fullName")?.value||"").trim();
       var _sn = (document.getElementById("startupName")?.value||"").trim();
