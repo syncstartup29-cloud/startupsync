@@ -78,7 +78,7 @@
     .page-header p  { font-size:0.78rem; color:#374151; margin-top:0.4rem; }
     .page-header .refresh-note { display:none; }
     /* ✅ FIX: hide header by default — JS shows it only when empty state is needed */
-    #pageHeader { display:none; visibility:hidden; }
+    #pageHeader { display:none; visibility:hidden; opacity:0; transition:opacity 0.3s ease; }
     .content-center { flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
     .profile-grid { display:grid; grid-template-columns:1fr; gap:1.25rem; align-items:start; }
     @media(min-width:600px)  { .profile-grid { grid-template-columns:repeat(2,1fr); } }
@@ -1242,12 +1242,12 @@
 
 /* Card enter — original StartupSync animation */
 @keyframes ssCardIn {
-  from { opacity:0; transform:translateY(10px) scale(.98); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
 }
 @keyframes qCardNew {
-  from { opacity:0; transform:translateY(28px) scale(0.95); }
-  to   { opacity:1; transform:translateY(0)    scale(1);    }
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
 }
 @keyframes qCardOutInterested {
   0%   { opacity:1; transform:translateY(0)     scale(1)    rotate(0deg); }
@@ -1262,18 +1262,18 @@
 .profile-grid .profile-card {
   animation: ssCardIn 0.18s ease-out forwards;
 }
-.profile-grid .profile-card:nth-child(1)  { animation-delay:0ms;   }
-.profile-grid .profile-card:nth-child(2)  { animation-delay:60ms;  }
-.profile-grid .profile-card:nth-child(3)  { animation-delay:120ms; }
-.profile-grid .profile-card:nth-child(4)  { animation-delay:180ms; }
-.profile-grid .profile-card:nth-child(5)  { animation-delay:60ms;  }
-.profile-grid .profile-card:nth-child(6)  { animation-delay:120ms; }
-.profile-grid .profile-card:nth-child(7)  { animation-delay:180ms; }
-.profile-grid .profile-card:nth-child(8)  { animation-delay:60ms;  }
-.profile-grid .profile-card:nth-child(9)  { animation-delay:120ms; }
-.profile-grid .profile-card:nth-child(10) { animation-delay:180ms; }
-.profile-grid .profile-card:nth-child(11) { animation-delay:60ms;  }
-.profile-grid .profile-card:nth-child(12) { animation-delay:120ms; }
+.profile-grid .profile-card:nth-child(1)  { animation-delay:0ms;  }
+.profile-grid .profile-card:nth-child(2)  { animation-delay:50ms; }
+.profile-grid .profile-card:nth-child(3)  { animation-delay:100ms; }
+.profile-grid .profile-card:nth-child(4)  { animation-delay:50ms; }
+.profile-grid .profile-card:nth-child(5)  { animation-delay:0ms;  }
+.profile-grid .profile-card:nth-child(6)  { animation-delay:50ms; }
+.profile-grid .profile-card:nth-child(7)  { animation-delay:100ms; }
+.profile-grid .profile-card:nth-child(8)  { animation-delay:50ms; }
+.profile-grid .profile-card:nth-child(9)  { animation-delay:0ms;  }
+.profile-grid .profile-card:nth-child(10) { animation-delay:50ms; }
+.profile-grid .profile-card:nth-child(11) { animation-delay:0ms;  }
+.profile-grid .profile-card:nth-child(12) { animation-delay:50ms; }
 
 .profile-card.ss-exiting    { pointer-events:none !important; z-index:0 !important; }
 .profile-card.ss-exit-interested { animation:qCardOutInterested 0.34s cubic-bezier(0.4,0,1,1) forwards !important; }
@@ -1745,7 +1745,7 @@
     es.classList.add("show");
     /* show class handles it */
     // Always show heading — empty state fills everything below it
-    if(header) { header.style.display="block"; header.style.visibility="visible"; }
+    if(header) { header.style.display="block"; header.style.visibility="visible"; setTimeout(function(){ header.style.opacity="1"; }, 10); }
     if(hasEverLoadedProfiles){ if(ftEl)ftEl.style.display="none"; if(exEl)exEl.style.display="flex"; }
     else { if(ftEl)ftEl.style.display="flex"; if(exEl)exEl.style.display="none"; }
   }
@@ -2464,7 +2464,7 @@
     if (es)   es.classList.add('show');
 
     // Always keep heading visible so user sees "DISCOVER CONNECTIONS" + animation below
-    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
+    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; setTimeout(function(){ hdr.style.opacity = "1"; }, 10); }
     // Make sure ss-gi is set so emptyState is fully visible (no opacity:0)
     /* .show class handles visibility */
 
@@ -2495,7 +2495,7 @@
     _initDone = true;
     // Hide empty state ONLY when we have actual cards to show
     if (es) { es.classList.remove('show'); }
-    if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }
+    if (hdr) { hdr.style.opacity = '0'; setTimeout(function(){ hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }, 300); }
     grid.style.display = 'grid';
     grid.innerHTML = '';
 
@@ -2778,7 +2778,7 @@
         // (not just temporarily during animation or refetch)
         if (activeCards.length > 0 || allCards.length > 0) {
           es.classList.remove('show');
-          if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }
+          if (hdr) { hdr.style.opacity = '0'; setTimeout(function(){ hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; }, 300); }
         } else if (!window._feedLoading && !window._isFetching && !window._isReplacing) {
           // Only show empty state if not currently loading or replacing
           es.classList.add('show');
