@@ -828,13 +828,21 @@ a, button, [role="button"] {
 <body>
 <nav class="top-nav">
   <div class="top-nav-inner">
-    <div class="nav-left">
-      <span class="nav-brand-name">STARTUP SYNC<sup class="nav-tm">™</sup></span>
+    <div class="nav-left" style="flex:1;">
+      <svg width="26" height="26" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+        <defs><linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3399ff"/><stop offset="100%" stop-color="#22ccaa"/></linearGradient></defs>
+        <circle cx="18" cy="22" r="10" fill="#3399ff"/><ellipse cx="18" cy="44" rx="12" ry="8" fill="#2255cc"/>
+        <circle cx="102" cy="22" r="10" fill="#22ccaa"/><ellipse cx="102" cy="44" rx="12" ry="8" fill="#0f8866"/>
+        <path d="M 28 38 Q 60 5 92 38" fill="none" stroke="url(#ng)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="44" y1="22" x2="44" y2="38" stroke="url(#ng)" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+        <line x1="60" y1="13" x2="60" y2="38" stroke="url(#ng)" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+        <line x1="76" y1="22" x2="76" y2="38" stroke="url(#ng)" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+      </svg>
     </div>
-    <div class="nav-center">
-      <span class="nav-tagline">Connect. Pitch. Build.</span>
+    <div class="nav-center" style="flex:2;text-align:center;">
+      <span style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111118;letter-spacing:0.08em;">STARTUP SYNC<sup style="font-size:0.5em;vertical-align:super;">™</sup></span>
     </div>
-    <div class="nav-right">
+    <div class="nav-right" style="flex:1;justify-content:flex-end;">
       <div class="nav-avatar" id="sbAvatar" title="Edit Profile"></div>
     </div>
   </div>
