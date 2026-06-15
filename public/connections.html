@@ -915,7 +915,7 @@
     @media(max-width:360px) {
       .top-nav-inner { padding:0 .4rem !important; gap:.25rem !important; }
       .nav-brand-name { font-size:.85rem !important; }
-      .nav-tagline { font-size:1rem !important; }
+      .nav-tagline { display:none !important; }
       .nav-avatar { width:34px !important; height:34px !important; }
     }
 
@@ -1162,14 +1162,14 @@
     @media (max-width: 360px) {
       .top-nav-inner { height: 48px !important; min-height: 48px !important; max-height: 48px !important; padding: 0 8px !important; gap: 4px !important; }
       .nav-avatar { width: 28px !important; height: 28px !important; }
-      .nav-tagline { font-size: 0.85rem !important; }
+      .nav-tagline { display:none !important; }
       .nav-brand-name { font-size: 0.6rem !important; }
     }
 
   
     /* ═══ STARTUPSYNC™ HEADER — CANONICAL ═══ */
     nav.top-nav .nav-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; letter-spacing:0.06em !important; white-space:nowrap !important; line-height:1.1 !important; }
-    nav.top-nav .nav-tagline { font-family:'Sora',sans-serif !important; font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; letter-spacing:0.01em !important; white-space:nowrap !important; }
+    nav.top-nav .nav-tagline { font-family:'Sora',sans-serif !important; font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; letter-spacing:0.01em !important; white-space:nowrap !important; } @media(max-width:768px) { nav.top-nav .nav-tagline { display:none !important; } }
     @media(max-width:768px){ .mob-brand-name { font-family:'Sora',sans-serif !important; font-size:1rem !important; font-weight:800 !important; color:#111118 !important; } .mob-brand-sub { font-size:0.82rem !important; font-weight:700 !important; color:#374151 !important; } }
   
     /* ═══ PERF: Mobile speed ═══ */
@@ -1375,6 +1375,10 @@
 /* Queue badge — hidden */
 #ss-queue-badge { display:none !important; }
 </style>
+<style>
+@media(max-width:768px) { .nav-tagline, nav.top-nav .nav-tagline, span.nav-tagline { display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important; } }
+</style>
+
 
 </head>
 <body>
