@@ -1375,11 +1375,6 @@
 /* Queue badge — hidden */
 #ss-queue-badge { display:none !important; }
 </style>
-<style>
-@media(max-width:768px) { .nav-tagline, nav.top-nav .nav-tagline, span.nav-tagline { display:none !important; } 
-.nav-center { justify-content:center !important; text-align:center !important; } 
-.nav-brand-name { font-size:1rem !important; text-align:center !important; } }
-</style>
 
 
 </head>
@@ -2873,5 +2868,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 </script>
+
+<style id="ss-mobile-nav-fix">
+/* Hide tagline on mobile only */
+@media (max-width: 768px) {
+  .nav-center { display: none !important; }
+  .top-nav-inner { 
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  .nav-left { flex: 1 !important; }
+  .nav-brand-name { 
+    font-size: 1rem !important;
+    letter-spacing: 0.06em !important;
+  }
+}
+</style>
 </body>
 </html>
