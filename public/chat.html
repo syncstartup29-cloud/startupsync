@@ -28,7 +28,7 @@
     .top-nav-inner::-webkit-scrollbar { display:none; }
     .nav-brand { position:relative; display:flex; flex-direction:row; align-items:center; gap:8px; padding-right:14px; border-right:1px solid #E4E4E7; flex-shrink:0; margin-right:8px; }
     .nav-brand-name-wrap { display:flex; align-items:flex-start; gap:2px; }
-    .nav-brand-name { font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; color:#111118; letter-spacing:0.02em; line-height:1.1; white-space:nowrap; }
+    .nav-brand-name { font-family:'Sora',sans-serif; font-size:1rem !important; font-weight:800 !important; color:#111118; letter-spacing:0.08em !important; line-height:1.1; white-space:nowrap; }
     .nav-logo-circle { width:13px; height:13px; border-radius:50%; background:transparent; color:#111118; border:1.2px solid #111118; font-family:'Sora',sans-serif; font-size:0.4rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; line-height:1; flex-shrink:0; margin-top:0px; }
     .nav-brand-text { display:flex; flex-direction:column; gap:1px; }
     .nav-brand-sub { font-size:0.44rem; color:#9CA3AF; font-weight:500; white-space:nowrap; }
@@ -1071,19 +1071,7 @@
       .bubble { font-size: 0.8rem !important; padding: 8px 10px !important; }
       .ch-input-wrap { padding: 6px 10px !important; }
     }
-  
-    /* === NAVBAR EXACT MATCH (connections.html) === */
-    .top-nav { position:sticky; top:0; z-index:1000; background:#FFFFFF; border-bottom:1px solid #E4E4E7; box-shadow:0 1px 0 rgba(0,0,0,0.06); }
-    .top-nav-inner { display:flex; align-items:center; padding:0 20px; gap:4px; overflow:visible; -webkit-overflow-scrolling:touch; scrollbar-width:none; height:60px; }
-    .top-nav-inner::-webkit-scrollbar { display:none; }
-    .nav-left { display:flex; align-items:center; }
-    .nav-center { display:flex; align-items:center; justify-content:center; }
-    .nav-right { display:flex; align-items:center; justify-content:flex-end; }
-    .nav-brand-name { font-family:'Sora',sans-serif; font-size:1rem; font-weight:800; color:#111118; letter-spacing:0.08em; white-space:nowrap; }
-    .nav-avatar { width:36px; height:36px; border-radius:50%; background:#111118; color:#fff; font-family:'Sora',sans-serif; font-size:0.6rem; font-weight:700; display:flex; align-items:center; justify-content:center; border:2px solid #E4E4E7; cursor:pointer; flex-shrink:0; transition:border-color 0.15s,transform 0.15s,opacity 0.15s; overflow:hidden; opacity:0; background-size:cover; background-position:center; }
-    .nav-avatar:hover { border-color:#111118; transform:scale(1.05); }
-    .nav-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
-</style>
+  </style>
 <script>
 (function(){
   try{
@@ -1240,7 +1228,7 @@
       </svg>
     </div>
     <div class="nav-center" style="flex:2;text-align:center;">
-      <span class="nav-brand-name" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111118;letter-spacing:0.08em;">STARTUP SYNC<sup style="font-size:0.5em;vertical-align:super;">™</sup></span>
+      <span style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111118;letter-spacing:0.08em;">STARTUP SYNC<sup style="font-size:0.5em;vertical-align:super;">™</sup></span>
     </div>
     <div class="nav-right" style="flex:1;justify-content:flex-end;">
       <div class="nav-avatar" id="sbAvatar" title="Edit Profile"></div>
