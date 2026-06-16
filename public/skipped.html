@@ -20,7 +20,7 @@
 
     .nav-brand { display:flex; flex-direction:row; align-items:center; gap:8px; padding-right:14px; border-right:1px solid #E4E4E7; flex-shrink:0; margin-right:8px; }
     .nav-brand-name-wrap { display:flex; align-items:flex-start; gap:2px; }
-    .nav-brand-name { font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; color:#111118; letter-spacing:0.02em; line-height:1.1; white-space:nowrap; }
+    .nav-brand-name { font-family:'Sora',sans-serif; font-size:1rem !important; font-weight:800 !important; color:#111118; letter-spacing:0.08em !important; line-height:1.1; white-space:nowrap; }
     .nav-logo-circle { width:13px; height:13px; border-radius:50%; background:transparent; color:#111118; border:1.2px solid #111118; font-family:'Sora',sans-serif; font-size:0.4rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; line-height:1; flex-shrink:0; }
     .nav-brand-text { display:flex; flex-direction:column; gap:1px; }
     .nav-brand-sub { font-size:0.44rem; color:#9CA3AF; font-weight:500; white-space:nowrap; }
@@ -52,16 +52,19 @@
     .page-wrapper { display:flex; flex:1; min-height:0; }
     .page-content { flex:1; display:flex; flex-direction:column; overflow-y:auto; }
     .main-content { max-width:860px; margin:0 auto; width:100%; padding:1.5rem 1.25rem 2rem; flex:1; }
-    .page-header { margin-bottom:1.25rem; }
-    .page-header h2 { font-family:var(--font-h); font-size:1.25rem; font-weight:700; color:var(--text); letter-spacing:0.03em; }
-    .page-header p { font-size:0.92rem; color:var(--sub); margin-top:4px; }
+    .page-header { margin-bottom:1.75rem; padding-top:1.5rem; text-align:center; }
+    .page-header h2 { font-family:var(--font-h); font-size:clamp(1.6rem,4vw,2.6rem); font-weight:700; color:#111118; letter-spacing:-0.02em; margin-bottom:0.5rem; line-height:1.1; display:inline-block; position:relative; }
+    .page-header h2::after { content:''; position:absolute; left:0; bottom:-5px; width:100%; height:3px; background:#111118; border-radius:2px; animation:underlinePing 2.6s ease-in-out infinite; }
+    @keyframes underlinePing { 0%{transform:scaleX(0);transform-origin:left;} 42%{transform:scaleX(1);transform-origin:left;} 50%{transform:scaleX(1);transform-origin:right;} 92%{transform:scaleX(0);transform-origin:right;} 100%{transform:scaleX(0);transform-origin:left;} }
+    .page-header p { font-size:0.78rem; color:#374151; margin-top:0.4rem; }
 
     .profiles-list { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
     @media(min-width:640px)  { .profiles-list { grid-template-columns:repeat(2,1fr); gap:12px; } }
     @media(min-width:1024px) { .profiles-list { grid-template-columns:repeat(3,1fr); gap:14px; } }
     @media(min-width:1280px) { .profiles-list { grid-template-columns:repeat(4,1fr); gap:14px; } }
-    .profile-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-card); transition:transform 0.2s var(--ease),box-shadow 0.2s var(--ease); }
-    .profile-card:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,0.09); }
+    .profile-card { background:#fff; border:1.5px solid #111118; border-radius:var(--radius); overflow:hidden; box-shadow:0 2px 0 #111118, 0 4px 12px rgba(0,0,0,0.08); transition:transform 0.18s var(--ease),box-shadow 0.18s var(--ease); position:relative; }
+    .profile-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:#111118; border-radius:var(--radius) var(--radius) 0 0; }
+    .profile-card:hover { transform:translateY(-3px); box-shadow:0 5px 0 #111118, 0 8px 24px rgba(0,0,0,0.12); }
     .card-main { padding:12px 14px; display:flex; gap:12px; align-items:center; }
     .profile-photo { width:48px; height:48px; min-width:48px; min-height:48px; max-width:48px; max-height:48px; border-radius:50%; flex-shrink:0; background:#F4F4F5; border:1.5px solid var(--border); overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:var(--font-h); font-weight:700; font-size:1rem; color:var(--text); }
     .profile-photo img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; border-radius:50%; }
@@ -814,7 +817,7 @@ a, button, [role="button"] {
       </svg>
     </div>
     <div class="nav-center" style="flex:2;text-align:center;">
-      <span class="nav-brand-name" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111118;letter-spacing:0.08em;">STARTUP SYNC<sup style="font-size:0.5em;vertical-align:super;">™</sup></span>
+      <span style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;color:#111118;letter-spacing:0.08em;">STARTUP SYNC<sup style="font-size:0.5em;vertical-align:super;">™</sup></span>
     </div>
     <div class="nav-right" style="flex:1;justify-content:flex-end;">
       <div class="nav-avatar" id="sbAvatar" title="Edit Profile"></div>
