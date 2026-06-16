@@ -78,9 +78,23 @@
     .char-counter.ok { color:var(--success); }
     .char-counter.warn { color:#B45309; }
     .phone-row { display:grid; grid-template-columns:1fr 2fr; gap:0.75rem; }
-    .phone-validation { font-size:0.75rem; margin-top:6px; font-weight:600; display:flex; align-items:center; gap:6px; font-family:var(--font-b); min-height:0; transition:all 0.2s; }
-    .phone-validation.error { color:#DC2626; background:#FEF2F2; border:1.5px solid #FECACA; border-radius:8px; padding:8px 12px; }
-    .phone-validation.ok { color:#16A34A; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:8px; padding:8px 12px; }
+    .phone-validation { font-size:0.78rem; margin-top:8px; font-weight:600; font-family:var(--font-b); min-height:0; transition:all 0.25s ease; border-radius:10px; line-height:1.5; word-break:break-word; }
+    .phone-validation.error {
+      display:flex; align-items:flex-start; gap:8px;
+      color:#B91C1C; background:#FEF2F2;
+      border:1.5px solid #FECACA; border-left:4px solid #DC2626;
+      border-radius:10px; padding:10px 14px;
+    }
+    .phone-validation.error::before {
+      content:'🚫'; font-size:1rem; flex-shrink:0; margin-top:1px;
+    }
+    .phone-validation.ok {
+      display:flex; align-items:center; gap:8px;
+      color:#15803D; background:#F0FDF4;
+      border:1.5px solid #BBF7D0; border-left:4px solid #16A34A;
+      border-radius:10px; padding:10px 14px;
+    }
+    .phone-validation.ok::before { content:'✅'; font-size:1rem; flex-shrink:0; }
     .field-hint { font-size:0.68rem; color:var(--text-secondary); margin-top:5px; line-height:1.6; font-family:var(--font-b); }
     .warning-hint { color:#B45309; font-weight:500; background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:8px; padding:8px 12px; margin-top:8px; font-size:0.72rem; line-height:1.6; font-family:var(--font-b); }
     .disclaimer-hint { color:var(--text-secondary); font-style:italic; font-size:0.75rem; line-height:1.6; font-family:var(--font-b); margin-top:6px; border-left:2px solid var(--border); padding-left:8px; }
@@ -1196,7 +1210,7 @@ window._showToast = function(opts) {
       const msgEl = document.getElementById("phoneValidation");
       if (!digits) { msgEl.textContent = ""; msgEl.className = "phone-validation"; return false; }
       const result = isValidPhoneForCountry(digits, country);
-      if (!result.valid) { msgEl.textContent = `⚠️ ${result.msg}`; msgEl.className = "phone-validation error"; return false; }
+      if (!result.valid) { msgEl.innerHTML = result.msg; msgEl.className = "phone-validation error"; return false; }
       msgEl.textContent = "✅ Looks good!"; msgEl.className = "phone-validation ok";
       checkPhoneDuplicate(digits);
       return true;
@@ -1217,7 +1231,7 @@ window._showToast = function(opts) {
           });
           const data = await r.json();
           if (data.taken) {
-            msgEl.innerHTML = "🚫 &nbsp;This number is already registered. Please use a different number.";
+            msgEl.innerHTML = "This number is already registered.<br>Please use a different number.";
             msgEl.className = "phone-validation error";
           }
         } catch(e) {}
@@ -1516,7 +1530,7 @@ window._showToast = function(opts) {
           });
           const data = await r.json();
           if (data.taken) {
-            if (phoneMsg) { phoneMsg.innerHTML = '🚫 &nbsp;This number is already registered. Please use a different number.'; phoneMsg.className = 'phone-validation error'; }
+            if (phoneMsg) { phoneMsg.innerHTML = 'This number is already registered.<br>Please use a different number.'; phoneMsg.className = 'phone-validation error'; }
             showValToast('This phone number is already registered. Use a different number.');
             return;
           }
