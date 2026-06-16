@@ -52,11 +52,9 @@
     .page-wrapper { display:flex; flex:1; min-height:0; }
     .page-content { flex:1; display:flex; flex-direction:column; overflow-y:auto; }
     .main-content { max-width:860px; margin:0 auto; width:100%; padding:1.5rem 1.25rem 2rem; flex:1; }
-    .page-header { margin-bottom:1.75rem; padding-top:1.5rem; text-align:center; }
-    .page-header h2 { font-family:var(--font-h); font-size:clamp(1.6rem,4vw,2.6rem); font-weight:700; color:#111118; letter-spacing:-0.02em; margin-bottom:0.5rem; line-height:1.1; display:inline-block; position:relative; }
-    .page-header h2::after { content:''; position:absolute; left:0; bottom:-5px; width:100%; height:3px; background:#111118; border-radius:2px; animation:underlinePing 2.6s ease-in-out infinite; }
-    @keyframes underlinePing { 0%{transform:scaleX(0);transform-origin:left;} 42%{transform:scaleX(1);transform-origin:left;} 50%{transform:scaleX(1);transform-origin:right;} 92%{transform:scaleX(0);transform-origin:right;} 100%{transform:scaleX(0);transform-origin:left;} }
-    .page-header p { font-size:0.78rem; color:#374151; margin-top:0.4rem; }
+    .page-header { margin-bottom:1.25rem; }
+    .page-header h2 { font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:800; color:#111118; letter-spacing:-0.02em; }
+    .page-header p { font-size:0.78rem; color:#374151; margin-top:3px; }
 
     .profiles-list { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
     @media(min-width:640px)  { .profiles-list { grid-template-columns:repeat(2,1fr); gap:12px; } }
