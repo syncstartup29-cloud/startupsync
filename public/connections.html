@@ -1759,6 +1759,8 @@
     if(header) { header.style.display="none"; header.style.visibility="hidden"; }
     const slice=getSlice(carouselIndex, cpp());
     const render=()=>{ grid.innerHTML=slice.map(createProfileCard).join(""); };
+    // Cache for view button fallback
+    window._ssProfileCache = allProfiles.slice();
     // ✅ FIX: replaced fade (opacity transition) with instant swap + subtle scale
     // Fade was getting stuck when interrupted — isFading flag never reset on errors
     window._isReplacing=true;
@@ -1769,14 +1771,13 @@
     // Animate each card in with scale — no opacity transition on grid so nothing can freeze
     var cards = grid.querySelectorAll('.profile-card');
     cards.forEach(function(card, i) {
-      card.style.transform = 'scale(0.96)';
-      card.style.opacity = '0';
-      card.style.transition = 'none';
+      card.style.cssText += ';opacity:0;transform:translateY(10px);transition:none;';
       void card.offsetHeight;
-      card.style.transition = 'transform 150ms ease, opacity 150ms ease';
-      card.style.transitionDelay = (i * 40) + 'ms';
-      card.style.transform = 'scale(1)';
-      card.style.opacity = '1';
+      setTimeout(function() {
+        card.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, i * 50);
     });
     isFading = false; // never lock — instant swap
     setTimeout(function(){ window._isReplacing=false; }, 300);
@@ -2815,6 +2816,10 @@ document.addEventListener('DOMContentLoaded', function() {
   window.openProfileModal = function(userId) {
     var profiles = window.allProfiles || [];
     var u = profiles.find(function(x){ return x._id === userId; });
+    // Fallback: check cached profiles if allProfiles is stale/empty
+    if (!u && window._ssProfileCache) {
+      u = window._ssProfileCache.find(function(x){ return x._id === userId; });
+    }
     if (!u) return;
     var isF = u.role === 'Founder';
     var p = isF ? (u.founderProfile || {}) : (u.investorProfile || {});
