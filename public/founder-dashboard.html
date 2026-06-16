@@ -77,9 +77,9 @@
     .char-counter.ok { color:var(--success); }
     .char-counter.warn { color:#B45309; }
     .phone-row { display:grid; grid-template-columns:1fr 2fr; gap:0.75rem; }
-    .phone-validation { font-size:0.68rem; margin-top:4px; font-weight:600; display:flex; align-items:center; gap:4px; font-family:var(--font-b); }
-    .phone-validation.error { color:var(--error); }
-    .phone-validation.ok { color:var(--success); }
+    .phone-validation { font-size:0.75rem; margin-top:6px; font-weight:600; display:flex; align-items:center; gap:6px; font-family:var(--font-b); min-height:0; transition:all 0.2s; }
+    .phone-validation.error { color:#DC2626; background:#FEF2F2; border:1.5px solid #FECACA; border-radius:8px; padding:8px 12px; }
+    .phone-validation.ok { color:#16A34A; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:8px; padding:8px 12px; }
     .warning-hint { color:#B45309; font-weight:500; background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:8px; padding:8px 12px; margin-top:8px; font-size:0.72rem; line-height:1.6; font-family:var(--font-b); }
     .save-button { width:100%; margin-top:1.5rem; padding:0.85rem 1rem; border:none; border-radius:8px; font-family:var(--font-h); font-size:0.82rem; font-weight:600; cursor:pointer; letter-spacing:0.04em; background:var(--accent); color:#FFFFFF; box-shadow:0 2px 8px rgba(17,17,24,0.1); transition:transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.15s; position:relative; overflow:hidden; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit--webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-tap-highlight-color:transparent; }
     .save-button::after { content:''; position:absolute; top:0; left:-110%; width:60%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition:left 0.45s var(--ease); transform:skewX(-15deg); }
@@ -1287,7 +1287,7 @@ window._showToast = function(opts) {
           });
           const data = await r.json();
           if (data.taken) {
-            msgEl.textContent = "❌ This number is already registered. Use a different number.";
+            msgEl.innerHTML = "🚫 &nbsp;This number is already registered. Please use a different number.";
             msgEl.className = "phone-validation error";
           }
         } catch(e) {}
@@ -1579,7 +1579,7 @@ window._showToast = function(opts) {
           });
           const data = await r.json();
           if (data.taken) {
-            if (phoneMsg) { phoneMsg.textContent = '❌ This number is already registered. Use a different number.'; phoneMsg.className = 'phone-validation error'; }
+            if (phoneMsg) { phoneMsg.innerHTML = '🚫 &nbsp;This number is already registered. Please use a different number.'; phoneMsg.className = 'phone-validation error'; }
             showValToast('This phone number is already registered. Use a different number.');
             return;
           }
