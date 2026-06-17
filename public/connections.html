@@ -245,8 +245,9 @@
     .container::before,.card::before{background:linear-gradient(90deg,#555 0%,#111 50%,#555 100%)!important;background-size:200% 100%!important;}
 
     /* Discover cards */
-    .profile-grid .profile-card{border:0.5px solid #e4e4e7!important;border-top:2px solid #111!important;box-shadow:0 4px 12px rgba(0,0,0,.06)!important;transition:transform .18s ease,box-shadow .18s ease!important;}
-    .profile-grid .profile-card:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(0,0,0,.1)!important;}
+    .profile-grid .profile-card{border:1.5px solid #111118!important;box-shadow:0 2px 0 #111118,0 4px 12px rgba(0,0,0,.08)!important;transition:transform .18s ease,box-shadow .18s ease!important;position:relative;overflow:hidden;}
+    .profile-grid .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#111118;border-radius:12px 12px 0 0;}
+    .profile-grid .profile-card:hover{transform:translateY(-3px)!important;box-shadow:0 5px 0 #111118,0 8px 24px rgba(0,0,0,.12)!important;}
     /* Animation handled by ss-queue-css — removed duplicate to prevent glitch */
 
     /* Connected cards */
