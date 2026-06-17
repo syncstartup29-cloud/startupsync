@@ -165,6 +165,8 @@ async function ensureIndexes() {
 }
 
 // ── MongoDB ──────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+
 mongoose.connect(process.env.MONGO_URI, {
   family: 4,
   maxPoolSize: 10,
@@ -172,7 +174,14 @@ mongoose.connect(process.env.MONGO_URI, {
   socketTimeoutMS: 45000,
   bufferCommands: false,
 })
-  .then(async () => { await ensureIndexes(); })
+  .then(async () => {
+    await ensureIndexes();
+    // 🔒 FIX: only start accepting requests once MongoDB is actually ready.
+    // Previously server.listen() ran independently below, so on cold start
+    // requests could hit the server before Mongo finished connecting,
+    // causing "Cannot call ... before initial connection is complete" 502s.
+    server.listen(PORT, () => { /* server started */ });
+  })
   .catch((err) => {
     console.error("❌ MongoDB Error:", err);
     process.exit(1); // 🔒 STARTUP: Exit if DB fails — don't run without a database
@@ -2260,9 +2269,7 @@ app.use((err, req, res, next) => {
 // ════════════════════════════════════════════════════════
 //  SERVER START + GRACEFUL SHUTDOWN
 // ════════════════════════════════════════════════════════
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => { /* server started */ });
+// (server.listen now happens above, only after MongoDB connects — see top of file)
 
 // 🔒 STARTUP: Graceful shutdown — waits for active requests to finish
 // before closing DB connection. Prevents data corruption on restart.
