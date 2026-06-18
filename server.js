@@ -6,15 +6,15 @@
 require("dotenv").config();
 const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "EMAIL_USER", "EMAIL_PASS", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
 
-if (process.env.JWT_SECRET.length < 32) {
-  console.error("❌ JWT_SECRET must be at least 32 characters");
-  process.exit(1);
-}
 for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     console.error(`❌ Missing required env variable: ${key}`);
     process.exit(1);
   }
+}
+if (process.env.JWT_SECRET.length < 32) {
+  console.error("❌ JWT_SECRET must be at least 32 characters");
+  process.exit(1);
 }
 
 const express    = require("express");
@@ -1548,11 +1548,6 @@ async function autoConnectPair(aId, bId) {
     User.updateOne({ _id: aId }, { $addToSet: { connections: bId }, $pull: { interestedUsers: bId, skippedUsers: bId } }),
     User.updateOne({ _id: bId }, { $addToSet: { connections: aId }, $pull: { interestedUsers: aId, skippedUsers: aId } }),
   ]);
-  // ✅ FIX: notify both clients in real time so Connected/Skipped pages auto-refresh
-  // (these pages already listen for this event but server never emitted it)
-  const payload = { userId1: aId.toString(), userId2: bId.toString() };
-  io.to(`user:${aId}`).emit("connection:established", payload);
-  io.to(`user:${bId}`).emit("connection:established", payload);
   return { already: false };
 }
 
@@ -1730,11 +1725,6 @@ app.post("/inbox/accept", authMiddleware, async (req, res) => {
       pushNotification(senderId.toString(),   "connected", `✅ ${receiver.fullName} accepted your request. You are now connected!`, receiverId.toString()),
       pushNotification(receiverId.toString(), "connected", `✅ You accepted ${sender?.fullName || "their"} request. You are now connected!`, senderId.toString()),
     ]);
-
-    // ✅ FIX: notify both clients in real time so Connected/Skipped pages auto-refresh
-    const _connPayload = { userId1: senderId.toString(), userId2: receiverId.toString() };
-    io.to(`user:${senderId}`).emit("connection:established", _connPayload);
-    io.to(`user:${receiverId}`).emit("connection:established", _connPayload);
 
     return res.json({ success: true, connected: true });
   } catch (e) {

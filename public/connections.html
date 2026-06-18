@@ -1867,13 +1867,10 @@
     let myComplete = false;
     try {
       const token = localStorage.getItem('token')||sessionStorage.getItem('token')||'';
-      const resp = await fetch('/get-profile', { headers:{ 'Authorization': `Bearer ${token}` } });
+      const resp = await fetch('/profile/check', { headers:{ 'Authorization': `Bearer ${token}` } });
       if(resp.ok) {
         const data = await resp.json();
-        const p = (data && data.success && data.profile) ? data.profile : {};
-        myComplete = _role==='Founder'
-          ? !!(p.photo && p.startupName && p.description && p.phone)
-          : !!(p.photo && p.investorType && p.bio && p.phone);
+        myComplete = !!(data.profileComplete);
       } else {
         // Fallback to local check
         const myProfile = _role==='Founder' ? (currentUser?.founderProfile||{}) : (currentUser?.investorProfile||{});
@@ -1963,7 +1960,8 @@
       _startPolling();
       _startAutoFetch();
     }
-  
+  });
+
   // ── Explore mode ──
   (function(){
     const cu = JSON.parse(localStorage.getItem('currentUser')||sessionStorage.getItem('currentUser')||'null');
@@ -2006,7 +2004,6 @@
     }, true);
   })();
 
-});
 </script>
 <script>
   // ── Stats Strip ──────────────────────────────────────────────────────────
