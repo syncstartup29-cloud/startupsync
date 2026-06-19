@@ -444,6 +444,19 @@ io.on("connection", (socket) => {
   socket.join(`user:${userId}`);
   socket.join(userId.toString());
 
+  // ✅ FIX: check suspension status the instant this socket connects.
+  // Covers every page load/reload/reconnect — fires the existing
+  // suspension-screen.js "user:suspended" listener without needing
+  // any other file to emit it.
+  (async () => {
+    try {
+      const u = await User.findById(userId).select("isSuspended").lean();
+      if (u && u.isSuspended) {
+        socket.emit("user:suspended", { userId: String(userId) });
+      }
+    } catch (e) { console.error("suspend-check on connect error:", e); }
+  })();
+
   socket.on("presence:whoIsOnline", (cb) => {
     cb?.({ onlineUserIds: Array.from(onlineUsers) });
   });
@@ -596,9 +609,24 @@ io.on("connection", (socket) => {
   });
 });
 
-// ════════════════════════════════════════════════════════
-//  AUTH ROUTES  (public — no authMiddleware)
-// ════════════════════════════════════════════════════════
+// ✅ FIX: periodic suspension sweep — catches users who were ALREADY
+// connected (open tab, no reload/reconnect) at the moment an admin
+// suspends them. Without this, suspension only took effect on the
+// suspended user's next page load. Runs entirely server-side, no
+// changes needed anywhere else.
+setInterval(async () => {
+  try {
+    if (onlineUsers.size === 0) return;
+    const ids = Array.from(onlineUsers).filter((id) => mongoose.Types.ObjectId.isValid(id));
+    if (ids.length === 0) return;
+    const suspendedUsers = await User.find({ _id: { $in: ids }, isSuspended: true }).select("_id").lean();
+    suspendedUsers.forEach((u) => {
+      io.to(`user:${u._id}`).emit("user:suspended", { userId: String(u._id) });
+    });
+  } catch (e) {
+    console.error("suspension sweep error:", e);
+  }
+}, 15000);
 
 app.post("/auth/send-otp", otpLimiter, async (req, res) => {
   try {
@@ -948,7 +976,9 @@ app.post("/session/check", async (req, res) => {
     if (!decoded?.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) return res.json({ active: false });
     const user = await User.findById(decoded.userId).select("activeSessionToken isSuspended").lean();
     if (!user) return res.json({ active: false, deleted: true });
-    if (user.isSuspended) return res.json({ active: false, deleted: true });
+    // ✅ FIX: also send suspended:true + success:false so suspension-screen.js's
+    // generic fetch-interceptor fallback path can catch this too, not just session-guard.js
+    if (user.isSuspended) return res.json({ active: false, deleted: true, suspended: true, success: false });
     if (!user.activeSessionToken) {
       return res.json({ active: false });
     }
@@ -1075,6 +1105,28 @@ app.get("/get-user", authMiddleware, async (req, res) => {
 // ════════════════════════════════════════════════════════
 //  PROFILE ROUTES
 // ════════════════════════════════════════════════════════
+
+// ✅ FIX: this route was missing entirely — frontend (connections.html)
+// was calling it to verify profile completeness fresh from the server,
+// silently 404ing every time and falling back to stale local data.
+app.get("/profile/check", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("role founderProfile investorProfile").lean();
+    if (!user) return res.json({ success: false, profileComplete: false });
+    let profileComplete = false;
+    if (user.role === "Founder") {
+      const p = user.founderProfile || {};
+      profileComplete = !!(p.photo && p.startupName && p.description && p.phone);
+    } else {
+      const p = user.investorProfile || {};
+      profileComplete = !!(p.photo && p.investorType && p.bio && p.phone);
+    }
+    return res.json({ success: true, profileComplete });
+  } catch (e) {
+    console.error("profile/check error:", e);
+    return res.status(500).json({ success: false, profileComplete: false });
+  }
+});
 
 // CONFIG 4: LinkedIn duplicate check — prevent same LinkedIn URL on 2 accounts
 app.post("/profile/check-linkedin", authMiddleware, async (req, res) => {
