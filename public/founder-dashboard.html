@@ -1671,6 +1671,14 @@ window._showToast = function(opts) {
       if (!_sn) { _showToast("Startup name is required!"); document.getElementById("startupName")?.focus(); return; }
       if (!_ds || _ds.length < 100) { _showToast("Description must be at least 100 characters!"); document.getElementById("description")?.focus(); return; }
       if (!_ph || _ph.length < 10) { _showToast("Valid phone number is required!"); document.getElementById("phone")?.focus(); return; }
+      // ✅ FIX: industry and fundingStage had the HTML "required" attribute,
+      // but since this form submits via a synthetic dispatchEvent() instead
+      // of a real submit, the browser's native required-field check never
+      // ran — these two could be left blank. Now explicitly checked here.
+      var _ind = (document.getElementById("industry")?.value||"").trim();
+      if (!_ind) { _showToast("Industry is required!"); document.getElementById("industry")?.focus(); return; }
+      var _fs = (document.getElementById("fundingStage")?.value||"").trim();
+      if (!_fs) { _showToast("Funding stage is required!"); document.getElementById("fundingStage")?.focus(); return; }
 
       const fullNameVal = document.getElementById("fullName").value.trim();
       if (!fullNameVal) return _showToast("Full name is required!");
@@ -1713,7 +1721,7 @@ window._showToast = function(opts) {
         description: document.getElementById("description").value.trim(),
         photo: (localStorage.getItem(profilePhotoKey()) || "")
       };
-      if (!founderProfile.startupName || !founderProfile.description || !founderProfile.photo) return _showToast("Please fill all required fields and upload a profile photo!");
+      if (!founderProfile.startupName || !founderProfile.description || !founderProfile.photo || !founderProfile.industry || !founderProfile.fundingStage) return _showToast("Please fill all required fields and upload a profile photo!");
       if (founderProfile.description.length < 100) return _showToast("Description must be at least 100 characters!");
       try {
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");

@@ -1655,6 +1655,15 @@ window._showToast = function(opts) {
       const financialCapacityVal = document.getElementById("financialCapacity").value.trim();
       if (!financialCapacityVal) return _showToast("Please select your financial capacity!");
 
+      // ✅ FIX: preferredStage and ticketSize had the HTML "required" attribute,
+      // but since this form submits via a synthetic dispatchEvent() instead
+      // of a real submit, the browser's native required-field check never
+      // ran — these two could be left blank. Now explicitly checked here.
+      const preferredStageVal = (document.getElementById("preferredStage")?.value||"").trim();
+      if (!preferredStageVal) return _showToast("Please select a preferred funding stage!");
+      const ticketSizeVal = (document.getElementById("ticketSize")?.value||"").trim();
+      if (!ticketSizeVal) return _showToast("Please select a ticket size!");
+
       const linkedinUrlVal = "";
       // Clear any old error first if the field is empty or changed
       if (!linkedinUrlVal) clearLinkedinError();
@@ -1688,7 +1697,7 @@ window._showToast = function(opts) {
         bio: document.getElementById("bio").value.trim(),
         photo: uploadedPhoto || existingProfile.photo || ""
       };
-      if (!investorProfile.investorType||!investorProfile.investmentFocus||!investorProfile.financialCapacity||!investorProfile.bio) return _showToast("Please fill all required fields!");
+      if (!investorProfile.investorType||!investorProfile.investmentFocus||!investorProfile.financialCapacity||!investorProfile.bio||!investorProfile.preferredStage||!investorProfile.ticketSize) return _showToast("Please fill all required fields!");
       try {
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         const res = await fetch("/profile/investor", { method:"POST", headers:{"Content-Type":"application/json", "Authorization": `Bearer ${token}`}, body:JSON.stringify({email:currentUser.email, newEmail:emailVal, fullName:fullNameVal, investorProfile}) });
