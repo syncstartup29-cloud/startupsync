@@ -4,17 +4,23 @@
 //  critical env variable is missing — prevents silent failures
 // ══════════════════════════════════════════════════════════
 require("dotenv").config();
-const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "EMAIL_USER", "EMAIL_PASS", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
+// Only the vars actually read by this file are required. EMAIL_USER/EMAIL_PASS
+// were removed: email is sent through the Brevo HTTP API (BREVO_API_KEY), so
+// those two were never used — yet a fresh deploy without them would crash boot.
+const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
 
-if (process.env.JWT_SECRET.length < 32) {
-  console.error("❌ JWT_SECRET must be at least 32 characters");
-  process.exit(1);
-}
+// Presence is checked FIRST. Reading JWT_SECRET.length before this loop threw a
+// cryptic "Cannot read properties of undefined" TypeError when it was missing,
+// instead of the clear message below.
 for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     console.error(`❌ Missing required env variable: ${key}`);
     process.exit(1);
   }
+}
+if (process.env.JWT_SECRET.length < 32) {
+  console.error("❌ JWT_SECRET must be at least 32 characters");
+  process.exit(1);
 }
 
 const express    = require("express");
@@ -107,7 +113,10 @@ app.use(express.json({ limit: "25mb" }));
 // 🔒 SECURITY: Strip $ and . from request body keys — prevents NoSQL injection
 app.use((req, res, next) => {
   function sanitizeKeys(obj) {
-    if (typeof obj !== "object" || obj === null || Array.isArray(obj)) return;
+    if (typeof obj !== "object" || obj === null) return;
+    // Recurse into arrays too — objects nested inside an array were being
+    // skipped before, leaving $-operator keys ({ items: [{ $gt: "" }] }) through.
+    if (Array.isArray(obj)) { obj.forEach(sanitizeKeys); return; }
     for (const key of Object.keys(obj)) {
       if (key.startsWith("$") || key.includes(".")) { delete obj[key]; }
       else sanitizeKeys(obj[key]);
@@ -421,14 +430,18 @@ function sanitize(val, maxLen) {
 io.use((socket, next) => {
   const { userId, token } = socket.handshake.auth || {};
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) return next(new Error("Invalid userId"));
-  // ✅ FIX: Token is optional — verify if provided, allow connection either way
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
-    } catch {
-      return next(new Error("Invalid token"));
-    }
+  // 🔒 SECURITY: a valid JWT is now REQUIRED (it used to be optional). userId is
+  // a plain ObjectId exposed all over the app — feed cards, chat payloads
+  // (fromUserId/toUserId), notification refUserId. With an optional token,
+  // anyone who saw a victim's id could connect as them and receive their live
+  // messages, notifications and suspension events. Token must be present AND
+  // decode to the same userId.
+  if (!token) return next(new Error("Authentication token required"));
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (String(decoded.userId) !== String(userId)) return next(new Error("Token mismatch"));
+  } catch {
+    return next(new Error("Invalid token"));
   }
   socket.userId = userId;
   socket._connCache = new Map();
@@ -984,7 +997,9 @@ app.post("/session/check", async (req, res) => {
     }
     return res.json({ active: !!(user.activeSessionToken === token) });
   } catch {
-    return res.json({ active: true });
+    // 🔒 Fail CLOSED. Returning active:true on error meant a transient DB blip
+    // could report a stale or already-kicked session as still valid.
+    return res.json({ active: false });
   }
 });
 
@@ -1131,7 +1146,8 @@ app.get("/profile/check", authMiddleware, async (req, res) => {
 // CONFIG 4: LinkedIn duplicate check — prevent same LinkedIn URL on 2 accounts
 app.post("/profile/check-linkedin", authMiddleware, async (req, res) => {
   try {
-    const { linkedinUrl, userId } = req.body || {};
+    const { linkedinUrl } = req.body || {};
+    const userId = req.userId; // 🔒 use the authenticated id, not a client-supplied one
     const url = (linkedinUrl || "").trim();
     if (!url) return res.json({ taken: false });
     const existing = await User.findOne({
@@ -1150,7 +1166,8 @@ app.post("/profile/check-linkedin", authMiddleware, async (req, res) => {
 
 app.post("/profile/check-phone", authMiddleware, async (req, res) => {
   try {
-    const { phone, userId } = req.body || {};
+    const { phone } = req.body || {};
+    const userId = req.userId; // 🔒 use the authenticated id, not a client-supplied one
     const cleaned = (phone || "").replace(/\D/g, "").slice(-10);
     if (!cleaned || cleaned.length !== 10) return res.json({ taken: false });
     const existing = await User.findOne({
@@ -1899,7 +1916,7 @@ app.post("/notifications/mark-seen", authMiddleware, async (req, res) => {
 
 app.get("/chat/history", authMiddleware, async (req, res) => {
   try {
-    const { peerId, deleted: isDeletedUser } = req.query || {};
+    const { peerId } = req.query || {};
     const userId = req.userId;
     if (!peerId || !mongoose.Types.ObjectId.isValid(peerId))
       return res.json({ success: false });
@@ -1920,8 +1937,6 @@ app.get("/chat/history", authMiddleware, async (req, res) => {
     return res.json({
       success: true,
       messages: msgs
-        // FIX: filter out messages where sender was deleted and requester is not the sender
-        .filter(m => true)
         .map(m => ({
         _id: m._id,
         fromUserId: m.senderId,
@@ -1950,8 +1965,13 @@ app.post("/chat/send", authMiddleware, async (req, res) => {
     if (!toUserId || !cleanText || !mongoose.Types.ObjectId.isValid(toUserId))
       return res.json({ success: false });
 
-    // ✅ FIX: removed assertConnected check — was blocking file sends
-    // Users only reach chat if they're connected anyway; this was a double-check causing failures
+    // 🔒 Connection check re-added. Without it, any authenticated user could POST
+    // a message to ANY userId — not just their connections. The socket path
+    // (chat:send) always enforced this; the HTTP path must match.
+    // If this ever blocks a legitimate send, the real bug is in how the
+    // connection was stored — debug that instead of deleting this guard.
+    const connected = await assertConnected(fromUserId, toUserId);
+    if (!connected) return res.json({ success: false, message: "You are not connected with this user" });
     const blocked = await isUserBlockedBy(fromUserId, toUserId);
     if (blocked) return res.json({ success: false, message: "You have been blocked" });
 
@@ -2000,8 +2020,11 @@ app.post("/chat/upload", authMiddleware, upload.single("file"), async (req, res)
     if (!toUserId || !req.file || !mongoose.Types.ObjectId.isValid(toUserId))
       return res.json({ success: false });
 
-    // ✅ FIX: removed assertConnected check — was blocking file sends
-    // Users only reach chat if they're connected anyway; this was a double-check causing failures
+    // 🔒 Connection check re-added (see /chat/send). Prevents sending files to
+    // arbitrary users. If a legit upload is blocked, fix the stored connection,
+    // not this guard.
+    const connected = await assertConnected(fromUserId, toUserId);
+    if (!connected) return res.json({ success: false, message: "You are not connected with this user" });
     const blocked = await isUserBlockedBy(fromUserId, toUserId);
     if (blocked) return res.json({ success: false, message: "You have been blocked" });
 
