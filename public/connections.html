@@ -1797,6 +1797,15 @@
   var _loadingTimeout=null;
 
   async function loadProfiles(isRefresh){
+    // ✅ FIX: old carousel system fully retired — queue engine (ss-queue-engine
+    // script below) already handles all profile fetching, rendering, real-time
+    // updates, and pagination. This function and the queue engine were both
+    // writing into the same #profileGrid and toggling the same #emptyState
+    // independently, causing a loaded card to show alongside a stuck
+    // "Finding your match" empty-state overlay. Disabling this fully hands
+    // control to the queue engine, matching what _startAutoFetch/_startPolling
+    // already did for this exact reason (see comments above).
+    return;
     if(_isLoading) return;
     _isLoading=true;
     clearTimeout(_loadingTimeout);
