@@ -2771,9 +2771,16 @@
     var hdr  = document.getElementById('pageHeader');
     if (!es || !grid) return;
 
-    // Show radar while queue loads initially
-    es.classList.add('show');
-    if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
+    // ✅ FIX: check for already-rendered cards before forcing empty state on.
+    // Previously this ran unconditionally, so if the queue engine had already
+    // rendered a card before this script executed, it would incorrectly show
+    // "Finding your match" on top of/alongside a real, already-loaded card —
+    // and since nothing new mutates the grid afterward, it stayed stuck.
+    var hasCardsAlready = grid.querySelectorAll('.profile-card').length > 0;
+    if (!hasCardsAlready) {
+      es.classList.add('show');
+      if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
+    }
 
     if (!window.MutationObserver) return;
     var timer = null;
