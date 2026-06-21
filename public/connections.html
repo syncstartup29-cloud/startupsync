@@ -1473,6 +1473,7 @@
           </div>
           <!-- Finding match state -->
           <div id="emptyFirstTime" class="empty-inner">
+            <div class="ssp-dots" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="es-icon-wrap">
               <div class="es-ring es-ring-1"></div>
               <div class="es-ring es-ring-2"></div>
@@ -1489,6 +1490,7 @@
               <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Ranking best matches</span><span class="ss-ps">NEXT</span></div>
               <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Loading profiles</span><span class="ss-ps">SOON</span></div>
             </div>
+            <div class="ssp-bar" aria-hidden="true"><i></i></div>
           </div>
           <!-- All caught up state -->
           <div id="emptyExhausted" class="empty-inner" style="display:none">
@@ -2843,86 +2845,86 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ===================================================================
-     StartupSync · Single-Container Loader + Swipe-Right Handoff
-     The title now lives INSIDE #emptyState in the HTML above, so title +
-     radar are one container. This block makes the WHOLE box swipe off to
-     the right when real cards arrive (instead of vanishing), and guarantees
-     the radar can never get stuck behind a card. Touches NO fetch/auth/skip.
+     StartupSync · Plain loader + stuck fix
+     Only restyles the middle container (#emptyState / #emptyFirstTime).
+     Sidebar, header/topbar, fetch, skip, interested — all untouched.
+     No existing id/class is renamed; only new ssp-* classes are added.
      ==================================================================== -->
-<style id="ss-swipe-fix">
-  .content-center{ position:relative; }
+<style id="ss-plain-loader">
+  /* Plain look: drop the page title, ticker, old radar + step pills. */
+  #pageHeader{ display:none !important; }
+  #emptyState .es-ticker{ display:none !important; }
+  #emptyFirstTime .es-icon-wrap,
+  #emptyFirstTime .ss-pills{ display:none !important; }
 
-  /* Title sits inside the box, above the radar and above the ticker bg. */
-  #emptyState > #pageHeader{
-    position:relative; z-index:2; width:100%;
-    margin:0 0 1.5rem; padding:0;
+  /* Plain loader — three brand dots that bounce. */
+  #emptyFirstTime .ssp-dots{ display:flex; gap:9px; margin-bottom:1.5rem; }
+  #emptyFirstTime .ssp-dots span{
+    width:14px; height:14px; border-radius:50%;
+    animation:sspBlink 1.4s ease-in-out infinite;
   }
-  #emptyState > #pageHeader h2{ margin-bottom:.55rem; }
-
-  /* Cards arrive -> the WHOLE box (title + radar) slides off to the right.
-     Absolute + high z-index so it glides over and reveals the cards; the
-     keyframe runs even straight out of display:none. */
-  #emptyState.ss-swiped{
-    display:flex !important; flex-direction:column !important;
-    align-items:center !important; justify-content:center !important;
-    position:absolute !important; left:0; right:0; top:0; z-index:5;
-    pointer-events:none !important;
-    animation: ssSwipeOut .6s cubic-bezier(.65,0,.2,1) forwards;
-  }
-  /* Their code hides the title for the card view — keep it visible while the
-     box is still on screen, so the title rides out with the swipe. */
-  #emptyState.ss-swiped > #pageHeader{
-    display:block !important; visibility:visible !important; opacity:1 !important;
-  }
-  @keyframes ssSwipeOut{
-    0%   { transform:translateX(0);    opacity:1; }
-    55%  { opacity:1; }
-    100% { transform:translateX(115%); opacity:0; }
+  #emptyFirstTime .ssp-dots span:nth-child(1){ background:#2F6BFF; animation-delay:0s; }
+  #emptyFirstTime .ssp-dots span:nth-child(2){ background:#14B8A6; animation-delay:.2s; }
+  #emptyFirstTime .ssp-dots span:nth-child(3){ background:#22C55E; animation-delay:.4s; }
+  @keyframes sspBlink{
+    0%,100%{ opacity:.25; transform:translateY(0); }
+    50%    { opacity:1;   transform:translateY(-6px); }
   }
 
-  /* Cards ease in underneath (opacity only, won't fight per-card transforms). */
-  #profileGrid.ss-revealed{ animation: ssGridIn .5s .12s ease both; }
-  @keyframes ssGridIn{ from{ opacity:0; } to{ opacity:1; } }
+  /* Plain loader — thin sliding progress bar. */
+  #emptyFirstTime .ssp-bar{
+    margin-top:1.6rem; width:240px; max-width:70vw; height:4px;
+    background:#E8E8EA; border-radius:99px; overflow:hidden;
+  }
+  #emptyFirstTime .ssp-bar i{
+    display:block; height:100%; width:35%; border-radius:99px; background:#111118;
+    animation:sspSlide 1.5s ease-in-out infinite;
+  }
+  @keyframes sspSlide{ 0%{ margin-left:-35%; } 100%{ margin-left:100%; } }
 
+  /* Mobile sizing. */
+  @media (max-width:600px){
+    #emptyFirstTime .ssp-dots span{ width:12px; height:12px; }
+    #emptyFirstTime .ssp-bar{ width:200px; }
+  }
   @media (prefers-reduced-motion: reduce){
-    #emptyState.ss-swiped{ animation:none !important; opacity:0 !important;
-      transform:translateX(115%) !important; }
-    #profileGrid.ss-revealed{ animation:none !important; }
+    #emptyFirstTime .ssp-dots span, #emptyFirstTime .ssp-bar i{ animation:none; }
+    #emptyFirstTime .ssp-dots span{ opacity:1; }
+    #emptyFirstTime .ssp-bar i{ margin-left:32%; }
   }
+
+  /* STUCK FIX: loader is force-hidden whenever real cards exist. id+class
+     specificity beats .empty-state.show, so the loader can never sit behind
+     the cards again — no matter which engine renders them. */
+  #emptyState.ssp-hidden{ display:none !important; }
 </style>
-<script id="ss-swipe-controller">
+<script id="ss-loader-guard">
 (function(){
   function init(){
     var grid  = document.getElementById('profileGrid');
     var empty = document.getElementById('emptyState');
-    if(!grid || !empty){ return setTimeout(init, 300); } // wait for DOM if early
+    if(!grid || !empty){ return setTimeout(init, 300); }
 
-    var raf = null, backTimer = null, revealed = false;
-
-    // A "real card" = anything the render engines output as a profile.
+    var raf = null, back = null;
     function hasCards(){ return !!grid.querySelector('.profile-card, [data-id]'); }
 
     function apply(){
       raf = null;
       if(hasCards()){
-        // Cards present -> swipe the whole box off to the right. Always.
-        if(backTimer){ clearTimeout(backTimer); backTimer = null; }
-        if(!empty.classList.contains('ss-swiped')){ empty.classList.add('ss-swiped'); }
-        if(!revealed){ grid.classList.add('ss-revealed'); revealed = true; }
+        if(back){ clearTimeout(back); back = null; }
+        empty.classList.add('ssp-hidden');          // cards present -> hide loader
       } else {
-        // Grid momentarily empty (between skip/interested) — wait a beat so the
-        // box doesn't flicker back, then restore it if still truly empty.
-        if(backTimer) return;
-        backTimer = setTimeout(function(){
-          backTimer = null;
-          if(!hasCards()){ empty.classList.remove('ss-swiped'); revealed = false; }
+        if(back) return;                            // grace, so it can't flicker
+        back = setTimeout(function(){
+          back = null;
+          if(!hasCards()){ empty.classList.remove('ssp-hidden'); }
         }, 240);
       }
     }
-    function schedule(){ if(raf === null){ raf = requestAnimationFrame(apply); } }
+    function sched(){ if(raf === null){ raf = requestAnimationFrame(apply); } }
 
-    new MutationObserver(schedule).observe(grid, { childList:true, subtree:true });
-    schedule(); // lock in the correct state on load
+    new MutationObserver(sched).observe(grid, { childList:true, subtree:true });
+    sched();
   }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', init);
