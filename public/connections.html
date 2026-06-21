@@ -80,6 +80,30 @@
     /* ✅ FIX: hide header by default — JS shows it only when empty state is needed */
     #pageHeader { display:block; visibility:visible; opacity:1; }
     .content-center { flex:1; display:flex; flex-direction:column; justify-content:flex-start; }
+
+    /* ══ DISCOVER STAGE — single container, single state controller ══
+       data-state="loading" | "ready" | "empty" drives everything below.
+       No more separate display/visibility/classList battles between
+       multiple scripts — exactly one attribute decides what's visible. */
+    .discover-stage { flex:1; display:flex; flex-direction:column; position:relative; }
+    .discover-stage #pageHeader { transition:opacity 0.25s var(--ease); }
+    .discover-stage #profileGrid,
+    .discover-stage #emptyState {
+      transition:opacity 0.3s var(--ease), filter 0.3s var(--ease);
+    }
+    /* Loading: show heading + loader, grid hidden */
+    .discover-stage[data-state="loading"] #profileGrid { display:none; }
+    .discover-stage[data-state="loading"] #emptyState  { display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:1; filter:none; }
+    /* Ready: cards visible, loader fully gone (not just dimmed/hidden-by-zindex) */
+    .discover-stage[data-state="ready"] #pageHeader { display:none; }
+    .discover-stage[data-state="ready"] #profileGrid { display:grid; opacity:1; }
+    .discover-stage[data-state="ready"] #emptyState  { display:none; }
+    /* Empty/exhausted: same loader box, heading visible, content swapped via JS */
+    .discover-stage[data-state="empty"] #profileGrid { display:none; }
+    .discover-stage[data-state="empty"] #emptyState  { display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:1; filter:none; }
+    /* Transition moment: briefly dim the loader just before swapping to ready,
+       so the switch reads as an intentional fade instead of a hard jump/stuck frame */
+    .discover-stage[data-state="loading"].is-settling #emptyState { opacity:0.35; filter:blur(1px); }
     .profile-grid { display:grid; grid-template-columns:1fr; gap:1.25rem; align-items:start; }
     @media(min-width:600px)  { .profile-grid { grid-template-columns:repeat(2,1fr); } }
     @media(min-width:1024px) { .profile-grid { grid-template-columns:repeat(3,1fr); } }
@@ -283,8 +307,7 @@
     #emptyState{position:relative;overflow:hidden;}
     #emptyState canvas#ssEC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
     #emptyState .empty-inner{position:relative;z-index:1;}
-    /* ss-go/ss-gi replaced by .show class only */
-    #emptyState.show{opacity:1 !important;pointer-events:auto !important;}
+    /* visibility owned entirely by .discover-stage[data-state] now */
 
     @keyframes ssPI{0%,100%{opacity:.45;}50%{opacity:1;}}
 
@@ -421,9 +444,9 @@
     @keyframes btnGlow { 0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.22);} 50%{box-shadow:0 5px 22px rgba(0,0,0,.45),0 0 0 3px rgba(0,0,0,.07);} }
     .btn-interested:hover { background:#2d2d35; transform:translateY(-1px); }
 
-    /* ══ EMPTY STATE — fills full space below heading ══════════════ */
+    /* ══ EMPTY STATE — visual styling only; display is owned by
+       .discover-stage[data-state] now, not by a .show class ══ */
     .empty-state {
-      display: none;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -434,12 +457,6 @@
       /* Fill all remaining vertical space in the page */
       flex: 1;
       min-height: calc(100vh - 220px);
-    }
-    .empty-state.show {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
     /* Mobile — same full fill */
     @media (max-width: 768px) {
@@ -1279,12 +1296,15 @@
 .profile-card.ss-new-card        { animation:qCardNew 0.25s ease-out both !important; animation-delay:0ms !important; }
 
 /* ── Grid columns ─────────────────────────────────────────────────────────── */
-/* Mobile: 1 card full width — so cards are broad and readable */
-.profile-grid { display:grid !important; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)) !important; justify-content:center !important; gap:0.75rem !important; }
-@media(min-width:480px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)) !important; justify-content:center !important; gap:0.85rem !important; } }
-@media(min-width:768px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)) !important; justify-content:center !important; gap:1.1rem !important; } }
-@media(min-width:1024px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)) !important; justify-content:center !important; gap:1.25rem !important; } }
-@media(min-width:1280px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)) !important; justify-content:center !important; gap:1.25rem !important; } }
+/* Mobile: 1 card full width — so cards are broad and readable.
+   NOTE: display is intentionally NOT !important here — .discover-stage[data-state]
+   needs to be able to set display:none on this element while loading. Forcing
+   !important here was the root cause of cards rendering behind the loader. */
+.profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:center; gap:0.75rem; }
+@media(min-width:480px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:center; gap:0.85rem; } }
+@media(min-width:768px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.1rem; } }
+@media(min-width:1024px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.25rem; } }
+@media(min-width:1280px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.25rem; } }
 
 /* ── New profiles toast ───────────────────────────────────────────────────── */
 #ss-new-profiles-toast {
@@ -1302,29 +1322,8 @@
   to   { opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
 }
 
-/* ══ EMPTY STATE — fills full space below heading ═════════════════════════ */
-.empty-state {
-  display: none;
-  flex: 1;
-  min-height: calc(100vh - 220px);
-  background: #fff;
-  border-radius: 14px;
-  border: 1.5px solid #e4e4e7;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-  margin-top: 0.75rem;
-}
-.empty-state.show {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-/* Empty state show/hide controlled by .show class only */
-
+/* Empty-state visual styling lives in the earlier .empty-state rule.
+   Display/visibility is owned entirely by .discover-stage[data-state]. */
 @media(max-width:768px) {
   .empty-state { min-height:calc(100vh - 180px); border-radius:12px; }
 }
@@ -1457,52 +1456,56 @@
   <div class="page-content">
     <main class="main-content">
       <div class="content-center">
-        <div id="profileGrid" class="profile-grid"></div>
-        <div id="emptyState" class="empty-state">
-          <!-- Title now lives INSIDE the box: title + animation = one container -->
+        <div id="discoverStage" class="discover-stage" data-state="loading">
+          <!-- Heading + animation share one container, as requested -->
           <div class="page-header" id="pageHeader">
             <h2>DISCOVER CONNECTIONS</h2>
             <p>The right people are one swipe away</p>
             <p class="refresh-note">Refresh the page to load new connections</p>
           </div>
-          <!-- Ticker tape BG -->
-          <div class="es-ticker">
-            <div class="es-ticker-row tl"><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span></div>
-            <div class="es-ticker-row tr"><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span></div>
-            <div class="es-ticker-row tl"><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span></div>
-          </div>
-          <!-- Finding match state -->
-          <div id="emptyFirstTime" class="empty-inner">
-            <div class="ssp-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="es-icon-wrap">
-              <div class="es-ring es-ring-1"></div>
-              <div class="es-ring es-ring-2"></div>
-              <div class="es-ring es-ring-3"></div>
-              <div class="es-scan"></div>
-              <div class="es-core">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+
+          <div id="profileGrid" class="profile-grid"></div>
+
+          <div id="emptyState" class="empty-state">
+            <!-- Ticker tape BG -->
+            <div class="es-ticker">
+              <div class="es-ticker-row tl"><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span></div>
+              <div class="es-ticker-row tr"><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span><span>FOUNDERS</span><span>·</span><span>INVESTORS</span><span>·</span><span>STARTUP SYNC</span><span>·</span></div>
+              <div class="es-ticker-row tl"><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span></div>
+            </div>
+            <!-- Finding match state -->
+            <div id="emptyFirstTime" class="empty-inner">
+              <div class="ssp-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="es-icon-wrap">
+                <div class="es-ring es-ring-1"></div>
+                <div class="es-ring es-ring-2"></div>
+                <div class="es-ring es-ring-3"></div>
+                <div class="es-scan"></div>
+                <div class="es-core">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
               </div>
-            </div>
-            <h3>Finding your match</h3>
-            <p>Scanning profiles that align with your goals</p>
-            <div class="ss-pills">
-              <div class="ss-pill"><div class="ss-pdot on"></div><span class="ss-pt">Scanning preferences</span><span class="ss-ps live">LIVE</span></div>
-              <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Ranking best matches</span><span class="ss-ps">NEXT</span></div>
-              <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Loading profiles</span><span class="ss-ps">SOON</span></div>
-            </div>
-            <div class="ssp-bar" aria-hidden="true"><i></i></div>
-          </div>
-          <!-- All caught up state -->
-          <div id="emptyExhausted" class="empty-inner" style="display:none">
-            <div class="es-icon-wrap">
-              <div class="es-ring es-ring-1"></div>
-              <div class="es-ring es-ring-2"></div>
-              <div class="es-core">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              <h3>Finding your match</h3>
+              <p>Scanning profiles that align with your goals</p>
+              <div class="ss-pills">
+                <div class="ss-pill"><div class="ss-pdot on"></div><span class="ss-pt">Scanning preferences</span><span class="ss-ps live">LIVE</span></div>
+                <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Ranking best matches</span><span class="ss-ps">NEXT</span></div>
+                <div class="ss-pill"><div class="ss-pdot off"></div><span class="ss-pt">Loading profiles</span><span class="ss-ps">SOON</span></div>
               </div>
+              <div class="ssp-bar" aria-hidden="true"><i></i></div>
             </div>
-            <h3>You're all caught up</h3>
-            <p>Check back for fresh faces — new profiles drop regularly</p>
+            <!-- All caught up state -->
+            <div id="emptyExhausted" class="empty-inner" style="display:none">
+              <div class="es-icon-wrap">
+                <div class="es-ring es-ring-1"></div>
+                <div class="es-ring es-ring-2"></div>
+                <div class="es-core">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+              </div>
+              <h3>You're all caught up</h3>
+              <p>Check back for fresh faces — new profiles drop regularly</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1582,18 +1585,15 @@
         totalUnread=0;
         updateChatBadge();
       });
-      socket.on("account:deleted",({deletedUserId})=>{
-        const card=document.querySelector(`[data-id="${deletedUserId}"]`);
-        if(card) card.remove();
-      });
-      // Refresh feed on new connection events
+      // account:deleted is handled by the queue engine (removes card + backfills grid)
+      // Refresh feed on new connection events — throttled to 30s
+      var _lastNotifProfileLoad = 0;
       socket.on("notification:new",function(n){
-        // Only reload profiles on real connection events, throttled to 30s
         if(["auto_connected","connected"].includes(n.type)){
           var now = Date.now();
-          if (now - _lastProfileLoad > 30000) {
-            _lastProfileLoad = now;
-            loadProfiles();
+          if (now - _lastNotifProfileLoad > 30000) {
+            _lastNotifProfileLoad = now;
+            if(typeof window.loadProfiles === 'function') window.loadProfiles();
           }
         }
       });
@@ -1713,266 +1713,31 @@
     return !!(p.photo && p.investorType && p.bio && p.phone);
   }
 
-  // ── Carousel state ──
-  let allProfiles   = [];   // master list, never reordered
-  let carouselIndex = 0;    // pointer into infinite loop
-  let carouselTimer = null;
-  let isFading      = false;
-  let hasEverLoadedProfiles = false;
-  const CYCLE_MS    = 999999; // FIX: disabled — queue engine handles rotation
-  const FADE_MS     = 180;  // snappier fade
+  // ── Guard: bounce to login if no user (queue engine init also checks this) ──
+  if(!currentUser || !currentUser._id){ window.location.href='index.html'; }
 
-  function cpp(){ return window.innerWidth>=1024?3:window.innerWidth>=600?2:1; }
-
-  // Pull `count` profiles starting at index, never showing duplicates
-  function getSlice(startIdx, count){
-    if(!allProfiles.length) return [];
-    const actual = Math.min(count, allProfiles.length); // never show more than we have
-    const out=[];
-    for(let i=0;i<actual;i++) out.push(allProfiles[(startIdx+i)%allProfiles.length]);
-    return out;
-  }
-
-  function showEmpty(){
-    const grid=document.getElementById("profileGrid");
-    const es=document.getElementById("emptyState");
-    const header=document.getElementById("pageHeader");
-    const ftEl=document.getElementById("emptyFirstTime");
-    const exEl=document.getElementById("emptyExhausted");
-    grid.innerHTML=""; grid.style.display="none";
-    clearInterval(carouselTimer); carouselTimer=null;
-    es.classList.add("show");
-    /* show class handles it */
-    // Always show heading — empty state fills everything below it
-    if(header) { header.style.display="block"; header.style.visibility="visible"; header.style.opacity="1"; }
-    if(hasEverLoadedProfiles){ if(ftEl)ftEl.style.display="none"; if(exEl)exEl.style.display="flex"; }
-    else { if(ftEl)ftEl.style.display="flex"; if(exEl)exEl.style.display="none"; }
-  }
-
-  function showProfiles(animate){
-    if(!allProfiles.length){ showEmpty(); return; }
-    hasEverLoadedProfiles=true;
-    const grid=document.getElementById("profileGrid");
-    const es=document.getElementById("emptyState");
-    const header=document.getElementById("pageHeader");
-    es.classList.remove("show");
-    grid.style.display="grid";
-    if(header) { header.style.display="none"; header.style.visibility="hidden"; }
-    const slice=getSlice(carouselIndex, cpp());
-    const render=()=>{ grid.innerHTML=slice.map(createProfileCard).join(""); };
-    // Cache for view button fallback
-    window._ssProfileCache = allProfiles.slice();
-    // ✅ FIX: replaced fade (opacity transition) with instant swap + subtle scale
-    // Fade was getting stuck when interrupted — isFading flag never reset on errors
-    window._isReplacing=true;
-    render();
-    grid.style.transition="none";
-    grid.style.opacity="1";
-    grid.style.transform="";
-    // Animate each card in with scale — no opacity transition on grid so nothing can freeze
-    var cards = grid.querySelectorAll('.profile-card');
-    cards.forEach(function(card, i) {
-      card.style.cssText += ';opacity:0;transform:translateY(10px);transition:none;';
-      void card.offsetHeight;
-      setTimeout(function() {
-        card.style.transition = 'opacity 200ms ease, transform 200ms ease';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      }, i * 50);
-    });
-    isFading = false; // never lock — instant swap
-    setTimeout(function(){ window._isReplacing=false; }, 300);
-  }
-
-  function advanceCarousel(){
-    if(!allProfiles.length) return;
-    carouselIndex=(carouselIndex+1)%allProfiles.length; // Fix #3: advance 1 profile at a time (row-by-row feel)
-    showProfiles(true);
-  }
-
-  function startCarouselTimer(){
-    clearInterval(carouselTimer);
-    carouselTimer=null;
-    if(allProfiles.length) carouselTimer=setInterval(advanceCarousel, CYCLE_MS);
-  }
-
-  let _isLoading=false;
-  var _loadingTimeout=null;
-
-  async function loadProfiles(isRefresh){
-    // ✅ FIX: old carousel system fully retired — queue engine (ss-queue-engine
-    // script below) already handles all profile fetching, rendering, real-time
-    // updates, and pagination. This function and the queue engine were both
-    // writing into the same #profileGrid and toggling the same #emptyState
-    // independently, causing a loaded card to show alongside a stuck
-    // "Finding your match" empty-state overlay. Disabling this fully hands
-    // control to the queue engine, matching what _startAutoFetch/_startPolling
-    // already did for this exact reason (see comments above).
-    return;
-    if(_isLoading) return;
-    _isLoading=true;
-    clearTimeout(_loadingTimeout);
-    // Safety reset — if fetch hangs, unlock after 12s
-    _loadingTimeout=setTimeout(function(){ _isLoading=false; },12000);
-    try{
-      const tok=()=>localStorage.getItem("token")||sessionStorage.getItem("token")||"";
-      const res=await fetch(`/connections/feed?userId=${encodeURIComponent(currentUser._id)}&_t=${Date.now()}`,{
-        cache:"no-store",
-        headers:{"Authorization":`Bearer ${tok()}`}
-      });
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      const clean=(data.success&&Array.isArray(data.users)?data.users:[]).filter(isProfileComplete);
-      const wasEmpty=allProfiles.length===0;
-      const existingIds=new Set(allProfiles.map(u=>u._id));
-      const freshIds=new Set(clean.map(u=>u._id));
-      const added=clean.filter(u=>!existingIds.has(u._id));
-      allProfiles=allProfiles.filter(u=>freshIds.has(u._id));
-      allProfiles=[...allProfiles,...added];
-      window.allProfiles=allProfiles; // expose for modal
-      if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length;
-      else carouselIndex=0;
-      hasEverLoadedProfiles=true;
-      if(wasEmpty || isRefresh){
-        showProfiles(false);
-        startCarouselTimer();
-      } else if(!allProfiles.length){
-        showEmpty();
-      } else if(added.length>0){
-        showProfiles(true);
-        if(!carouselTimer) startCarouselTimer();
-      }
-    }catch(e){
-      console.warn('loadProfiles error:',e);
-      if(!hasEverLoadedProfiles) setTimeout(function(){ loadProfiles(); },2000);
-    }
-    finally{
-      _isLoading=false;
-      clearTimeout(_loadingTimeout);
-    }
-  }
-
-  let _rsTimer=null;
-  window.addEventListener("resize",function(){
-    clearTimeout(_rsTimer);
-    _rsTimer=setTimeout(function(){
-      if(allProfiles.length&&!isFading){ carouselIndex=carouselIndex%allProfiles.length; showProfiles(false); }
-    },250);
-  });
-
-  let isSkipping=false;
-  window.handleSkip=async function(targetId){ if(isSkipping) return; isSkipping=true; const card=document.querySelector(`[data-id="${targetId}"]`),btn=card?.querySelector(".btn-skip"); if(btn){btn.disabled=true;btn.textContent="Skipping...";} try{ const r=await(await fetch("/connections/skip",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({userId:currentUser._id,targetId}),keepalive:true})).json(); if(r?.success){ allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); } else{ showPopup(r?.message||"Skip failed"); if(btn){btn.disabled=false;btn.textContent="Skip";} } }catch(e){ showPopup("Skip failed."); if(btn){btn.disabled=false;btn.textContent="Skip";} } finally{ isSkipping=false; } };
-  window.handleInterested=async function(targetId){
-    const _email = currentUser?.email||'';
-    const _role = currentUser?.role||'';
-    const _dashUrl = _role==='Founder' ? 'founder-dashboard.html' : 'investor-dashboard.html';
-
-    // Block if in explore/tour mode
-    const _isExplore = localStorage.getItem('ss_explore_mode_'+_email) === 'true';
-    if(_isExplore){
-      showPopup('🔒 Complete your profile first to connect with others!');
-      setTimeout(() => { window.location.href = _dashUrl; }, 2000);
-      return;
-    }
-
-    // Block if own profile is incomplete — fetch fresh from server
-    let myComplete = false;
-    try {
-      const token = localStorage.getItem('token')||sessionStorage.getItem('token')||'';
-      const resp = await fetch('/profile/check', { headers:{ 'Authorization': `Bearer ${token}` } });
-      if(resp.ok) {
-        const data = await resp.json();
-        myComplete = !!(data.profileComplete);
-      } else {
-        // Fallback to local check
-        const myProfile = _role==='Founder' ? (currentUser?.founderProfile||{}) : (currentUser?.investorProfile||{});
-        myComplete = _role==='Founder'
-          ? !!(myProfile.photo && myProfile.startupName && myProfile.description && myProfile.phone)
-          : !!(myProfile.photo && myProfile.investorType && myProfile.bio && myProfile.phone);
-      }
-    } catch(e) {
-      const myProfile = _role==='Founder' ? (currentUser?.founderProfile||{}) : (currentUser?.investorProfile||{});
-      myComplete = _role==='Founder'
-        ? !!(myProfile.photo && myProfile.startupName && myProfile.description && myProfile.phone)
-        : !!(myProfile.photo && myProfile.investorType && myProfile.bio && myProfile.phone);
-    }
-
-    if(!myComplete){
-      showPopup('⚠️ Please complete your profile before connecting with others.');
-      setTimeout(() => { window.location.href = _dashUrl; }, 2000);
-      return;
-    }
-    allProfiles=allProfiles.filter(u=>u._id!==targetId); if(allProfiles.length) carouselIndex=carouselIndex%allProfiles.length; else carouselIndex=0; showProfiles(true); startCarouselTimer(); try{ await fetch("/connections/interested",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("token")||sessionStorage.getItem("token")||""}`},body:JSON.stringify({fromUserId:currentUser._id,toUserId:targetId})}); }catch(e){ showPopup("Server error"); } };
-
-  // FIX: centralize interval management — prevents stacking duplicate intervals
-  // on rapid visibility changes (tab switch back and forth quickly)
-  function _startPolling() {
-    _stopPolling();
-    _unreadTimer = setInterval(loadUnreadCounts, 30000);
-    // _profileTimer disabled — queue engine handles profile fetching via maybePreFetch
-    _profileTimer = null;
-  }
-  function _stopPolling() {
-    clearInterval(_unreadTimer);
-    clearInterval(_profileTimer);
-    _unreadTimer = null;
-    _profileTimer = null;
-  }
-
+  // ── Unread-count polling (separate from profile feed; queue engine owns profiles) ──
   var _unreadTimer = null;
-  var _profileTimer = null;
-  var _lastProfileLoad = 0;
-
-  // ✅ Auto-fetch every 45s — show toast when new profiles arrive
-  function _startAutoFetch(){
-    // Disabled — queue engine handles auto-fetch via maybePreFetch + socket
-    clearInterval(window._autoFetchInterval);
+  function _startUnreadPolling(){
+    clearInterval(_unreadTimer);
+    _unreadTimer = setInterval(loadUnreadCounts, 30000);
   }
-
-  // ✅ Start loading immediately — no waiting for socket
-  function _init(){
-    // ✅ Guard — ensure currentUser exists before loading
-    if(!currentUser || !currentUser._id){
-      window.location.href='index.html';
-      return;
-    }
-    loadProfiles();
-    _lastProfileLoad = Date.now();
-    loadUnreadCounts();
-    _startPolling();
-    _startAutoFetch();
+  function _stopUnreadPolling(){
+    clearInterval(_unreadTimer);
+    _unreadTimer = null;
   }
+  loadUnreadCounts();
+  _startUnreadPolling();
 
-  // ✅ Run immediately — DOM is ready (script is at bottom)
-  // Also add window.onload as backup in case _init() fails
-  _init();
-  window.addEventListener('load', function(){
-    // If profiles still not loaded after page fully loads — retry once
-    setTimeout(function(){
-      if(!hasEverLoadedProfiles && !_isLoading){
-        loadProfiles();
-      }
-    }, 1500);
-  });
-
-  // Pause polling when tab is hidden — saves server load
   document.addEventListener("visibilitychange", function() {
     if (document.hidden) {
-      _stopPolling();
-      clearInterval(window._autoFetchInterval);
+      _stopUnreadPolling();
     } else {
-      clearInterval(_unreadTimer);
-      clearInterval(_profileTimer);
       loadUnreadCounts();
-      var now = Date.now();
-      if (now - _lastProfileLoad > 30000) {
-        _lastProfileLoad = now;
-        loadProfiles(false);
-      }
-      _startPolling();
-      _startAutoFetch();
+      _startUnreadPolling();
     }
-  
+  });
+
   // ── Explore mode ──
   (function(){
     const cu = JSON.parse(localStorage.getItem('currentUser')||sessionStorage.getItem('currentUser')||'null');
@@ -2014,8 +1779,6 @@
       }
     }, true);
   })();
-
-});
 </script>
 <script>
   // ── Stats Strip ──────────────────────────────────────────────────────────
@@ -2464,55 +2227,54 @@
 
   // ── Grid element ───────────────────────────────────────────────────────
   function getGrid() { return document.getElementById('profileGrid'); }
+  function getStage() { return document.getElementById('discoverStage'); }
 
-  // ── Show empty state ───────────────────────────────────────────────────
+  // ── Single state controller — the ONLY place that sets data-state ─────
+  // states: "loading" (heading + finding-match animation), "ready" (cards),
+  // "empty" (heading + all-caught-up animation)
+  function setStageState(state) {
+    var stage = getStage();
+    if (!stage) return;
+    stage.setAttribute('data-state', state);
+  }
+
+  // ── Show empty / all-caught-up state ───────────────────────────────────
   function showQueueEmpty() {
     var grid = getGrid();
-    var es   = document.getElementById('emptyState');
-    var hdr  = document.getElementById('pageHeader');
     var ftEl = document.getElementById('emptyFirstTime');
     var exEl = document.getElementById('emptyExhausted');
 
-    // Hide grid, show empty state — it fills the full remaining space
-    if (grid) { grid.innerHTML = ''; grid.style.display = 'none'; }
-    if (es)   es.classList.add('show');
+    if (grid) grid.innerHTML = '';
 
-    // Always keep heading visible so user sees "DISCOVER CONNECTIONS" + animation below
-    if (hdr)  { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; hdr.style.opacity = '1'; }
-    // Make sure ss-gi is set so emptyState is fully visible (no opacity:0)
-    /* .show class handles visibility */
-
-    // Show correct inner state
+    // Show correct inner copy
     if (_initDone) {
       // Has loaded before — show "all caught up"
       if (ftEl) ftEl.style.display = 'none';
       if (exEl) exEl.style.display = 'flex';
+      setStageState('empty');
     } else {
-      // First load — show "finding your match" radar
+      // First load — show "finding your match" animation
       if (ftEl) ftEl.style.display = 'flex';
       if (exEl) exEl.style.display = 'none';
+      setStageState('loading');
     }
     updateBadge();
   }
 
   // ── Initial grid fill ─────────────────────────────────────────────────
   function renderInitialGrid() {
-    var grid = getGrid();
-    var es   = document.getElementById('emptyState');
-    var hdr  = document.getElementById('pageHeader');
-    if (!grid) return;
+    var grid  = getGrid();
+    var stage = getStage();
+    if (!grid || !stage) return;
 
     var n      = gridSize();
     var toShow = _queue.splice(0, n);
     if (!toShow.length) { showQueueEmpty(); return; }
 
     _initDone = true;
-    // Hide empty state ONLY when we have actual cards to show
-    if (es) { es.classList.remove('show'); }
-    if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; hdr.style.opacity = '0'; }
-    grid.style.display = 'grid';
-    grid.innerHTML = '';
 
+    // Build cards off-stage first, so the grid is never visible half-empty
+    grid.innerHTML = '';
     toShow.forEach(function(u) {
       _seenIds.add(u._id);
       _shownIds.add(u._id);
@@ -2520,8 +2282,17 @@
       if (card) grid.appendChild(card);
     });
 
-    updateBadge();
-    maybePreFetch();
+    // Brief dim on the loader, then reveal cards — one clean transition
+    // instead of an instant hide/show jump.
+    stage.classList.add('is-settling');
+    requestAnimationFrame(function() {
+      setTimeout(function() {
+        stage.classList.remove('is-settling');
+        setStageState('ready');
+        updateBadge();
+        maybePreFetch();
+      }, 180);
+    });
   }
 
   // ── Replace one card when user acts (skip or interested) ──────────────
@@ -2684,10 +2455,11 @@
                   if (newCard && grid) {
                     newCard.classList.add('ss-new-card');
                     grid.appendChild(newCard);
-                    if (grid.style.display === 'none') {
-                      grid.style.display = 'grid';
-                      var es = document.getElementById('emptyState');
-                      /* queue engine manages empty state */
+                    // If we were showing the empty/loading state, switch to ready now
+                    var stage = getStage();
+                    if (stage && stage.getAttribute('data-state') !== 'ready') {
+                      _initDone = true;
+                      setStageState('ready');
                     }
                   }
                 }
@@ -2845,14 +2617,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ===================================================================
-     StartupSync · Plain loader + stuck fix
-     Only restyles the middle container (#emptyState / #emptyFirstTime).
-     Sidebar, header/topbar, fetch, skip, interested — all untouched.
-     No existing id/class is renamed; only new ssp-* classes are added.
+     StartupSync · Plain loader styling.
+     Heading + animation live together in #discoverStage; visibility for
+     the whole stage is controlled by data-state on .discover-stage, set
+     by the queue engine — no separate guard script needed anymore.
      ==================================================================== -->
 <style id="ss-plain-loader">
-  /* Plain look: drop the page title, ticker, old radar + step pills. */
-  #pageHeader{ display:none !important; }
+  /* Plain look: drop the ticker + old radar + step pills, keep the heading. */
   #emptyState .es-ticker{ display:none !important; }
   #emptyFirstTime .es-icon-wrap,
   #emptyFirstTime .ss-pills{ display:none !important; }
@@ -2892,44 +2663,6 @@ document.addEventListener('DOMContentLoaded', function() {
     #emptyFirstTime .ssp-dots span{ opacity:1; }
     #emptyFirstTime .ssp-bar i{ margin-left:32%; }
   }
-
-  /* STUCK FIX: loader is force-hidden whenever real cards exist. id+class
-     specificity beats .empty-state.show, so the loader can never sit behind
-     the cards again — no matter which engine renders them. */
-  #emptyState.ssp-hidden{ display:none !important; }
 </style>
-<script id="ss-loader-guard">
-(function(){
-  function init(){
-    var grid  = document.getElementById('profileGrid');
-    var empty = document.getElementById('emptyState');
-    if(!grid || !empty){ return setTimeout(init, 300); }
-
-    var raf = null, back = null;
-    function hasCards(){ return !!grid.querySelector('.profile-card, [data-id]'); }
-
-    function apply(){
-      raf = null;
-      if(hasCards()){
-        if(back){ clearTimeout(back); back = null; }
-        empty.classList.add('ssp-hidden');          // cards present -> hide loader
-      } else {
-        if(back) return;                            // grace, so it can't flicker
-        back = setTimeout(function(){
-          back = null;
-          if(!hasCards()){ empty.classList.remove('ssp-hidden'); }
-        }, 240);
-      }
-    }
-    function sched(){ if(raf === null){ raf = requestAnimationFrame(apply); } }
-
-    new MutationObserver(sched).observe(grid, { childList:true, subtree:true });
-    sched();
-  }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
-})();
-</script>
 </body>
 </html>
