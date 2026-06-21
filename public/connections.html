@@ -2762,55 +2762,6 @@
 })();
 </script>
 
-<script id="ss-conn-empty-ctrl">
-// Controls empty state visibility — prevents ghost after 2-3 mins
-(function(){
-  function run(){
-    var es   = document.getElementById('emptyState');
-    var grid = document.getElementById('profileGrid');
-    var hdr  = document.getElementById('pageHeader');
-    if (!es || !grid) return;
-
-    // ✅ FIX: check for already-rendered cards before forcing empty state on.
-    // Previously this ran unconditionally, so if the queue engine had already
-    // rendered a card before this script executed, it would incorrectly show
-    // "Finding your match" on top of/alongside a real, already-loaded card —
-    // and since nothing new mutates the grid afterward, it stayed stuck.
-    var hasCardsAlready = grid.querySelectorAll('.profile-card').length > 0;
-    if (!hasCardsAlready) {
-      es.classList.add('show');
-      if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
-    }
-
-    if (!window.MutationObserver) return;
-    var timer = null;
-    var obs = new MutationObserver(function(){
-      clearTimeout(timer);
-      // ✅ FIX: Increased debounce to 3000ms to prevent ghosting
-      timer = setTimeout(function(){
-        // Count ALL cards including exiting ones — if any exist, don't show empty state
-        var allCards = grid.querySelectorAll('.profile-card');
-        var activeCards = grid.querySelectorAll('.profile-card:not(.ss-exiting)');
-        
-        // Only show empty state if truly no cards at all
-        // (not just temporarily during animation or refetch)
-        if (activeCards.length > 0 || allCards.length > 0) {
-          es.classList.remove('show');
-          if (hdr) { hdr.style.display = 'none'; hdr.style.visibility = 'hidden'; hdr.style.opacity = '0'; }
-        } else if (!window._feedLoading && !window._isFetching && !window._isReplacing) {
-          // Only show empty state if not currently loading or replacing
-          es.classList.add('show');
-          if (hdr) { hdr.style.display = 'block'; hdr.style.visibility = 'visible'; }
-        }
-      }, 3000);
-    });
-    obs.observe(grid, { childList: true, subtree: false });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else { run(); }
-})();
-</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('[data-nav]').forEach(function(el) {
@@ -2888,6 +2839,87 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.style.overflow = '';
     }
   });
+</script>
+
+<!-- ===================================================================
+     StartupSync · Swipe Handoff Fix
+     Single source of truth for the loading scanner vs. profile cards.
+     Sits on top of every loader/carousel engine. Because it watches the
+     grid directly via MutationObserver, no engine can leave the scanner
+     stuck behind the cards again. Touches NO fetch / auth / skip logic.
+     ==================================================================== -->
+<style id="ss-swipe-fix">
+  /* The scanning panel (#emptyState holds the "Finding your match" radar)
+     slides off to the right the moment real cards exist, and collapses its
+     own height so it never leaves a gap below the cards. */
+  #emptyState{
+    transition: transform .55s cubic-bezier(.66,0,.18,1),
+                opacity   .34s ease,
+                max-height .50s cubic-bezier(.66,0,.18,1) !important;
+    max-height: 1400px;
+    will-change: transform, opacity, max-height;
+  }
+  #emptyState.ss-swiped{
+    transform: translateX(112%) !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    margin-top: 0 !important; margin-bottom: 0 !important;
+    padding-top: 0 !important; padding-bottom: 0 !important;
+    pointer-events: none !important;
+  }
+  /* Cards ease in the first time the grid goes live (opacity only, so it
+     never fights the per-card entrance transforms you already have). */
+  #profileGrid.ss-revealed{ animation: ssGridIn .45s ease both; }
+  @keyframes ssGridIn{ from{ opacity:0; } to{ opacity:1; } }
+
+  @media (prefers-reduced-motion: reduce){
+    #emptyState{ transition:none !important; }
+    #profileGrid.ss-revealed{ animation:none !important; }
+    #emptyState.ss-swiped{ display:none !important; }
+  }
+</style>
+<script id="ss-swipe-controller">
+(function(){
+  function init(){
+    var grid  = document.getElementById('profileGrid');
+    var empty = document.getElementById('emptyState');
+    if(!grid || !empty){ return setTimeout(init, 300); } // wait for DOM if early
+
+    var raf = null, backTimer = null, revealed = false;
+
+    // A "real card" = anything the render engines actually output as a profile.
+    function hasCards(){ return !!grid.querySelector('.profile-card, [data-id]'); }
+
+    function apply(){
+      raf = null;
+      if(hasCards()){
+        // Cards present -> swipe the scanner away immediately. Cards win, always.
+        if(backTimer){ clearTimeout(backTimer); backTimer = null; }
+        empty.classList.add('ss-swiped');
+        if(!revealed){ grid.classList.add('ss-revealed'); revealed = true; }
+      } else {
+        // Grid momentarily empty (e.g. between skip/interested transitions).
+        // Wait a beat before bringing the radar back so it can't flicker.
+        if(backTimer) return;
+        backTimer = setTimeout(function(){
+          backTimer = null;
+          if(!hasCards()){
+            empty.classList.remove('ss-swiped'); // genuinely empty -> show panel
+            revealed = false;
+          }
+        }, 240);
+      }
+    }
+    function schedule(){ if(raf === null){ raf = requestAnimationFrame(apply); } }
+
+    // React to ANY engine writing into the grid.
+    new MutationObserver(schedule).observe(grid, { childList:true, subtree:true });
+    schedule(); // lock in the correct state on load
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+})();
 </script>
 </body>
 </html>

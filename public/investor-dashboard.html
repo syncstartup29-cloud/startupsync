@@ -1537,6 +1537,10 @@ window._showToast = function(opts) {
     }
   }
 
+  // ✅ FIX: This used to skip straight to connections.html with zero checks —
+  // a user could hit "Just Looking Around" without ever picking a photo.
+  // Photo is now required before explore mode is allowed too.
+  // ── Explore first — let them browse but lock connect/chat ──
   function exploreFirst() {
     localStorage.setItem('ss_explore_mode_' + (currentUser?.email || ''), 'true');
     window.location.href = 'connections.html';
