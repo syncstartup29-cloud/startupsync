@@ -1457,13 +1457,14 @@
   <div class="page-content">
     <main class="main-content">
       <div class="content-center">
-        <div class="page-header" id="pageHeader">
-          <h2>DISCOVER CONNECTIONS</h2>
-          <p>The right people are one swipe away</p>
-          <p class="refresh-note">Refresh the page to load new connections</p>
-        </div>
         <div id="profileGrid" class="profile-grid"></div>
         <div id="emptyState" class="empty-state">
+          <!-- Title now lives INSIDE the box: title + animation = one container -->
+          <div class="page-header" id="pageHeader">
+            <h2>DISCOVER CONNECTIONS</h2>
+            <p>The right people are one swipe away</p>
+            <p class="refresh-note">Refresh the page to load new connections</p>
+          </div>
           <!-- Ticker tape BG -->
           <div class="es-ticker">
             <div class="es-ticker-row tl"><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span><span>DISCOVER</span><span>·</span><span>CONNECT</span><span>·</span><span>PITCH</span><span>·</span><span>BUILD</span><span>·</span></div>
@@ -2842,50 +2843,50 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- ===================================================================
-     StartupSync · Single-Container Loader + Swipe Handoff
-     1) Moves the "DISCOVER CONNECTIONS" heading INSIDE the scanning box so
-        heading + radar are one container.
-     2) Watches #profileGrid directly, so the moment real cards exist the
-        whole box leaves and the radar can never get stuck behind a card.
-     Touches NO fetch / auth / skip logic.
+     StartupSync · Single-Container Loader + Swipe-Right Handoff
+     The title now lives INSIDE #emptyState in the HTML above, so title +
+     radar are one container. This block makes the WHOLE box swipe off to
+     the right when real cards arrive (instead of vanishing), and guarantees
+     the radar can never get stuck behind a card. Touches NO fetch/auth/skip.
      ==================================================================== -->
 <style id="ss-swipe-fix">
-  /* Give the loading box a positioning context so it can swipe out without
-     shoving the cards around. */
   .content-center{ position:relative; }
 
-  /* Heading, now INSIDE the box, sits above the radar as one unit and stays
-     above the ticker-tape background. */
+  /* Title sits inside the box, above the radar and above the ticker bg. */
   #emptyState > #pageHeader{
-    position:relative; z-index:2;
-    width:100%;
-    margin:0 0 1.4rem; padding:0;
+    position:relative; z-index:2; width:100%;
+    margin:0 0 1.5rem; padding:0;
   }
-  #emptyState > #pageHeader h2{ margin-bottom:.6rem; }
+  #emptyState > #pageHeader h2{ margin-bottom:.55rem; }
 
-  /* When real cards exist, the whole box (heading + radar) swipes off right.
-     Absolute so it doesn't push the cards; animation runs even coming out of
-     display:none. */
+  /* Cards arrive -> the WHOLE box (title + radar) slides off to the right.
+     Absolute + high z-index so it glides over and reveals the cards; the
+     keyframe runs even straight out of display:none. */
   #emptyState.ss-swiped{
     display:flex !important; flex-direction:column !important;
-    position:absolute !important; left:0; right:0; top:0;
+    align-items:center !important; justify-content:center !important;
+    position:absolute !important; left:0; right:0; top:0; z-index:5;
     pointer-events:none !important;
-    animation: ssSwipeOut .55s cubic-bezier(.66,0,.18,1) forwards;
+    animation: ssSwipeOut .6s cubic-bezier(.65,0,.2,1) forwards;
+  }
+  /* Their code hides the title for the card view — keep it visible while the
+     box is still on screen, so the title rides out with the swipe. */
+  #emptyState.ss-swiped > #pageHeader{
+    display:block !important; visibility:visible !important; opacity:1 !important;
   }
   @keyframes ssSwipeOut{
-    from{ transform:translateX(0);    opacity:1; }
-    to  { transform:translateX(112%); opacity:0; }
+    0%   { transform:translateX(0);    opacity:1; }
+    55%  { opacity:1; }
+    100% { transform:translateX(115%); opacity:0; }
   }
-  /* Box never seen by the user (fast load) -> just hide it, no swipe flash. */
-  #emptyState.ss-hidden{ display:none !important; }
 
-  /* Cards ease in (opacity only, so it never fights your per-card transforms). */
-  #profileGrid.ss-revealed{ animation: ssGridIn .45s ease both; }
+  /* Cards ease in underneath (opacity only, won't fight per-card transforms). */
+  #profileGrid.ss-revealed{ animation: ssGridIn .5s .12s ease both; }
   @keyframes ssGridIn{ from{ opacity:0; } to{ opacity:1; } }
 
   @media (prefers-reduced-motion: reduce){
     #emptyState.ss-swiped{ animation:none !important; opacity:0 !important;
-      transform:translateX(112%) !important; }
+      transform:translateX(115%) !important; }
     #profileGrid.ss-revealed{ animation:none !important; }
   }
 </style>
@@ -2894,42 +2895,27 @@ document.addEventListener('DOMContentLoaded', function() {
   function init(){
     var grid  = document.getElementById('profileGrid');
     var empty = document.getElementById('emptyState');
-    var hdr   = document.getElementById('pageHeader');
     if(!grid || !empty){ return setTimeout(init, 300); } // wait for DOM if early
-
-    // (1) Merge the heading INTO the scanning box -> one single container.
-    if(hdr && hdr.parentNode !== empty){
-      empty.insertBefore(hdr, empty.firstChild);
-    }
 
     var raf = null, backTimer = null, revealed = false;
 
     // A "real card" = anything the render engines output as a profile.
     function hasCards(){ return !!grid.querySelector('.profile-card, [data-id]'); }
-    function boxVisible(){ return empty.offsetParent !== null; }
 
     function apply(){
       raf = null;
       if(hasCards()){
+        // Cards present -> swipe the whole box off to the right. Always.
         if(backTimer){ clearTimeout(backTimer); backTimer = null; }
-        if(!empty.classList.contains('ss-swiped') && !empty.classList.contains('ss-hidden')){
-          // If the box was actually on screen, swipe it away; if a card landed
-          // while it was still showing (the old stuck-loader case), this is the
-          // visible right-swipe. If it was never shown, just hide it cleanly.
-          empty.classList.add(boxVisible() ? 'ss-swiped' : 'ss-hidden');
-        }
+        if(!empty.classList.contains('ss-swiped')){ empty.classList.add('ss-swiped'); }
         if(!revealed){ grid.classList.add('ss-revealed'); revealed = true; }
       } else {
-        // Grid momentarily empty (e.g. between skip/interested). Wait a beat
-        // before restoring the box so it can't flicker.
+        // Grid momentarily empty (between skip/interested) — wait a beat so the
+        // box doesn't flicker back, then restore it if still truly empty.
         if(backTimer) return;
         backTimer = setTimeout(function(){
           backTimer = null;
-          if(!hasCards()){
-            empty.classList.remove('ss-swiped');
-            empty.classList.remove('ss-hidden');
-            revealed = false;
-          }
+          if(!hasCards()){ empty.classList.remove('ss-swiped'); revealed = false; }
         }, 240);
       }
     }
