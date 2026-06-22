@@ -470,18 +470,6 @@
     .es-ticker-row.tr { animation:esTickR 28s linear infinite; }
     @keyframes esTickL { from{transform:translateX(0)} to{transform:translateX(-50%)} }
     @keyframes esTickR { from{transform:translateX(-50%)} to{transform:translateX(0)} }
-    /* Radar icon */
-    .es-icon-wrap { position:relative; width:96px; height:96px; margin:0 auto 1.4rem; flex-shrink:0; }
-    .es-ring { position:absolute; border-radius:50%; border:1.5px solid #111118; top:50%; left:50%; transform:translate(-50%,-50%); }
-    .es-ring-1 { width:96px; height:96px; opacity:.10; animation:esRP 2.4s ease-in-out infinite; }
-    .es-ring-2 { width:70px; height:70px; opacity:.17; animation:esRP 2.4s .3s ease-in-out infinite; }
-    .es-ring-3 { width:46px; height:46px; opacity:.25; animation:esRP 2.4s .6s ease-in-out infinite; }
-    @keyframes esRP { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.07)} }
-    .es-scan { position:absolute; top:50%; left:50%; width:48px; height:1.5px; background:linear-gradient(90deg,transparent,#111118); transform-origin:left center; transform:translate(0,-50%); animation:esScan 2.4s linear infinite; opacity:.45; border-radius:1px; }
-    @keyframes esScan { from{transform:translate(0,-50%) rotate(0deg)} to{transform:translate(0,-50%) rotate(360deg)} }
-    .es-core { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:38px; height:38px; border-radius:50%; background:#111118; display:flex; align-items:center; justify-content:center; animation:esCP 2.4s ease-in-out infinite; }
-    @keyframes esCP { 0%,100%{box-shadow:0 0 0 0 rgba(17,17,24,.2)} 50%{box-shadow:0 0 0 8px rgba(17,17,24,0)} }
-    .es-core svg { width:17px; height:17px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
     /* Text */
     .empty-state h3 { font-family:var(--font-h); font-size:clamp(1.1rem,3vw,1.4rem); font-weight:700; color:#111118; letter-spacing:-.02em; margin-bottom:.3rem; position:relative; z-index:1; animation:fadeUpE .5s ease both; }
     .empty-state p  { font-size:.74rem; color:#6B7280; max-width:240px; line-height:1.7; margin:0 auto .2rem; position:relative; z-index:1; animation:fadeUpE .5s .08s ease both; }
@@ -1300,11 +1288,11 @@
    NOTE: display is intentionally NOT !important here — .discover-stage[data-state]
    needs to be able to set display:none on this element while loading. Forcing
    !important here was the root cause of cards rendering behind the loader. */
-.profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:center; gap:0.75rem; }
-@media(min-width:480px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:center; gap:0.85rem; } }
-@media(min-width:768px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.1rem; } }
-@media(min-width:1024px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.25rem; } }
-@media(min-width:1280px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:center; gap:1.25rem; } }
+.profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:start; gap:0.75rem; }
+@media(min-width:480px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); justify-content:start; gap:0.85rem; } }
+@media(min-width:768px)  { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:start; gap:1.1rem; } }
+@media(min-width:1024px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:start; gap:1.25rem; } }
+@media(min-width:1280px) { .profile-grid { grid-template-columns:repeat(auto-fit,minmax(280px,340px)); justify-content:start; gap:1.25rem; } }
 
 /* ── New profiles toast ───────────────────────────────────────────────────── */
 #ss-new-profiles-toast {
@@ -1338,19 +1326,6 @@
 
 /* Inner content */
 .empty-inner { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:0; width:100%; }
-
-/* Radar icon */
-.es-icon-wrap { position:relative; width:96px; height:96px; margin:0 auto 20px; flex-shrink:0; }
-.es-ring { position:absolute; border-radius:50%; border:1.5px solid #111118; top:50%; left:50%; transform:translate(-50%,-50%); }
-.es-ring-1 { width:96px; height:96px; opacity:.10; animation:esRP 2.4s ease-in-out infinite; }
-.es-ring-2 { width:68px; height:68px; opacity:.17; animation:esRP 2.4s .3s ease-in-out infinite; }
-.es-ring-3 { width:42px; height:42px; opacity:.26; animation:esRP 2.4s .6s ease-in-out infinite; }
-@keyframes esRP { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.07)} }
-.es-scan { position:absolute; top:50%; left:50%; width:48px; height:1.5px; background:linear-gradient(90deg,transparent,#111118); transform-origin:left center; transform:translate(0,-50%); animation:esScan 2.4s linear infinite; opacity:.45; border-radius:1px; }
-@keyframes esScan { from{transform:translate(0,-50%) rotate(0deg)} to{transform:translate(0,-50%) rotate(360deg)} }
-.es-core { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:38px; height:38px; border-radius:50%; background:#111118; display:flex; align-items:center; justify-content:center; animation:esCP 2.4s ease-in-out infinite; z-index:2; }
-@keyframes esCP { 0%,100%{box-shadow:0 0 0 0 rgba(17,17,24,.2)} 50%{box-shadow:0 0 0 10px rgba(17,17,24,0)} }
-.es-core svg { width:17px; height:17px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
 
 /* Text */
 .empty-inner h3 { font-family:'Sora',sans-serif; font-size:17px; font-weight:700; color:#111118; letter-spacing:-0.02em; margin-bottom:6px; animation:fadeUpE .5s ease both; }
@@ -1476,15 +1451,6 @@
             <!-- Finding match state -->
             <div id="emptyFirstTime" class="empty-inner">
               <div class="ssp-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-              <div class="es-icon-wrap">
-                <div class="es-ring es-ring-1"></div>
-                <div class="es-ring es-ring-2"></div>
-                <div class="es-ring es-ring-3"></div>
-                <div class="es-scan"></div>
-                <div class="es-core">
-                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </div>
-              </div>
               <h3>Finding your match</h3>
               <p>Scanning profiles that align with your goals</p>
               <div class="ss-pills">
@@ -1494,17 +1460,12 @@
               </div>
               <div class="ssp-bar" aria-hidden="true"><i></i></div>
             </div>
-            <!-- All caught up state -->
+            <!-- All caught up state — same dots animation, no separate ring -->
             <div id="emptyExhausted" class="empty-inner" style="display:none">
-              <div class="es-icon-wrap">
-                <div class="es-ring es-ring-1"></div>
-                <div class="es-ring es-ring-2"></div>
-                <div class="es-core">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-                </div>
-              </div>
+              <div class="ssp-dots" aria-hidden="true"><span></span><span></span><span></span></div>
               <h3>You're all caught up</h3>
               <p>Check back for fresh faces — new profiles drop regularly</p>
+              <div class="ssp-bar" aria-hidden="true"><i></i></div>
             </div>
           </div>
         </div>
@@ -2621,33 +2582,40 @@ document.addEventListener('DOMContentLoaded', function() {
      Heading + animation live together in #discoverStage; visibility for
      the whole stage is controlled by data-state on .discover-stage, set
      by the queue engine — no separate guard script needed anymore.
-     ==================================================================== -->
+     The SAME dots+bar animation is used for both "Finding your match"
+     and "You're all caught up" — one consistent loader, not two. ====================================================================== -->
 <style id="ss-plain-loader">
-  /* Plain look: drop the ticker + old radar + step pills, keep the heading. */
+  /* Plain look: drop the ticker tape, keep the heading. */
   #emptyState .es-ticker{ display:none !important; }
-  #emptyFirstTime .es-icon-wrap,
   #emptyFirstTime .ss-pills{ display:none !important; }
 
-  /* Plain loader — three brand dots that bounce. */
-  #emptyFirstTime .ssp-dots{ display:flex; gap:9px; margin-bottom:1.5rem; }
-  #emptyFirstTime .ssp-dots span{
+  /* Plain loader — three brand dots that bounce. Shared by both states. */
+  #emptyFirstTime .ssp-dots,
+  #emptyExhausted .ssp-dots{ display:flex; gap:9px; margin-bottom:1.5rem; }
+  #emptyFirstTime .ssp-dots span,
+  #emptyExhausted .ssp-dots span{
     width:14px; height:14px; border-radius:50%;
     animation:sspBlink 1.4s ease-in-out infinite;
   }
-  #emptyFirstTime .ssp-dots span:nth-child(1){ background:#2F6BFF; animation-delay:0s; }
-  #emptyFirstTime .ssp-dots span:nth-child(2){ background:#14B8A6; animation-delay:.2s; }
-  #emptyFirstTime .ssp-dots span:nth-child(3){ background:#22C55E; animation-delay:.4s; }
+  #emptyFirstTime .ssp-dots span:nth-child(1),
+  #emptyExhausted .ssp-dots span:nth-child(1){ background:#2F6BFF; animation-delay:0s; }
+  #emptyFirstTime .ssp-dots span:nth-child(2),
+  #emptyExhausted .ssp-dots span:nth-child(2){ background:#14B8A6; animation-delay:.2s; }
+  #emptyFirstTime .ssp-dots span:nth-child(3),
+  #emptyExhausted .ssp-dots span:nth-child(3){ background:#22C55E; animation-delay:.4s; }
   @keyframes sspBlink{
     0%,100%{ opacity:.25; transform:translateY(0); }
     50%    { opacity:1;   transform:translateY(-6px); }
   }
 
-  /* Plain loader — thin sliding progress bar. */
-  #emptyFirstTime .ssp-bar{
+  /* Plain loader — thin sliding progress bar. Shared by both states. */
+  #emptyFirstTime .ssp-bar,
+  #emptyExhausted .ssp-bar{
     margin-top:1.6rem; width:240px; max-width:70vw; height:4px;
     background:#E8E8EA; border-radius:99px; overflow:hidden;
   }
-  #emptyFirstTime .ssp-bar i{
+  #emptyFirstTime .ssp-bar i,
+  #emptyExhausted .ssp-bar i{
     display:block; height:100%; width:35%; border-radius:99px; background:#111118;
     animation:sspSlide 1.5s ease-in-out infinite;
   }
@@ -2655,13 +2623,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* Mobile sizing. */
   @media (max-width:600px){
-    #emptyFirstTime .ssp-dots span{ width:12px; height:12px; }
-    #emptyFirstTime .ssp-bar{ width:200px; }
+    #emptyFirstTime .ssp-dots span,
+    #emptyExhausted .ssp-dots span{ width:12px; height:12px; }
+    #emptyFirstTime .ssp-bar,
+    #emptyExhausted .ssp-bar{ width:200px; }
   }
   @media (prefers-reduced-motion: reduce){
-    #emptyFirstTime .ssp-dots span, #emptyFirstTime .ssp-bar i{ animation:none; }
-    #emptyFirstTime .ssp-dots span{ opacity:1; }
-    #emptyFirstTime .ssp-bar i{ margin-left:32%; }
+    #emptyFirstTime .ssp-dots span, #emptyFirstTime .ssp-bar i,
+    #emptyExhausted .ssp-dots span, #emptyExhausted .ssp-bar i{ animation:none; }
+    #emptyFirstTime .ssp-dots span,
+    #emptyExhausted .ssp-dots span{ opacity:1; }
+    #emptyFirstTime .ssp-bar i,
+    #emptyExhausted .ssp-bar i{ margin-left:32%; }
   }
 </style>
 </body>
