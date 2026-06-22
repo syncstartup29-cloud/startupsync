@@ -304,7 +304,7 @@
     .save-btn,.btn-save{animation:ssBtnG 2.8s ease-in-out infinite!important;background:#111118!important;color:#fff!important;}
 
     /* connections empty state */
-    #emptyState{position:relative;overflow:hidden;}
+    #emptyState{position:relative;overflow:visible;}
     #emptyState canvas#ssEC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
     #emptyState .empty-inner{position:relative;z-index:1;}
     /* visibility owned entirely by .discover-stage[data-state] now */
@@ -1451,19 +1451,37 @@
             <!-- Finding match state -->
             <div id="emptyFirstTime" class="empty-inner">
               <div class="ss-orbit" aria-hidden="true">
-                <div class="ss-orbit-dot"></div>
-                <div class="ss-orbit-ring ss-orbit-ring-1"></div>
-                <div class="ss-orbit-ring ss-orbit-ring-2"></div>
+                <svg viewBox="0 0 64 64" width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="32" cy="32" r="24" stroke="#111118" stroke-width="1.5" stroke-dasharray="120 32" stroke-linecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="1.2s" repeatCount="indefinite"/>
+                  </circle>
+                  <circle cx="32" cy="32" r="15" stroke="rgba(17,17,24,0.3)" stroke-width="1" stroke-dasharray="60 35" stroke-linecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="-360 32 32" dur="0.9s" repeatCount="indefinite"/>
+                  </circle>
+                  <circle cx="32" cy="32" r="4" fill="#111118">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.6s" repeatCount="indefinite"/>
+                    <animate attributeName="r" values="3.5;4.5;3.5" dur="1.6s" repeatCount="indefinite"/>
+                  </circle>
+                </svg>
               </div>
               <h3>Finding your match</h3>
               <p>Scanning profiles that align with your goals</p>
             </div>
-            <!-- All caught up — identical orbit animation, different text -->
+            <!-- All caught up — identical animation, different text -->
             <div id="emptyExhausted" class="empty-inner" style="display:none">
               <div class="ss-orbit" aria-hidden="true">
-                <div class="ss-orbit-dot"></div>
-                <div class="ss-orbit-ring ss-orbit-ring-1"></div>
-                <div class="ss-orbit-ring ss-orbit-ring-2"></div>
+                <svg viewBox="0 0 64 64" width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="32" cy="32" r="24" stroke="#111118" stroke-width="1.5" stroke-dasharray="120 32" stroke-linecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="1.2s" repeatCount="indefinite"/>
+                  </circle>
+                  <circle cx="32" cy="32" r="15" stroke="rgba(17,17,24,0.3)" stroke-width="1" stroke-dasharray="60 35" stroke-linecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="-360 32 32" dur="0.9s" repeatCount="indefinite"/>
+                  </circle>
+                  <circle cx="32" cy="32" r="4" fill="#111118">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.6s" repeatCount="indefinite"/>
+                    <animate attributeName="r" values="3.5;4.5;3.5" dur="1.6s" repeatCount="indefinite"/>
+                  </circle>
+                </svg>
               </div>
               <h3>You're all caught up</h3>
               <p>Check back for fresh faces — new profiles drop regularly</p>
@@ -2539,58 +2557,17 @@ document.addEventListener('DOMContentLoaded', function() {
   #emptyFirstTime .ss-corp-loader,
   #emptyExhausted .ss-corp-loader{ display:none !important; }
 
-  /* ── Orbit wrapper ── */
+  /* ── Orbit wrapper — SVG handles all animation internally ── */
   .ss-orbit {
-    position: relative;
-    width: 64px;
-    height: 64px;
+    display: block;
     margin: 0 auto 28px;
     flex-shrink: 0;
-    overflow: visible;
   }
-
-  /* ── Centre pulsing dot ── */
-  .ss-orbit-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #111118;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    animation: ssOrbitDot 1.6s ease-in-out infinite;
+  .ss-orbit svg { display: block; }
+  @media (prefers-reduced-motion: reduce) {
+    .ss-orbit svg circle animateTransform,
+    .ss-orbit svg circle animate { display: none; }
   }
-  @keyframes ssOrbitDot {
-    0%, 100% { opacity: 0.35; transform: translate(-50%,-50%) scale(0.85); }
-    50%       { opacity: 1;    transform: translate(-50%,-50%) scale(1); }
-  }
-
-  /* ── Rings — both positioned from wrapper centre ── */
-  .ss-orbit-ring {
-    position: absolute;
-    top: 50%; left: 50%;
-    border-radius: 50%;
-    border-style: solid;
-  }
-  .ss-orbit-ring-1 {
-    width: 52px; height: 52px;
-    margin-top: -26px; margin-left: -26px;
-    border-width: 1.5px;
-    border-color: #111118;
-    border-right-color: transparent;
-    animation: ssOrbitCW 1.2s linear infinite;
-  }
-  .ss-orbit-ring-2 {
-    width: 34px; height: 34px;
-    margin-top: -17px; margin-left: -17px;
-    border-width: 1px;
-    border-color: rgba(17,17,24,0.3);
-    border-left-color: transparent;
-    animation: ssOrbitCCW 0.9s linear infinite;
-  }
-  @keyframes ssOrbitCW  { to { transform: rotate(360deg);  } }
-  @keyframes ssOrbitCCW { to { transform: rotate(-360deg); } }
 
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
