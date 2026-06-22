@@ -822,8 +822,10 @@ app.post("/login", loginLimiter, async (req, res) => {
     if (!email || !password) return res.json({ success: false, message: "Email and password required" });
 
     const user = await User.findOne({ email });
-    if (!user) return res.json({ success: false, message: "User not found" });
-    if (!await bcrypt.compare(password, user.password)) return res.json({ success: false, message: "Wrong password" });
+    // 🔒 SECURITY: identical message for "no such email" and "wrong password"
+    // so an attacker can't tell which Gmail addresses are registered.
+    if (!user) return res.json({ success: false, message: "Invalid email or password" });
+    if (!await bcrypt.compare(password, user.password)) return res.json({ success: false, message: "Invalid email or password" });
 
     // ── Single-session check ─────────────────────────────────
     // ✅ Always clear old session + kick old device — no conflict modal

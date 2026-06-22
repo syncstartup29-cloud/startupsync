@@ -1,6 +1,18 @@
 // Adminroutes.js
 const mongoose = require("mongoose");
 const jwt      = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
+
+// 🔒 SECURITY: strict limiter for the admin password gate.
+// The global limiter (2000/15min) is far too loose for a single shared
+// password — this caps admin login attempts to 10 per 15 minutes per IP.
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: "Too many login attempts. Please wait 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 module.exports = function (app, User, io) {
 
@@ -37,7 +49,7 @@ module.exports = function (app, User, io) {
   // ── Admin Login ────────────────────────────────────────
   // FIX: returns a JWT (expires in 8h) instead of the raw secret.
   // The frontend stores this token and sends it as x-admin-token.
-  app.post("/admin/login", (req, res) => {
+  app.post("/admin/login", adminLoginLimiter, (req, res) => {
     const { password } = req.body || {};
 
     if (!ADMIN_SECRET || !JWT_SECRET) {

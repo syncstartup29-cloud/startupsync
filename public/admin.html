@@ -759,11 +759,12 @@ function switchTab(name,btn){
 
 function fmt(d){if(!d)return"—";return new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});}
 function ini(n){return(n||"?").split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase();}
+function esc(v){return(v==null?"":String(v)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");}
 function av(photo,name,size=32){
   const i=ini(name);
   if(photo&&(photo.startsWith("data:")||photo.startsWith("/")||photo.startsWith("http")))
-    return`<div class="av" style="width:${size}px;height:${size}px;"><img src="${photo}" onerror="this.parentElement.textContent='${i}'"/></div>`;
-  return`<div class="av" style="width:${size}px;height:${size}px;">${i}</div>`;
+    return`<div class="av" style="width:${size}px;height:${size}px;"><img src="${esc(photo)}" onerror="this.parentElement.textContent='${esc(i)}'"/></div>`;
+  return`<div class="av" style="width:${size}px;height:${size}px;">${esc(i)}</div>`;
 }
 function sortList(list,sort){
   if(sort==="oldest")return list.sort((a,b)=>new Date(a.joinedAt)-new Date(b.joinedAt));
@@ -792,14 +793,14 @@ function filterF(){
   const tb=document.getElementById("fBody");
   if(!list.length){tb.innerHTML=`<tr><td colspan="8" class="empty-state">No founders found</td></tr>`;return;}
   tb.innerHTML=list.map(f=>`<tr onclick="openDrawer('${f._id}','founder')">
-    <td><div class="td-name">${av(f.profile?.photo,f.fullName)}<span class="av-name">${f.fullName||"—"}</span></div></td>
-    <td class="td-email">${f.email||"—"}</td>
+    <td><div class="td-name">${av(f.profile?.photo,f.fullName)}<span class="av-name">${esc(f.fullName)||"—"}</span></div></td>
+    <td class="td-email">${esc(f.email)||"—"}</td>
     <td class="td-phone hm">${fmtPhone(f.profile?.phone, f.profile?.phoneCountry)}</td>
-    <td style="font-weight:500;color:#111;font-size:0.83rem;">${f.profile?.startupName||`<span style="color:#ccc">—</span>`}</td>
+    <td style="font-weight:500;color:#111;font-size:0.83rem;">${esc(f.profile?.startupName)||`<span style="color:#ccc">—</span>`}</td>
     <td class="hm"><span class="badge ${f.termsAccepted?"b-yes":"b-no"}">${f.termsAccepted?"Yes":"No"}</span></td>
     <td><span class="td-num">${f.connectionsCount}</span></td>
     <td class="td-date hm">${fmt(f.joinedAt)}</td>
-    <td onclick="event.stopPropagation()"><button class="btn-del" onclick="delUser('${f._id}','${(f.fullName||"").replace(/'/g,"\\'")}','founder')">Delete</button></td>
+    <td onclick="event.stopPropagation()"><button class="btn-del" onclick="delUser('${f._id}','${esc((f.fullName||"").replace(/'/g,"\\'"))}','founder')">Delete</button></td>
   </tr>`).join("");
 }
 
@@ -812,15 +813,15 @@ function filterI(){
   const tb=document.getElementById("iBody");
   if(!list.length){tb.innerHTML=`<tr><td colspan="9" class="empty-state">No investors found</td></tr>`;return;}
   tb.innerHTML=list.map(f=>`<tr onclick="openDrawer('${f._id}','investor')">
-    <td><div class="td-name">${av(f.profile?.photo,f.fullName)}<span class="av-name">${f.fullName||"—"}</span></div></td>
-    <td class="td-email">${f.email||"—"}</td>
+    <td><div class="td-name">${av(f.profile?.photo,f.fullName)}<span class="av-name">${esc(f.fullName)||"—"}</span></div></td>
+    <td class="td-email">${esc(f.email)||"—"}</td>
     <td class="td-phone hm">${fmtPhone(f.profile?.phone, f.profile?.phoneCountry)}</td>
-    <td><span class="badge b-type">${tl[f.profile?.investorType]||f.profile?.investorType||"—"}</span></td>
-    <td style="font-size:0.83rem;color:#111;">${f.profile?.investmentFocus||`<span style="color:#ccc">—</span>`}</td>
+    <td><span class="badge b-type">${tl[f.profile?.investorType]||esc(f.profile?.investorType)||"—"}</span></td>
+    <td style="font-size:0.83rem;color:#111;">${esc(f.profile?.investmentFocus)||`<span style="color:#ccc">—</span>`}</td>
     <td class="hm" style="font-size:0.78rem;color:#444;">${f.profile?.financialCapacity||"—"}</td>
     <td><span class="td-num">${f.connectionsCount}</span></td>
     <td class="td-date hm">${fmt(f.joinedAt)}</td>
-    <td onclick="event.stopPropagation()"><button class="btn-del" onclick="delUser('${f._id}','${(f.fullName||"").replace(/'/g,"\\'")}','investor')">Delete</button></td>
+    <td onclick="event.stopPropagation()"><button class="btn-del" onclick="delUser('${f._id}','${esc((f.fullName||"").replace(/'/g,"\\'"))}','investor')">Delete</button></td>
   </tr>`).join("");
 }
 
@@ -829,30 +830,30 @@ async function openDrawer(id,role){
   const u=r.user; const p=role==="founder"?(u.founderProfile||{}):(u.investorProfile||{});
   document.getElementById("drawerTitle").textContent=role==="founder"?"Founder Profile":"Investor Profile";
   const i=ini(u.fullName);
-  const avSrc=p.photo&&(p.photo.startsWith("data:")||p.photo.startsWith("/")||p.photo.startsWith("http"))?`<img src="${p.photo}" onerror="this.parentElement.textContent='${i}'"/>`:`${i}`;
+  const avSrc=p.photo&&(p.photo.startsWith("data:")||p.photo.startsWith("/")||p.photo.startsWith("http"))?`<img src="${esc(p.photo)}" onerror="this.parentElement.textContent='${esc(i)}'"/>`:`${i}`;
   let fields="";
   if(role==="founder"){
-    fields=`<div class="field"><div class="field-lbl">Startup Name</div><div class="field-val" style="font-weight:600">${p.startupName||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Industry</div><div class="field-val">${p.industry||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Funding Stage</div><div class="field-val">${p.fundingStage||"—"}</div></div>
+    fields=`<div class="field"><div class="field-lbl">Startup Name</div><div class="field-val" style="font-weight:600">${esc(p.startupName)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Industry</div><div class="field-val">${esc(p.industry)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Funding Stage</div><div class="field-val">${esc(p.fundingStage)||"—"}</div></div>
     <div class="field"><div class="field-lbl">Phone</div><div class="field-val mono">${fmtPhone(p.phone, p.phoneCountry)}</div></div>
-    <div class="field"><div class="field-lbl">Description</div><div class="field-val desc">${p.description||"—"}</div></div>`;
+    <div class="field"><div class="field-lbl">Description</div><div class="field-val desc">${esc(p.description)||"—"}</div></div>`;
   } else {
     const tl={angel:"Angel Investor",vc:"Venture Capitalist",pe:"Private Equity"};
-    fields=`<div class="field"><div class="field-lbl">Investor Type</div><div class="field-val" style="font-weight:600">${tl[p.investorType]||p.investorType||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Investment Focus</div><div class="field-val" style="font-weight:600">${p.investmentFocus||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Preferred Stage</div><div class="field-val">${p.preferredStage||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Ticket Size</div><div class="field-val">${p.ticketSize||"—"}</div></div>
-    <div class="field"><div class="field-lbl">Financial Capacity</div><div class="field-val mono">${p.financialCapacity||"—"}</div></div>
+    fields=`<div class="field"><div class="field-lbl">Investor Type</div><div class="field-val" style="font-weight:600">${tl[p.investorType]||esc(p.investorType)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Investment Focus</div><div class="field-val" style="font-weight:600">${esc(p.investmentFocus)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Preferred Stage</div><div class="field-val">${esc(p.preferredStage)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Ticket Size</div><div class="field-val">${esc(p.ticketSize)||"—"}</div></div>
+    <div class="field"><div class="field-lbl">Financial Capacity</div><div class="field-val mono">${esc(p.financialCapacity)||"—"}</div></div>
     <div class="field"><div class="field-lbl">Phone</div><div class="field-val mono">${fmtPhone(p.phone, p.phoneCountry)}</div></div>
-    <div class="field"><div class="field-lbl">Bio</div><div class="field-val desc">${p.bio||"—"}</div></div>`;
+    <div class="field"><div class="field-lbl">Bio</div><div class="field-val desc">${esc(p.bio)||"—"}</div></div>`;
   }
   document.getElementById("drawerBody").innerHTML=`
     <div class="user-top">
       <div class="big-av">${avSrc}</div>
       <div>
-        <div class="u-name">${u.fullName||"—"}</div>
-        <div class="u-email">${u.email||"—"}</div>
+        <div class="u-name">${esc(u.fullName)||"—"}</div>
+        <div class="u-email">${esc(u.email)||"—"}</div>
         <div class="u-badges">
           <span class="badge ${role==="founder"?"b-founder":"b-investor"}">${role.charAt(0).toUpperCase()+role.slice(1)}</span>
           <span class="badge ${u.termsAccepted?"b-yes":"b-no"}">Terms ${u.termsAccepted?"✓":"✗"}</span>
@@ -924,16 +925,16 @@ function filterH(){
       ? `<span class="badge b-seen" style="margin-top:4px;display:inline-block;">Seen</span>`
       : `<span class="badge b-unseen" style="margin-top:4px;display:inline-block;">New</span>`;
     const screenshotCell = h.screenshot
-      ? `<img class="help-screenshot" src="${h.screenshot}" alt="screenshot" onclick="openScreenshot('${h.screenshot}')"/>`
+      ? `<img class="help-screenshot" src="${esc(h.screenshot)}" alt="screenshot" onclick="openScreenshot('${esc(h.screenshot)}')"/>`
       : `<span style="color:#ccc;font-size:0.75rem;">—</span>`;
     const roleBadge = h.userRole
       ? `<span class="badge ${h.userRole==='Founder'?'b-founder':'b-investor'}">${h.userRole}</span>`
       : `<span style="color:#ccc">—</span>`;
     return `<tr>
-      <td><div class="td-name"><div class="av">${ini(h.userName)}</div><span class="av-name">${h.userName||"Anonymous"}</span></div></td>
-      <td class="td-email">${h.userEmail||"—"}</td>
+      <td><div class="td-name"><div class="av">${esc(ini(h.userName))}</div><span class="av-name">${esc(h.userName)||"Anonymous"}</span></div></td>
+      <td class="td-email">${esc(h.userEmail)||"—"}</td>
       <td>${roleBadge}</td>
-      <td><div class="help-problem">${(h.problem||"").substring(0,200)}${h.problem&&h.problem.length>200?"…":""}</div></td>
+      <td><div class="help-problem">${esc((h.problem||"").substring(0,200))}${h.problem&&h.problem.length>200?"…":""}</div></td>
       <td>${screenshotCell}</td>
       <td class="td-date hm">${fmt(h.createdAt)}</td>
       <td style="min-width:90px;">${statusBadge}<br/>${seenBadge}</td>
@@ -1016,11 +1017,11 @@ function filterFb(){
       ? `<span class="badge b-seen">Seen</span>`
       : `<span class="badge b-unseen">New</span>`;
     return `<tr>
-      <td><div class="td-name"><div class="av">${ini(f.userName)}</div><span class="av-name">${f.userName||"Anonymous"}</span></div></td>
-      <td class="td-email">${f.userEmail||"—"}</td>
+      <td><div class="td-name"><div class="av">${esc(ini(f.userName))}</div><span class="av-name">${esc(f.userName)||"Anonymous"}</span></div></td>
+      <td class="td-email">${esc(f.userEmail)||"—"}</td>
       <td>${roleBadge}</td>
       <td><span class="star-display">${starDisplay(f.rating)}</span><br/><span style="font-size:0.7rem;color:#888;">${f.rating}/5</span></td>
-      <td><div class="feedback-msg">${(f.message||"").substring(0,200)}${f.message&&f.message.length>200?"…":""}</div></td>
+      <td><div class="feedback-msg">${esc((f.message||"").substring(0,200))}${f.message&&f.message.length>200?"…":""}</div></td>
       <td class="td-date hm">${fmt(f.createdAt)}</td>
       <td>${seenBadge}</td>
       <td onclick="event.stopPropagation()">

@@ -62,8 +62,18 @@ async function authMiddleware(req, res, next) {
         }
       }
     } catch (dbErr) {
-      // Non-fatal — don't block the request if DB check fails
+      // 🔒 SECURITY: fail CLOSED. If this DB check throws we cannot verify
+      // suspension / deletion / active-session — so we must NOT let the request
+      // through on a bare valid JWT (that would let a suspended or deleted user,
+      // or a stale/stolen token, slip past during any DB hiccup).
+      // 503 (not 401) is used on purpose: it signals a transient server problem
+      // so the client can simply retry, instead of being force-logged-out the
+      // way a 401 would trigger.
       console.error("authMiddleware DB check error:", dbErr);
+      return res.status(503).json({
+        success: false,
+        message: "Service temporarily unavailable. Please try again.",
+      });
     }
 
     next();
