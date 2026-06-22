@@ -2545,9 +2545,8 @@ document.addEventListener('DOMContentLoaded', function() {
     width: 64px;
     height: 64px;
     margin: 0 auto 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-shrink: 0;
+    overflow: visible;
   }
 
   /* ── Centre pulsing dot ── */
@@ -2556,40 +2555,42 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 10px;
     border-radius: 50%;
     background: #111118;
-    position: relative;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 2;
     animation: ssOrbitDot 1.6s ease-in-out infinite;
   }
   @keyframes ssOrbitDot {
-    0%, 100% { opacity: 0.35; transform: scale(0.85); }
-    50%       { opacity: 1;    transform: scale(1); }
+    0%, 100% { opacity: 0.35; transform: translate(-50%,-50%) scale(0.85); }
+    50%       { opacity: 1;    transform: translate(-50%,-50%) scale(1); }
   }
 
-  /* ── Outer ring (clockwise) ── */
+  /* ── Rings — both positioned from wrapper centre ── */
   .ss-orbit-ring {
     position: absolute;
     top: 50%; left: 50%;
     border-radius: 50%;
     border-style: solid;
-    border-color: #111118;
-    transform: translate(-50%, -50%);
   }
   .ss-orbit-ring-1 {
-    width: 48px; height: 48px;
+    width: 52px; height: 52px;
+    margin-top: -26px; margin-left: -26px;
     border-width: 1.5px;
+    border-color: #111118;
     border-right-color: transparent;
     animation: ssOrbitCW 1.2s linear infinite;
   }
-  /* ── Inner ring (counter-clockwise) ── */
   .ss-orbit-ring-2 {
-    width: 32px; height: 32px;
+    width: 34px; height: 34px;
+    margin-top: -17px; margin-left: -17px;
     border-width: 1px;
-    border-color: rgba(17,17,24,0.25);
+    border-color: rgba(17,17,24,0.3);
     border-left-color: transparent;
     animation: ssOrbitCCW 0.9s linear infinite;
   }
-  @keyframes ssOrbitCW  { to { transform: translate(-50%,-50%) rotate(360deg);  } }
-  @keyframes ssOrbitCCW { to { transform: translate(-50%,-50%) rotate(-360deg); } }
+  @keyframes ssOrbitCW  { to { transform: rotate(360deg);  } }
+  @keyframes ssOrbitCCW { to { transform: rotate(-360deg); } }
 
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
