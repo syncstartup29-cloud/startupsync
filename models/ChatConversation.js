@@ -19,4 +19,4 @@ const chatConversationSchema = new mongoose.Schema({
 chatConversationSchema.index({ participants: 1 });
 // pairKey index defined inline above (unique:true) — no duplicate needed
 
-module.exports = mongoose.model("ChatConversation", chatConversationSchema);
+module.exports = mongoose.models.ChatConversation || mongoose.model("ChatConversation", chatConversationSchema);

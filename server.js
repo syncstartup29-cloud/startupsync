@@ -39,6 +39,11 @@ const morgan     = require("morgan");      // 🔒 STARTUP: Request logging
 const compression = require("compression"); // 🔒 STARTUP: Compress responses
 dns.setDefaultResultOrder("ipv4first");
 
+const next = require("next");
+const dev = process.env.NODE_ENV !== "production";
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
+
 const authMiddleware = require("./models/Authmiddleware");
 
 // ── Models ──────────────────────────────────────────────
@@ -129,6 +134,50 @@ app.use((req, res, next) => {
 
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 
+// ── Internal API Webhooks (Next.js serverless integration) ──
+app.post("/internal/emit", (req, res) => {
+  const { secret, room, event, data } = req.body || {};
+  if (secret !== process.env.ADMIN_SECRET) return res.status(403).json({ success: false });
+  if (room) {
+    io.to(room).emit(event, data);
+  } else {
+    io.emit(event, data);
+  }
+  return res.json({ success: true });
+});
+
+app.post("/internal/profile-updated", (req, res) => {
+  const { secret, userId, role, profile } = req.body || {};
+  if (secret !== process.env.ADMIN_SECRET) return res.status(403).json({ success: false });
+  const viewers = profileViewers.get(String(userId));
+  if (viewers && viewers.size > 0) {
+    io.to(Array.from(viewers).map(id => `user:${id}`)).emit("profile:updated", {
+      userId, role, profile
+    });
+  }
+  return res.json({ success: true });
+});
+
+app.post("/internal/emit-chat", async (req, res) => {
+  const { secret, pairKey, toUserId, payload } = req.body || {};
+  if (secret !== process.env.ADMIN_SECRET) return res.status(403).json({ success: false });
+
+  const roomName = roomFromPairKey(pairKey);
+  io.to(roomName).emit("chat:newMessage", payload);
+
+  const roomSockets = await io.in(roomName).allSockets();
+  const toUserStr = toUserId.toString();
+  const toUserInRoom = [...roomSockets].some(sid => {
+    const s = io.sockets.sockets.get(sid);
+    return s && s.userId === toUserStr;
+  });
+  if (!toUserInRoom) {
+    io.to(`user:${toUserId}`).emit("chat:newMessage", payload);
+  }
+  return res.json({ success: true });
+});
+
+
 // ── Static + uploads ─────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public"), {
   maxAge: 0,
@@ -173,28 +222,28 @@ async function ensureIndexes() {
   } catch(e) { console.error("⚠️ Index error (non-fatal):", e.message); }
 }
 
-// ── MongoDB ──────────────────────────────────────────────
+// ── MongoDB + Next.js ─────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGO_URI, {
-  family: 4,
-  maxPoolSize: 10,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  bufferCommands: false,
-})
-  .then(async () => {
-    await ensureIndexes();
-    // 🔒 FIX: only start accepting requests once MongoDB is actually ready.
-    // Previously server.listen() ran independently below, so on cold start
-    // requests could hit the server before Mongo finished connecting,
-    // causing "Cannot call ... before initial connection is complete" 502s.
-    server.listen(PORT, () => { /* server started */ });
+nextApp.prepare().then(() => {
+  mongoose.connect(process.env.MONGO_URI, {
+    family: 4,
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+    bufferCommands: false,
   })
-  .catch((err) => {
-    console.error("❌ MongoDB Error:", err);
-    process.exit(1); // 🔒 STARTUP: Exit if DB fails — don't run without a database
-  });
+    .then(async () => {
+      await ensureIndexes();
+      server.listen(PORT, () => {
+        // console.log(`> Ready on http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB Error:", err);
+      process.exit(1);
+    });
+});
 
 // ── Email transporter ─────────────────────────────────────
 const sendEmail = async (to, subject, html) => {
@@ -2330,7 +2379,9 @@ adminRoutes(app, User, io);
 //  CATCH-ALL + ERROR HANDLER
 // ════════════════════════════════════════════════════════
 
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.all('*', (req, res) => {
+  return handle(req, res);
+});
 
 // 🔒 SECURITY: Global error handler — catches all unhandled errors
 // Prevents stack traces from leaking to users in production

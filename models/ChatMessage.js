@@ -18,4 +18,4 @@ chatMessageSchema.index({ conversationId: 1, createdAt: 1 });
 chatMessageSchema.index({ receiverId: 1, seen: 1, deleted: 1 });
 chatMessageSchema.index({ conversationId: 1, receiverId: 1, seen: 1 });
 
-module.exports = mongoose.model("ChatMessage", chatMessageSchema);
+module.exports = mongoose.models.ChatMessage || mongoose.model("ChatMessage", chatMessageSchema);

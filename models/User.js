@@ -166,4 +166,4 @@ userSchema.pre("save", async function () {
   }
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);

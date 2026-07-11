@@ -17,4 +17,4 @@ const helpRequestSchema = new mongoose.Schema(
 // FIX 9: Indexes for admin queries — unseen + unresolved are the most common filters
 helpRequestSchema.index({ seen: 1, resolved: 1, createdAt: -1 });
 
-module.exports = mongoose.model("HelpRequest", helpRequestSchema);
+module.exports = mongoose.models.HelpRequest || mongoose.model("HelpRequest", helpRequestSchema);
