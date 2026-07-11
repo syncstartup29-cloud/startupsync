@@ -1,0 +1,7 @@
+{
+  "name": "mongoose",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Firestore-backed Mongoose compatibility layer",
+  "dependencies": {}
+}

@@ -7,7 +7,7 @@ require("dotenv").config();
 // Only the vars actually read by this file are required. EMAIL_USER/EMAIL_PASS
 // were removed: email is sent through the Brevo HTTP API (BREVO_API_KEY), so
 // those two were never used — yet a fresh deploy without them would crash boot.
-const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
+const REQUIRED_ENV = ["FIREBASE_PROJECT_ID", "JWT_SECRET", "ADMIN_SECRET", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "BREVO_API_KEY"];
 
 // Presence is checked FIRST. Reading JWT_SECRET.length before this loop threw a
 // cryptic "Cannot read properties of undefined" TypeError when it was missing,
@@ -226,13 +226,7 @@ async function ensureIndexes() {
 const PORT = process.env.PORT || 3000;
 
 nextApp.prepare().then(() => {
-  mongoose.connect(process.env.MONGO_URI, {
-    family: 4,
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-    bufferCommands: false,
-  })
+  mongoose.connect(process.env.FIREBASE_PROJECT_ID || "startupsync")
     .then(async () => {
       await ensureIndexes();
       server.listen(PORT, () => {
@@ -240,7 +234,7 @@ nextApp.prepare().then(() => {
       });
     })
     .catch((err) => {
-      console.error("❌ MongoDB Error:", err);
+      console.error("❌ Firebase/Firestore Error:", err);
       process.exit(1);
     });
 });
